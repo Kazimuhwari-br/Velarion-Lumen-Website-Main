@@ -10066,3 +10066,418 @@ body {
 
 </body>
 </html>
+<style>
+/* ==========================================================
+   RESPONSIVE FIX FINAL: 1920x1080 / notebook / mobile
+   - Sidebar fica fixa na esquerda e não entra por cima do card.
+   - Tela de detalhes usa a largura real da janela, sem cortar metade.
+   - Em telas médias vira 1 coluna antes de quebrar.
+   ========================================================== */
+:root {
+	--archive-w: 104px;
+	--archive-gap: 18px;
+	--page-pad-x: 18px;
+}
+
+html,
+body {
+	width: 100% !important;
+	max-width: 100% !important;
+	overflow-x: hidden !important;
+}
+
+.archive-side-hud {
+	position: fixed !important;
+	left: var(--page-pad-x) !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	width: 90px !important;
+	max-height: calc(100vh - 36px) !important;
+	z-index: 50 !important;
+}
+
+.app {
+	width: 100% !important;
+	max-width: 1440px !important;
+	margin: 0 auto !important;
+	padding-left: calc(var(--archive-w) + var(--archive-gap) + var(--page-pad-x)) !important;
+	padding-right: var(--page-pad-x) !important;
+	box-sizing: border-box !important;
+}
+
+.app::before,
+.topbar,
+.summon-status-panel,
+.grid,
+.grid.list-mode {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	box-sizing: border-box !important;
+}
+
+/* Detail/perfil aberto: ocupar a tela inteira, não só metade */
+.detail-view {
+	position: fixed !important;
+	inset: 0 !important;
+	width: 100vw !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	padding: 16px var(--page-pad-x) 28px calc(var(--archive-w) + var(--archive-gap) + var(--page-pad-x)) !important;
+	box-sizing: border-box !important;
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
+}
+
+.detail-stage {
+	width: 100% !important;
+	min-width: 0 !important;
+	display: flex !important;
+	justify-content: center !important;
+	align-items: flex-start !important;
+}
+
+.detail-frame {
+	width: min(100%, 1280px) !important;
+	max-width: 1280px !important;
+	min-width: 0 !important;
+	margin: 0 auto !important;
+	box-sizing: border-box !important;
+}
+
+.detail-shell {
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	display: grid !important;
+	grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) !important;
+	gap: 18px !important;
+	align-items: start !important;
+	margin: 0 !important;
+	box-sizing: border-box !important;
+}
+
+.detail-left-column,
+.detail-info,
+.info-panel,
+.info-grid,
+.info-item,
+.detail-card {
+	min-width: 0 !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+.detail-card {
+	width: 100% !important;
+	height: min(540px, calc(100vh - 92px)) !important;
+	min-height: 470px !important;
+}
+
+.info-grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* Notebook / 1366 / zoom alto: reduz coluna esquerda e espaçamento */
+@media (max-width: 1360px) and (min-width: 981px) {
+	.detail-frame {
+		max-width: 1120px !important;
+	}
+	.detail-shell {
+		grid-template-columns: minmax(250px, 320px) minmax(0, 1fr) !important;
+		gap: 14px !important;
+	}
+	.detail-card {
+		height: min(515px, calc(100vh - 88px)) !important;
+		min-height: 455px !important;
+	}
+	.info-panel {
+		padding: 14px !important;
+	}
+}
+
+/* Tablet / tela apertada: perfil vira uma coluna para não esmagar */
+@media (max-width: 980px) {
+	:root {
+		--page-pad-x: 14px;
+	}
+	.archive-side-hud {
+		display: none !important;
+	}
+	.app {
+		padding-left: var(--page-pad-x) !important;
+		padding-right: var(--page-pad-x) !important;
+		max-width: 100% !important;
+	}
+	.detail-view {
+		padding: 14px var(--page-pad-x) 24px !important;
+	}
+	.detail-frame {
+		width: 100% !important;
+		max-width: 760px !important;
+	}
+	.detail-shell {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 16px !important;
+	}
+	.detail-card {
+		height: auto !important;
+		min-height: 500px !important;
+	}
+	.info-grid {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+/* Mobile pequeno */
+@media (max-width: 560px) {
+	:root {
+		--page-pad-x: 10px;
+	}
+	.detail-card {
+		min-height: 430px !important;
+		border-radius: 20px !important;
+	}
+	.detail-card .detail-bottom,
+	.grid:not(.list-mode) .card-bottom {
+		left: 10px !important;
+		right: 10px !important;
+		bottom: 10px !important;
+		padding: 12px 10px !important;
+	}
+	.detail-title,
+	.grid:not(.list-mode) .title {
+		font-size: 18px !important;
+	}
+	.detail-info,
+	.info-panel {
+		width: 100% !important;
+	}
+}
+</style>
+
+
+<style>
+/* ==========================================================
+   SIDEBAR ARCHIVE FIX FINAL
+   Corrige a coluna ARCHIVE/TODOS/DEVELOPER/etc. sem sobrepor
+   o card e sem quebrar em 1920x1080, notebook e mobile.
+   ========================================================== */
+:root {
+	--archive-w: 108px !important;
+	--archive-gap: 22px !important;
+	--page-pad-x: 22px !important;
+}
+
+.archive-side-hud {
+	position: fixed !important;
+	left: var(--page-pad-x) !important;
+	top: 50% !important;
+	bottom: auto !important;
+	transform: translateY(-50%) !important;
+	width: var(--archive-w) !important;
+	height: auto !important;
+	max-height: calc(100vh - 32px) !important;
+	padding: 12px 10px !important;
+	box-sizing: border-box !important;
+	z-index: 60 !important;
+	pointer-events: none !important;
+	overflow: hidden !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 9px !important;
+	border-radius: 26px !important;
+}
+
+.archive-side-crystal {
+	width: 64px !important;
+	height: 78px !important;
+	min-height: 78px !important;
+	font-size: 42px !important;
+	border-radius: 24px !important;
+	flex: 0 0 auto !important;
+}
+
+.archive-side-title {
+	width: 100% !important;
+	margin: 0 0 4px !important;
+	font-size: 12px !important;
+	line-height: 1 !important;
+	letter-spacing: .13em !important;
+	text-align: center !important;
+	writing-mode: initial !important;
+	text-orientation: initial !important;
+	white-space: nowrap !important;
+	flex: 0 0 auto !important;
+}
+
+.archive-side-item {
+	width: 84px !important;
+	height: 56px !important;
+	min-height: 56px !important;
+	padding: 6px 4px !important;
+	box-sizing: border-box !important;
+	flex: 0 0 auto !important;
+	display: grid !important;
+	grid-template-rows: 24px 1fr !important;
+	place-items: center !important;
+	gap: 2px !important;
+	font-size: 18px !important;
+	line-height: 1 !important;
+	pointer-events: auto !important;
+}
+
+.archive-side-item .side-icon,
+.side-icon {
+	font-size: 18px !important;
+	line-height: 1 !important;
+	display: block !important;
+}
+
+.archive-side-item .side-label,
+.side-label {
+	max-width: 100% !important;
+	font-size: 7px !important;
+	line-height: 1.05 !important;
+	letter-spacing: .055em !important;
+	text-align: center !important;
+	white-space: normal !important;
+	word-break: normal !important;
+	overflow-wrap: anywhere !important;
+}
+
+.archive-side-footer {
+	margin-top: auto !important;
+	padding-top: 4px !important;
+	font-size: 7px !important;
+	line-height: 1.2 !important;
+	letter-spacing: .12em !important;
+	flex: 0 0 auto !important;
+}
+
+.app {
+	padding-left: calc(var(--archive-w) + var(--archive-gap) + var(--page-pad-x)) !important;
+	padding-right: var(--page-pad-x) !important;
+}
+
+.detail-view {
+	padding-left: calc(var(--archive-w) + var(--archive-gap) + var(--page-pad-x)) !important;
+	padding-right: var(--page-pad-x) !important;
+}
+
+/* 1080p/notebook: compacta para caber sem cortar */
+@media (max-height: 760px) and (min-width: 981px) {
+	.archive-side-hud {
+		gap: 6px !important;
+		padding-top: 8px !important;
+		padding-bottom: 8px !important;
+	}
+	.archive-side-crystal {
+		width: 56px !important;
+		height: 62px !important;
+		min-height: 62px !important;
+		font-size: 36px !important;
+		border-radius: 20px !important;
+	}
+	.archive-side-title {
+		font-size: 10px !important;
+		margin-bottom: 2px !important;
+	}
+	.archive-side-item {
+		width: 80px !important;
+		height: 48px !important;
+		min-height: 48px !important;
+		grid-template-rows: 20px 1fr !important;
+	}
+	.archive-side-item .side-icon,
+	.side-icon { font-size: 16px !important; }
+	.archive-side-item .side-label,
+	.side-label { font-size: 6.5px !important; }
+	.archive-side-footer { font-size: 6.5px !important; }
+}
+
+/* Tela média: sidebar menor e conteúdo preservado */
+@media (max-width: 1180px) and (min-width: 981px) {
+	:root {
+		--archive-w: 92px !important;
+		--archive-gap: 16px !important;
+		--page-pad-x: 14px !important;
+	}
+	.archive-side-item {
+		width: 72px !important;
+	}
+	.archive-side-title {
+		font-size: 10px !important;
+	}
+}
+
+/* Mobile/tablet: vira barra horizontal no topo em vez de sumir ou cobrir */
+@media (max-width: 980px) {
+	:root {
+		--page-pad-x: 12px !important;
+	}
+	.archive-side-hud {
+		position: sticky !important;
+		left: auto !important;
+		top: 8px !important;
+		transform: none !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		max-height: none !important;
+		margin: 8px auto 12px !important;
+		padding: 10px !important;
+		border-radius: 20px !important;
+		flex-direction: row !important;
+		justify-content: flex-start !important;
+		align-items: center !important;
+		gap: 8px !important;
+		overflow-x: auto !important;
+		overflow-y: hidden !important;
+		pointer-events: auto !important;
+	}
+	.archive-side-crystal {
+		width: 48px !important;
+		height: 48px !important;
+		min-width: 48px !important;
+		min-height: 48px !important;
+		font-size: 30px !important;
+		border-radius: 16px !important;
+	}
+	.archive-side-title {
+		width: auto !important;
+		min-width: 82px !important;
+		margin: 0 !important;
+		font-size: 11px !important;
+	}
+	.archive-side-item {
+		width: 72px !important;
+		min-width: 72px !important;
+		height: 50px !important;
+		min-height: 50px !important;
+	}
+	.archive-side-footer {
+		display: none !important;
+	}
+	.app,
+	.detail-view {
+		padding-left: var(--page-pad-x) !important;
+		padding-right: var(--page-pad-x) !important;
+	}
+}
+
+@media (max-width: 560px) {
+	.archive-side-title { display: none !important; }
+	.archive-side-item {
+		width: 64px !important;
+		min-width: 64px !important;
+	}
+	.archive-side-item .side-label,
+	.side-label {
+		font-size: 6.2px !important;
+	}
+}
+</style>
