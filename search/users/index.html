@@ -9360,7 +9360,21 @@ body {
 
 	async function openDetail(playerId, sourceCard) {
 		if (!playerId || isTransitionRunning) return;
-		window.location.href = makeProfileUrl(playerId);
+
+		const player = playersData.find(function(item) {
+			return String(item._id) === String(playerId);
+		});
+
+		try {
+			isTransitionRunning = true;
+			if (player) {
+				await playSummonSequence(player);
+			}
+		} catch (e) {
+			console.warn('[profile loading animation]', e);
+		} finally {
+			window.location.href = makeProfileUrl(playerId);
+		}
 	}
 
 	function closeDetail() {
