@@ -9365,16 +9365,23 @@ body {
 			return String(item._id) === String(playerId);
 		});
 
+		const profileUrl = makeProfileUrl(playerId);
+
 		try {
-			isTransitionRunning = true;
 			if (player) {
 				await playSummonSequence(player);
+
+				// Mantém a animação original da carta antes de sair para a página separada do perfil.
+				if (sourceCard) {
+					await animateOpenDetail(player, sourceCard, profileUrl);
+					return;
+				}
 			}
 		} catch (e) {
 			console.warn('[profile loading animation]', e);
-		} finally {
-			window.location.href = makeProfileUrl(playerId);
 		}
+
+		window.location.href = profileUrl;
 	}
 
 	function closeDetail() {
@@ -9411,7 +9418,7 @@ body {
 	}
 
 
-	async function animateOpenDetail(player, sourceCard) {
+	async function animateOpenDetail(player, sourceCard, redirectUrl) {
 		if (isTransitionRunning) return;
 		isTransitionRunning = true;
 
@@ -9491,6 +9498,13 @@ body {
 				wait(280)
 			]);
 			await wait(80);
+
+			if (redirectUrl) {
+				clone.classList.add("is-opening-profile");
+				await wait(180);
+				window.location.href = redirectUrl;
+				return;
+			}
 
 			lockBodyScroll();
 
