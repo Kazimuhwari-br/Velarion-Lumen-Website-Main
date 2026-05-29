@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>z𝐕elarion 𝐋umen 龍 (Beta)</title>
+<title>Perfil do Jogador | z𝐕elarion 𝐋umen 龍</title>
 
 <style>
 	/* ===== CSS: Fontes externas ===== */
@@ -6973,6 +6973,79 @@ body {
 	}
 }
 
+
+
+/* Página separada de perfil: não mostra o Grid/principal por trás */
+.archive-side-hud,
+#gridView,
+#paginationPanel,
+.topbar,
+.summon-status-panel {
+	display: none !important;
+}
+.app {
+	width: min(1160px, calc(100% - 20px));
+}
+#detailView {
+	display: block;
+	position: relative;
+	inset: auto;
+	min-height: 100vh;
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transform: none;
+	filter: none;
+	background: transparent;
+}
+.route-error-page {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+.route-error-card {
+	width: min(620px, 100%);
+	padding: 28px;
+	border-radius: 24px;
+	border: 1px solid rgba(255,255,255,.10);
+	background: linear-gradient(180deg, rgba(17,24,40,.92), rgba(7,10,20,.98));
+	box-shadow: 0 22px 48px rgba(0,0,0,.42), 0 0 30px rgba(130,100,255,.14);
+	text-align: center;
+}
+.route-error-code {
+	font-size: 13px;
+	font-weight: 1000;
+	letter-spacing: .22em;
+	text-transform: uppercase;
+	color: #aebce3;
+}
+.route-error-title {
+	margin: 10px 0 8px;
+	font-size: clamp(28px, 6vw, 54px);
+	line-height: 1;
+	font-weight: 1000;
+}
+.route-error-text {
+	margin: 0 auto 20px;
+	max-width: 480px;
+	line-height: 1.55;
+	color: #cfd7eb;
+}
+.route-error-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 44px;
+	padding: 0 18px;
+	border-radius: 14px;
+	border: 1px solid rgba(255,255,255,.12);
+	background: rgba(88,101,242,.22);
+	color: #fff;
+	font-weight: 900;
+	text-decoration: none;
+}
 </style>
 </head>
 <body>
@@ -7087,34 +7160,40 @@ body {
 	let currentPage = 1;
 	let itemsPerPage = 6;
 
-	// ===== JavaScript: Rotas da página =====
-	// GitHub Pages: /Velarion-Lumen-Website-Main/search/users
-	// Perfil:       /Velarion-Lumen-Website-Main/users/${id}/profile
-	const APP_BASE_PATH = "/Velarion-Lumen-Website-Main";
 
-	function getAppPath() {
+
+	// ===== Rotas separadas GitHub Pages =====
+	const SITE_BASE_PATH = "/Velarion-Lumen-Website-Main";
+	function getSiteBasePath() {
+		const path = window.location.pathname || "/";
+		const repo = "/Velarion-Lumen-Website-Main";
+		return path.startsWith(repo + "/") || path === repo ? repo : "";
+	}
+	function cleanProfileSlug(value) {
+		return String(value || "").trim().replace(/^ID[_-]?/i, "");
+	}
+	function makeProfileUrl(playerId) {
+		return getSiteBasePath() + "/users/" + encodeURIComponent(cleanProfileSlug(playerId)) + "/profile";
+	}
+	function makeSearchUrl() {
+		return getSiteBasePath() + "/search/users/";
+	}
+	function getProfileSlugFromPath() {
+		const base = getSiteBasePath();
 		let path = window.location.pathname || "/";
-
-		if (path.startsWith(APP_BASE_PATH)) {
-			path = path.slice(APP_BASE_PATH.length) || "/";
-		}
-
-		return path;
-	}
-
-	function getSearchUrl() {
-		return APP_BASE_PATH + "/search/users";
-	}
-
-	function getProfileUrl(playerId) {
-		return APP_BASE_PATH + "/users/" + encodeURIComponent(playerId) + "/profile";
-	}
-
-	function getRouteProfileId() {
-		const match = getAppPath().match(/^\/users\/([^/]+)\/profile\/?$/);
+		if (base && path.startsWith(base)) path = path.slice(base.length) || "/";
+		const match = path.match(/^\/users\/([^\/]+)\/profile\/?$/i);
 		return match ? decodeURIComponent(match[1]) : "";
 	}
-
+	function findPlayerBySlug(slug) {
+		const wanted = cleanProfileSlug(slug).toLowerCase();
+		return playersData.find(function(item) {
+			const rawId = String(item._id || "");
+			const cleanId = cleanProfileSlug(rawId);
+			const username = cleanProfileSlug(item?.profile?.display_username || "");
+			return rawId.toLowerCase() === wanted || cleanId.toLowerCase() === wanted || username.toLowerCase() === wanted;
+		}) || null;
+	}
 
 	// ===== JavaScript: Helpers de animação / transição =====
 	function wait(ms) {
@@ -9352,16 +9431,12 @@ body {
 		});
 	}
 
-	async function openDetail(playerId, sourceCard, updateUrl = true) {
+	async function openDetail(playerId, sourceCard) {
 		const player = playersData.find(function(item) {
 			return item._id === playerId;
 		});
 
 		if (!player) return;
-
-		if (updateUrl) {
-			history.pushState({ view: "profile", playerId: player._id }, "", getProfileUrl(player._id));
-		}
 
 		await playSummonSequence(player);
 
@@ -9373,55 +9448,8 @@ body {
 		animateOpenDetail(player, sourceCard);
 	}
 
-	function closeDetail(updateUrl = true) {
-		if (updateUrl) {
-			history.pushState({ view: "search" }, "", getSearchUrl());
-		}
-
-		animateCloseDetail();
-	}
-
-	function showSearchRoute(replaceUrl = false) {
-		if (replaceUrl) {
-			history.replaceState({ view: "search" }, "", getSearchUrl());
-		}
-
-		const gridView = document.getElementById("gridView");
-		const detailView = document.getElementById("detailView");
-
-		if (activePlayerId && detailView?.classList.contains("active")) {
-			closeDetail(false);
-			return;
-		}
-
-		if (detailView) {
-			detailView.classList.remove("ready", "active");
-			detailView.innerHTML = "";
-		}
-
-		if (gridView) gridView.classList.remove("hidden");
-		activePlayerId = null;
-	}
-
-	function syncRouteAfterData() {
-		const path = getAppPath();
-		const routePlayerId = getRouteProfileId();
-
-		if (routePlayerId) {
-			const player = playersData.find(function(item) {
-				return item._id === routePlayerId;
-			});
-
-			if (player) {
-				showDetailInstant(player);
-				history.replaceState({ view: "profile", playerId: player._id }, "", getProfileUrl(player._id));
-				return;
-			}
-		}
-
-		if (path === "/" || path === "/index.html" || path === "/search/users" || path === "/search/users/") {
-			showSearchRoute(path !== "/search/users");
-		}
+	function closeDetail() {
+		window.location.href = makeSearchUrl();
 	}
 
 	function lockBodyScroll() {
@@ -9873,7 +9901,7 @@ body {
 
 	// ===== JavaScript: Carregamento dos dados =====
 	async function load() {
-		const playersEl = document.getElementById("players");
+		const detailEl = document.getElementById("detailView");
 
 		try {
 			const [playersRes, extensionsRes] = await Promise.all([
@@ -9881,36 +9909,58 @@ body {
 				fetch(EXTENSIONS_DATA_URL, { cache: "no-store" })
 			]);
 
-			if (!playersRes.ok) {
-				throw new Error("Players HTTP " + playersRes.status + " - " + playersRes.statusText);
-			}
-
-			if (!extensionsRes.ok) {
-				throw new Error("Extensions HTTP " + extensionsRes.status + " - " + extensionsRes.statusText);
-			}
+			if (!playersRes.ok) throw new Error("Players HTTP " + playersRes.status + " - " + playersRes.statusText);
+			if (!extensionsRes.ok) throw new Error("Extensions HTTP " + extensionsRes.status + " - " + extensionsRes.statusText);
 
 			const playersJson = await playersRes.json();
 			const extensionsJson = await extensionsRes.json();
-
-			console.log("[Firebase Players OK]", playersJson);
-			console.log("[Firebase Extensions OK]", extensionsJson);
 
 			extensionsData = extensionsJson || {};
 			applyExtensionDataConfig();
 			playersData = normalize(playersJson);
 			filteredPlayers = playersData.slice();
 
-			render(filteredPlayers);
-			syncRouteAfterData();
+			const slug = getProfileSlugFromPath();
+			const player = findPlayerBySlug(slug);
+
+			if (!slug || !player) {
+				showRoute404(slug);
+				hideSummonBoot();
+				return;
+			}
+
+			activePlayerId = player._id;
+			detailEl.innerHTML = createDetailView(player);
+			detailEl.classList.add("active", "ready");
+			attach3DEffect(detailEl.querySelectorAll(".detail-card"));
+			setupAchievementGalleries(detailEl);
+			document.title = stripMinecraftCodes(getDisplayName(player)) + " | Perfil";
 			hideSummonBoot();
 
 		} catch (e) {
 			console.error("[Firebase erro]", e);
-			if (playersEl) {
-				playersEl.innerHTML = `<div class="empty">Erro ao carregar Firebase: ${String(e.message || e)}</div>`;
-			}
+			showRoute404("erro");
 			hideSummonBoot();
 		}
+	}
+
+	function showRoute404(slug) {
+		const detailEl = document.getElementById("detailView");
+		if (!detailEl) return;
+		document.title = "404 | Perfil não encontrado";
+		detailEl.classList.add("active", "ready");
+		detailEl.innerHTML = `
+			<section class="route-error-page">
+				<div class="route-error-card">
+					<div class="route-error-code">404 / Perfil não encontrado</div>
+					<h1 class="route-error-title">Não existe esse perfil</h1>
+					<p class="route-error-text">
+						O perfil ${slug ? `<strong>${escapeHtml(slug)}</strong>` : "informado"} não foi encontrado nos jogadores cadastrados.
+					</p>
+					<a class="route-error-button" href="${makeSearchUrl()}">Voltar para a busca</a>
+				</div>
+			</section>
+		`;
 	}
 
 
@@ -10140,23 +10190,6 @@ body {
 		}
 	})();
 
-
-	window.addEventListener("popstate", function() {
-		const routePlayerId = getRouteProfileId();
-
-		if (routePlayerId) {
-			const player = playersData.find(function(item) {
-				return item._id === routePlayerId;
-			});
-
-			if (player) {
-				showDetailInstant(player);
-			}
-			return;
-		}
-
-		showSearchRoute(false);
-	});
 
 	load();
 </script>
