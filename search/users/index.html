@@ -7057,7 +7057,6 @@ body {
 			<div class="summon-avatar" data-summon-avatar></div>
 			<div class="summon-kicker" data-summon-kicker>Scanning Player</div>
 			<div class="summon-title" data-summon-title>???</div>
-			<div class="summon-status" data-summon-status>Localizando assinatura do perfil...</div>
 			<div class="summon-bar"><span></span></div>
 		</div>
 	</div>
@@ -9368,17 +9367,13 @@ body {
 		const profileUrl = makeProfileUrl(playerId);
 
 		try {
-			if (player) {
-				await playSummonSequence(player);
-
-				// Mantém a animação original da carta antes de sair para a página separada do perfil.
-				if (sourceCard) {
-					await animateOpenDetail(player, sourceCard, profileUrl);
-					return;
-				}
+			if (player && sourceCard) {
+				// Abre direto com a animação da carta, sem mostrar a caixa de mensagem "Carregando perfil...".
+				await animateOpenDetail(player, sourceCard, profileUrl);
+				return;
 			}
 		} catch (e) {
-			console.warn('[profile loading animation]', e);
+			console.warn('[profile opening animation]', e);
 		}
 
 		window.location.href = profileUrl;
