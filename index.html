@@ -7087,6 +7087,34 @@ body {
 	let currentPage = 1;
 	let itemsPerPage = 6;
 
+	// ===== JavaScript: Rotas da página =====
+	// GitHub Pages: /Velarion-Lumen-Website-Main/search/users
+	// Perfil:       /Velarion-Lumen-Website-Main/users/${id}/profile
+	const APP_BASE_PATH = "/Velarion-Lumen-Website-Main";
+
+	function getAppPath() {
+		let path = window.location.pathname || "/";
+
+		if (path.startsWith(APP_BASE_PATH)) {
+			path = path.slice(APP_BASE_PATH.length) || "/";
+		}
+
+		return path;
+	}
+
+	function getSearchUrl() {
+		return APP_BASE_PATH + "/search/users";
+	}
+
+	function getProfileUrl(playerId) {
+		return APP_BASE_PATH + "/users/" + encodeURIComponent(playerId) + "/profile";
+	}
+
+	function getRouteProfileId() {
+		const match = getAppPath().match(/^\/users\/([^/]+)\/profile\/?$/);
+		return match ? decodeURIComponent(match[1]) : "";
+	}
+
 
 	// ===== JavaScript: Helpers de animação / transição =====
 	function wait(ms) {
@@ -9324,12 +9352,16 @@ body {
 		});
 	}
 
-	async function openDetail(playerId, sourceCard) {
+	async function openDetail(playerId, sourceCard, updateUrl = true) {
 		const player = playersData.find(function(item) {
 			return item._id === playerId;
 		});
 
 		if (!player) return;
+
+		if (updateUrl) {
+			history.pushState({ view: "profile", playerId: player._id }, "", getProfileUrl(player._id));
+		}
 
 		await playSummonSequence(player);
 
@@ -9341,8 +9373,55 @@ body {
 		animateOpenDetail(player, sourceCard);
 	}
 
-	function closeDetail() {
+	function closeDetail(updateUrl = true) {
+		if (updateUrl) {
+			history.pushState({ view: "search" }, "", getSearchUrl());
+		}
+
 		animateCloseDetail();
+	}
+
+	function showSearchRoute(replaceUrl = false) {
+		if (replaceUrl) {
+			history.replaceState({ view: "search" }, "", getSearchUrl());
+		}
+
+		const gridView = document.getElementById("gridView");
+		const detailView = document.getElementById("detailView");
+
+		if (activePlayerId && detailView?.classList.contains("active")) {
+			closeDetail(false);
+			return;
+		}
+
+		if (detailView) {
+			detailView.classList.remove("ready", "active");
+			detailView.innerHTML = "";
+		}
+
+		if (gridView) gridView.classList.remove("hidden");
+		activePlayerId = null;
+	}
+
+	function syncRouteAfterData() {
+		const path = getAppPath();
+		const routePlayerId = getRouteProfileId();
+
+		if (routePlayerId) {
+			const player = playersData.find(function(item) {
+				return item._id === routePlayerId;
+			});
+
+			if (player) {
+				showDetailInstant(player);
+				history.replaceState({ view: "profile", playerId: player._id }, "", getProfileUrl(player._id));
+				return;
+			}
+		}
+
+		if (path === "/" || path === "/index.html" || path === "/search/users" || path === "/search/users/") {
+			showSearchRoute(path !== "/search/users");
+		}
 	}
 
 	function lockBodyScroll() {
@@ -9822,6 +9901,7 @@ body {
 			filteredPlayers = playersData.slice();
 
 			render(filteredPlayers);
+			syncRouteAfterData();
 			hideSummonBoot();
 
 		} catch (e) {
@@ -10060,6 +10140,23 @@ body {
 		}
 	})();
 
+
+	window.addEventListener("popstate", function() {
+		const routePlayerId = getRouteProfileId();
+
+		if (routePlayerId) {
+			const player = playersData.find(function(item) {
+				return item._id === routePlayerId;
+			});
+
+			if (player) {
+				showDetailInstant(player);
+			}
+			return;
+		}
+
+		showSearchRoute(false);
+	});
 
 	load();
 </script>
