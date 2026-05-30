@@ -1374,6 +1374,52 @@
 	}
 
 
+	/* ===== CSS: Badge Verified no cabeçalho de Informações ===== */
+	.info-header {
+		align-items: center;
+	}
+
+	.info-header .info-title {
+		flex: 0 1 auto;
+	}
+
+	.info-verified-slot {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		min-width: 0;
+	}
+
+	.info-verified-slot .card-verified-chip {
+		width: 64px;
+		min-height: 68px;
+		padding: 7px 7px 7px;
+		border-radius: 17px;
+	}
+
+	.info-verified-slot .card-verified-chip img {
+		width: 32px;
+		height: 32px;
+	}
+
+	.info-verified-slot .card-verified-chip::after {
+		font-size: 7px;
+		padding: 3px 4px;
+	}
+
+	.info-verified-slot .card-verified-chip .card-verified-tooltip {
+		top: calc(100% + 8px);
+		left: 50%;
+		transform: translateX(-50%) translateY(-4px);
+	}
+
+	.info-verified-slot .card-verified-chip:hover .card-verified-tooltip,
+	.info-verified-slot .card-verified-chip:focus-visible .card-verified-tooltip {
+		transform: translateX(-50%) translateY(0);
+	}
+
+
 	/* ===== CSS: Clan rico dentro de Informações ===== */
 	.clan-info-card {
 		--clan-color: #a855f7;
@@ -7174,6 +7220,36 @@ body {
 	text-shadow: 0 2px 8px rgba(0,0,0,.82), 0 0 10px rgba(170,90,255,.18);
 }
 
+
+/* Badge Verified movido para o lado direito do título Informações */
+.detail-info .info-panel:first-child .info-header {
+	display: flex !important;
+	align-items: center !important;
+	gap: 12px !important;
+}
+
+.detail-info .info-panel:first-child .info-verified-slot {
+	margin-left: auto !important;
+}
+
+.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip-empty {
+	display: none !important;
+}
+
+@media (max-width: 520px) {
+	.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip {
+		width: 56px;
+		min-height: 60px;
+		padding: 6px;
+		border-radius: 15px;
+	}
+
+	.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip img {
+		width: 28px;
+		height: 28px;
+	}
+}
+
 @media (max-width: 760px) {
 	.grid:not(.list-mode) .card {
 		max-width: min(280px, 100%);
@@ -9617,7 +9693,6 @@ body.profile-route .summon-boot .summon-title::after {
 						>
 							<div class="detail-top">
 								${buildLevelChipHtml(player)}
-								${buildVerifiedCardBadgeHtml(player)}
 							</div>
 
 							<div class="side-rail"></div>
@@ -9673,6 +9748,7 @@ body.profile-route .summon-boot .summon-title::after {
 										>
 									</div>
 									<h3 class="info-title">Informações</h3>
+									<div class="info-verified-slot">${buildVerifiedCardBadgeHtml(player)}</div>
 								</div>
 
 								<div class="info-grid">
