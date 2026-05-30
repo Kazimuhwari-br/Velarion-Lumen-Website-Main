@@ -10320,8 +10320,8 @@ body.profile-route .summon-boot .summon-title::after {
 
 		if (!clanName || !clan) {
 			return `
-				<div class="clan-info-card clan-info-card-premium is-empty" style="--clan-color: #c9a24a;">
-					<div class="clan-info-label">CLAN</div>
+				<div class="clan-info-card clan-info-card-premium clan-info-card-tech is-empty" style="--clan-color: #a855f7;">
+					<div class="clan-info-label">SEM CLÃ</div>
 					<div class="clan-info-emblem" aria-hidden="true">
 						<span class="clan-info-emblem-fallback">♛</span>
 					</div>
@@ -10334,21 +10334,24 @@ body.profile-route .summon-boot .summon-title::after {
 			`;
 		}
 
-		const title = stripMinecraftCodes(cleanValue(clan?.title || clan?.profile?.title || clanName)) || clanName;
-		const subtitle = stripMinecraftCodes(cleanValue(clan?.sub || clan?.subtitle || clan?.profile?.sub || clan?.profile?.subtitle)) || "Clan";
+		const label = stripMinecraftCodes(cleanValue(clan?.sub || clanName)) || clanName;
+		const title = stripMinecraftCodes(cleanValue(clan?.profile?.title || clan?.title || clanName)) || clanName;
+		const subtitle = stripMinecraftCodes(cleanValue(clan?.profile?.bio || clan?.bio || clan?.profile?.subtitle || clan?.subtitle || "Informações do clã")) || "Informações do clã";
 		const color = normalizeHexColor(
 			clan?.theme?.card_embed?.card_color ||
 			clan?.theme?.card_embed?.background_color ||
 			player?.theme?.card_embed?.card_color ||
-			"#c9a24a",
-			"#c9a24a"
+			"#a855f7",
+			"#a855f7"
 		);
-		const icon = getMediaUrl(clan?.icon || clan?.emblem || clan?.image || clan?.rank?.icon_image) || getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || getMediaUrl(clan?.theme?.card_embed?.profile_frame_image);
-		const codepoint = cleanValue(clan?.icon_codepoint || clan?.rank?.icon_codepoint);
+
+		const mainIcon = getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || getMediaUrl(clan?.rank?.icon_image) || getMediaUrl(clan?.icon || clan?.emblem || clan?.image);
+		const watermarkIcon = getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || mainIcon;
+		const codepoint = cleanValue(clan?.rank?.icon_codepoint || clan?.icon_codepoint);
 		const fallbackIcon = codepoint || "♛";
-		const iconHtml = icon ? `
+		const iconHtml = mainIcon ? `
 			<img
-				src="${escapeHtml(icon)}"
+				src="${escapeHtml(mainIcon)}"
 				alt=""
 				loading="lazy"
 				referrerpolicy="no-referrer"
@@ -10359,8 +10362,8 @@ body.profile-route .summon-boot .summon-title::after {
 		` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIcon)}</span>`;
 
 		return `
-			<div class="clan-info-card clan-info-card-premium" style="--clan-color: ${escapeHtml(color)};">
-				<div class="clan-info-label">CLAN</div>
+			<div class="clan-info-card clan-info-card-premium clan-info-card-tech" style="--clan-color: ${escapeHtml(color)};">
+				<div class="clan-info-label">${escapeHtml(label)}</div>
 				<div class="clan-info-emblem" aria-hidden="true">
 					${iconHtml}
 				</div>
@@ -10369,7 +10372,7 @@ body.profile-route .summon-boot .summon-title::after {
 					<div class="clan-info-subtitle">${escapeHtml(subtitle)}</div>
 				</div>
 				<div class="clan-info-watermark" aria-hidden="true">
-					${icon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" draggable="false">` : `<span>${escapeHtml(fallbackIcon)}</span>`}
+					${watermarkIcon ? `<img src="${escapeHtml(watermarkIcon)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" draggable="false">` : `<span>${escapeHtml(fallbackIcon)}</span>`}
 				</div>
 			</div>
 		`;
@@ -13232,6 +13235,230 @@ body {
 		right: 8px;
 		width: 104px;
 		height: 104px;
+	}
+}
+
+
+/* ===== Clan Tech Frame - preview aplicado em HTML/CSS ===== */
+.info-item:has(.clan-info-card-tech) {
+	grid-column: 1 / -1 !important;
+}
+
+.clan-info-card.clan-info-card-tech {
+	--clan-tech: var(--clan-color, #a855f7);
+	--clan-tech-soft: color-mix(in srgb, var(--clan-tech) 18%, transparent);
+	--clan-tech-line: color-mix(in srgb, var(--clan-tech) 72%, #ffffff 12%);
+
+	position: relative !important;
+	display: grid !important;
+	grid-template-columns: 92px minmax(0, 1fr) 190px !important;
+	grid-template-rows: auto 1fr !important;
+	column-gap: 22px !important;
+	row-gap: 18px !important;
+	align-items: center !important;
+	min-height: 184px !important;
+	padding: 26px 30px !important;
+	border-radius: 22px !important;
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 70%, rgba(255,255,255,.16)) !important;
+	background:
+		radial-gradient(circle at 86% 48%, color-mix(in srgb, var(--clan-tech) 16%, transparent), transparent 30%),
+		linear-gradient(90deg, color-mix(in srgb, var(--clan-tech) 12%, rgba(255,255,255,.02)), transparent 42%),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 64px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 42px),
+		linear-gradient(180deg, rgba(9,13,25,.96), rgba(4,7,15,.98)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		inset 0 0 30px color-mix(in srgb, var(--clan-tech) 10%, transparent),
+		0 0 22px color-mix(in srgb, var(--clan-tech) 18%, transparent),
+		0 18px 34px rgba(0,0,0,.20) !important;
+	overflow: hidden !important;
+	isolation: isolate !important;
+}
+
+.clan-info-card.clan-info-card-tech::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 14px !important;
+	border-radius: 16px !important;
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 66%, rgba(255,255,255,.12)) !important;
+	clip-path: polygon(0 9%, 3% 0, 76% 0, 79% 9%, 100% 9%, 100% 82%, 96% 100%, 8% 100%, 0 90%) !important;
+	box-shadow: inset 0 0 20px color-mix(in srgb, var(--clan-tech) 10%, transparent) !important;
+	pointer-events: none !important;
+	z-index: 1 !important;
+}
+
+.clan-info-card.clan-info-card-tech::after {
+	content: "" !important;
+	position: absolute !important;
+	left: 42px !important;
+	right: 42px !important;
+	bottom: 24px !important;
+	height: 2px !important;
+	background: linear-gradient(90deg, transparent, var(--clan-tech-line), transparent 72%, var(--clan-tech-line)) !important;
+	box-shadow: 0 0 14px color-mix(in srgb, var(--clan-tech) 32%, transparent) !important;
+	z-index: 3 !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-label {
+	grid-column: 1 / -1 !important;
+	grid-row: 1 !important;
+	position: relative !important;
+	z-index: 4 !important;
+	font-family: 'Ethnocentric', sans-serif !important;
+	font-size: 15px !important;
+	font-weight: 900 !important;
+	letter-spacing: .20em !important;
+	line-height: 1 !important;
+	color: var(--clan-tech-line) !important;
+	text-transform: uppercase !important;
+	text-shadow: 0 0 14px color-mix(in srgb, var(--clan-tech) 50%, transparent) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem {
+	grid-column: 1 !important;
+	grid-row: 2 !important;
+	position: relative !important;
+	z-index: 4 !important;
+	width: 92px !important;
+	height: 92px !important;
+	border-radius: 24px !important;
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 78%, rgba(255,255,255,.18)) !important;
+	background:
+		radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 40%),
+		linear-gradient(180deg, color-mix(in srgb, var(--clan-tech) 22%, rgba(255,255,255,.04)), rgba(5,8,16,.78)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.16),
+		0 0 22px color-mix(in srgb, var(--clan-tech) 34%, transparent) !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem img {
+	width: 62px !important;
+	height: 62px !important;
+	object-fit: contain !important;
+	filter:
+		drop-shadow(0 2px 5px rgba(0,0,0,.46))
+		drop-shadow(0 0 13px color-mix(in srgb, var(--clan-tech) 62%, transparent)) !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem-fallback {
+	font-size: 42px !important;
+	color: color-mix(in srgb, var(--clan-tech) 72%, #ffffff 28%) !important;
+	filter: drop-shadow(0 0 12px color-mix(in srgb, var(--clan-tech) 58%, transparent)) !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-text {
+	grid-column: 2 !important;
+	grid-row: 2 !important;
+	position: relative !important;
+	z-index: 4 !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 9px !important;
+	min-width: 0 !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-title {
+	font-size: clamp(27px, 3.2vw, 42px) !important;
+	font-weight: 1000 !important;
+	line-height: 1.04 !important;
+	letter-spacing: .01em !important;
+	color: #ffffff !important;
+	text-shadow:
+		0 2px 5px rgba(0,0,0,.50),
+		0 0 16px color-mix(in srgb, var(--clan-tech) 28%, transparent) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-subtitle {
+	font-size: clamp(14px, 1.5vw, 19px) !important;
+	font-weight: 650 !important;
+	line-height: 1.35 !important;
+	color: rgba(239,244,255,.88) !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--clan-tech) 22%, transparent) !important;
+	white-space: normal !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 2 !important;
+	line-clamp: 2 !important;
+	-webkit-box-orient: vertical !important;
+	overflow: hidden !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-watermark {
+	grid-column: 3 !important;
+	grid-row: 1 / 3 !important;
+	position: relative !important;
+	right: auto !important;
+	top: auto !important;
+	transform: none !important;
+	z-index: 2 !important;
+	width: 190px !important;
+	height: 156px !important;
+	justify-self: end !important;
+	align-self: center !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 130px !important;
+	line-height: 1 !important;
+	color: color-mix(in srgb, var(--clan-tech) 22%, transparent) !important;
+	opacity: .52 !important;
+	filter: drop-shadow(0 0 22px color-mix(in srgb, var(--clan-tech) 22%, transparent)) !important;
+	pointer-events: none !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-watermark img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+	opacity: .22 !important;
+	filter: saturate(1.2) contrast(1.1) !important;
+}
+
+@media (max-width: 760px) {
+	.clan-info-card.clan-info-card-tech {
+		grid-template-columns: 74px minmax(0, 1fr) !important;
+		grid-template-rows: auto auto !important;
+		min-height: 150px !important;
+		padding: 20px 18px !important;
+		column-gap: 16px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-label {
+		font-size: 12px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-emblem {
+		width: 74px !important;
+		height: 74px !important;
+		border-radius: 20px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-emblem img {
+		width: 50px !important;
+		height: 50px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-title {
+		font-size: clamp(21px, 7vw, 30px) !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-subtitle {
+		font-size: 13px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-watermark {
+		position: absolute !important;
+		right: 12px !important;
+		top: 50% !important;
+		transform: translateY(-50%) !important;
+		width: 120px !important;
+		height: 120px !important;
+		opacity: .24 !important;
 	}
 }
 </style>
