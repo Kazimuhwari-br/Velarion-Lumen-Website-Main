@@ -1248,6 +1248,10 @@
 
 
 	/* ===== CSS: Badge Verified flutuante dentro da Carta ===== */
+	.card-top {
+		align-items: flex-start;
+	}
+
 	.card-verified-chip {
 		--verified-card-color: #a855f7;
 		position: relative;
@@ -1255,66 +1259,102 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 2px;
-		width: 46px;
-		height: 60px;
-		padding: 5px 4px 4px;
+		gap: 3px;
+		width: 48px;
+		min-height: 58px;
+		padding: 7px 6px 6px;
 		border-radius: 16px;
-		border: 1px solid color-mix(in srgb, var(--verified-card-color) 66%, rgba(255,255,255,.20));
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 58%, rgba(255,255,255,.20));
 		background:
-			radial-gradient(circle at 50% 18%, rgba(255,255,255,.25), transparent 34%),
-			linear-gradient(180deg, color-mix(in srgb, var(--verified-card-color) 30%, rgba(255,255,255,.07)), rgba(8,12,24,.80));
+			radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--verified-card-color) 32%, white 8%), transparent 46%),
+			linear-gradient(180deg, color-mix(in srgb, var(--verified-card-color) 18%, rgba(255,255,255,.08)), rgba(9,12,24,.78));
 		box-shadow:
-			inset 0 1px 0 rgba(255,255,255,.18),
-			inset 0 0 18px color-mix(in srgb, var(--verified-card-color) 18%, transparent),
-			0 0 16px color-mix(in srgb, var(--verified-card-color) 42%, transparent),
-			0 8px 18px rgba(0,0,0,.34);
+			inset 0 1px 0 rgba(255,255,255,.16),
+			inset 0 0 18px color-mix(in srgb, var(--verified-card-color) 12%, transparent),
+			0 0 14px color-mix(in srgb, var(--verified-card-color) 34%, transparent),
+			0 8px 18px rgba(0,0,0,.26);
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
-		overflow: hidden;
+		overflow: visible;
 		isolation: isolate;
 	}
 
 	.card-verified-chip::before {
 		content: "";
 		position: absolute;
-		inset: 0;
-		border-radius: inherit;
+		inset: 4px;
+		border-radius: 13px;
+		border: 1px solid rgba(255,255,255,.07);
 		background:
-			linear-gradient(120deg, transparent 18%, rgba(255,255,255,.20) 35%, transparent 52%),
-			repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 10px),
-			repeating-linear-gradient(180deg, rgba(255,255,255,.10) 0 1px, transparent 1px 10px);
-		opacity: .16;
-		mix-blend-mode: screen;
-		z-index: 1;
+			repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 9px),
+			repeating-linear-gradient(180deg, rgba(255,255,255,.07) 0 1px, transparent 1px 9px);
+		opacity: .24;
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	.card-verified-chip img {
 		position: relative;
 		z-index: 2;
-		width: 31px;
-		height: 31px;
+		display: block;
+		width: 30px;
+		height: 30px;
 		object-fit: contain;
 		filter:
-			drop-shadow(0 2px 5px rgba(0,0,0,.40))
-			drop-shadow(0 0 11px color-mix(in srgb, var(--verified-card-color) 62%, transparent));
+			drop-shadow(0 2px 5px rgba(0,0,0,.45))
+			drop-shadow(0 0 10px color-mix(in srgb, var(--verified-card-color) 62%, transparent));
 	}
 
 	.card-verified-chip::after {
 		content: attr(data-short-label);
 		position: relative;
 		z-index: 2;
-		max-width: 100%;
-		font-size: 10px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 22px;
+		height: 17px;
+		padding: 0 6px;
+		border-radius: 999px;
+		background: rgba(5,8,18,.68);
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 50%, rgba(255,255,255,.12));
+		font-size: 9px;
 		font-weight: 1000;
+		letter-spacing: .08em;
 		line-height: 1;
-		letter-spacing: .06em;
-		text-transform: uppercase;
 		color: #fff;
 		text-shadow: 0 0 8px color-mix(in srgb, var(--verified-card-color) 65%, transparent), 0 1px 2px rgba(0,0,0,.55);
+	}
+
+	.card-verified-chip .card-verified-tooltip {
+		position: absolute;
+		top: 50%;
+		left: calc(100% + 8px);
+		transform: translateY(-50%) translateX(-4px);
+		min-width: max-content;
+		max-width: 190px;
+		padding: 7px 10px;
+		border-radius: 9px;
+		background: rgba(5,8,18,.92);
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 45%, rgba(255,255,255,.12));
+		box-shadow: 0 10px 24px rgba(0,0,0,.28), 0 0 14px color-mix(in srgb, var(--verified-card-color) 22%, transparent);
+		color: #fff;
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: .01em;
 		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+		z-index: 20;
+	}
+
+	.card-verified-chip:hover .card-verified-tooltip,
+	.card-verified-chip:focus-visible .card-verified-tooltip {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(-50%) translateX(0);
 	}
 
 	.card-verified-chip-empty {
@@ -1322,15 +1362,15 @@
 	}
 
 	.detail-top .card-verified-chip {
-		width: 52px;
-		height: 66px;
-		border-radius: 17px;
+		width: 54px;
+		min-height: 62px;
 	}
 
 	.detail-top .card-verified-chip img {
-		width: 35px;
-		height: 35px;
+		width: 32px;
+		height: 32px;
 	}
+
 
 	/* ===== CSS: Clan rico dentro de Informações ===== */
 	.clan-info-card {
@@ -7606,7 +7646,9 @@ body.profile-route .summon-boot .summon-title::after {
 
 	function cleanValue(value) {
 		if (value == null) return "";
-		return String(value).trim();
+		if (typeof value === "object") return "";
+		const text = String(value).trim();
+		return text === "[object Object]" ? "" : text;
 	}
 
 	function normalizePossibleUrl(value) {
@@ -9111,7 +9153,6 @@ body.profile-route .summon-boot .summon-title::after {
 		return `
 			<div
 				class="card-verified-chip"
-				title="${escapeHtml(label)}"
 				aria-label="${escapeHtml(label)}"
 				data-short-label="${escapeHtml(shortLabel)}"
 				style="--verified-card-color: ${escapeHtml(color)};"
@@ -9125,12 +9166,13 @@ body.profile-route .summon-boot .summon-title::after {
 					draggable="false"
 					onerror="this.closest('.card-verified-chip')?.remove()"
 				>
+				<span class="card-verified-tooltip">${escapeHtml(label)}</span>
 			</div>
 		`;
 	}
 
 	function getPlayerClanName(player) {
-		const raw = player?.clan;
+		const raw = player?.clan || player?.profile?.clan || player?.profile?.clan_name || player?.profile?.clanName;
 		let value = "";
 
 		if (typeof raw === "string" || typeof raw === "number") {
@@ -9140,7 +9182,47 @@ body.profile-route .summon-boot .summon-title::after {
 		}
 
 		const cleaned = stripMinecraftCodes(cleanValue(value));
-		return cleaned && cleaned !== "[object Object]" ? cleaned : "";
+		if (cleaned && cleaned !== "-") return cleaned;
+
+		const found = findClanForPlayer(player);
+		return found?.name || "";
+	}
+
+	function playerMatchesClanEntry(player, entry) {
+		const candidates = [
+			cleanProfileSlug(player?._id || ""),
+			cleanProfileSlug(player?.id || ""),
+			cleanProfileSlug(player?.xuid || ""),
+			cleanProfileSlug(player?.profile?.display_username || ""),
+			cleanProfileSlug(player?.profile?.display_nickname || "")
+		].map(function(v) { return String(v || "").toLowerCase(); }).filter(Boolean);
+
+		function check(value) {
+			if (value == null) return false;
+			if (typeof value === "string" || typeof value === "number") {
+				const raw = cleanProfileSlug(value).toLowerCase();
+				return raw && candidates.includes(raw);
+			}
+			if (Array.isArray(value)) return value.some(check);
+			if (typeof value === "object") {
+				return check(value.id || value.playerId || value.player_id || value.xuid || value.username || value.name || value.sub);
+			}
+			return false;
+		}
+
+		return check(entry);
+	}
+
+	function findClanForPlayer(player) {
+		const source = clansData || {};
+		for (const clanName of Object.keys(source)) {
+			const clan = source[clanName];
+			if (!clan || typeof clan !== "object") continue;
+			if (clan.by && playerMatchesClanEntry(player, clan.by)) return { name: clanName, data: clan };
+			const players = clan.players || {};
+			if (playerMatchesClanEntry(player, players)) return { name: clanName, data: clan };
+		}
+		return null;
 	}
 
 	function normalizeClans(data) {
