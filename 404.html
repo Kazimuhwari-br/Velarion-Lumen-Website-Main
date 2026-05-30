@@ -9319,6 +9319,7 @@ body.profile-route .summon-boot .summon-title::after {
 					--rank-glow: ${rankData.glow || rankData.color};
 					--rank-banner: ${rankData.banner || "linear-gradient(135deg, color-mix(in srgb, " + (rankData.color || "#5865F2") + " 18%, rgba(255,255,255,.04)), rgba(8,12,24,.92))"};
 					--rank-checker-opacity: ${typeof rankData.checkerOpacity === "number" ? rankData.checkerOpacity : 0.10};
+					--tier-progress: ${Math.round(safeProgress)}%;
 				"
 			>
 				<div
@@ -12010,4 +12011,246 @@ body {
 		}
 	}
 
+
+
+/* ===== CORREÇÃO FINAL: Tier moderno compacto sem remover Lv. ===== */
+.info-item-level {
+	padding: 12px !important;
+	min-height: 158px !important;
+	overflow: hidden !important;
+}
+
+.level-info-wrap-modern {
+	display: grid !important;
+	gap: 10px !important;
+}
+
+.level-info-wrap-modern .level-info-tier-card {
+	position: relative !important;
+	display: grid !important;
+	grid-template-columns: 112px minmax(0, 1fr) minmax(170px, 245px) !important;
+	align-items: center !important;
+	gap: 12px !important;
+	min-height: 82px !important;
+	padding: 10px 14px 10px 12px !important;
+	border-radius: 18px !important;
+	clip-path: polygon(0 0, 100% 0, 100% 76%, 96% 100%, 4% 100%, 0 82%) !important;
+	border: 1px solid color-mix(in srgb, var(--rank-color, #5865F2) 52%, rgba(255,255,255,.20)) !important;
+	background:
+		radial-gradient(circle at 82% 50%, color-mix(in srgb, var(--rank-glow, #5865F2) 36%, transparent), transparent 34%),
+		linear-gradient(90deg,
+			rgba(7,10,20,.94) 0%,
+			rgba(11,15,28,.92) 36%,
+			color-mix(in srgb, var(--rank-color, #5865F2) 16%, rgba(10,14,28,.92)) 68%,
+			color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 24%, rgba(8,12,24,.88)) 100%) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.13),
+		inset 0 0 24px color-mix(in srgb, var(--rank-color, #5865F2) 10%, transparent),
+		0 0 18px color-mix(in srgb, var(--rank-glow, #5865F2) 18%, transparent) !important;
+	overflow: hidden !important;
+}
+
+.level-info-wrap-modern .level-info-tier-card::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	background:
+		repeating-linear-gradient(90deg, rgba(255,255,255,.075) 0 1px, transparent 1px 11px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.052) 0 1px, transparent 1px 11px),
+		linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--rank-glow, #5865F2) 18%, transparent) 58%, rgba(255,255,255,.16) 78%, transparent 100%) !important;
+	opacity: .28 !important;
+	pointer-events: none !important;
+	z-index: 0 !important;
+}
+
+.level-info-wrap-modern .level-info-tier-card::after {
+	content: "" !important;
+	position: absolute !important;
+	left: 14px !important;
+	right: 14px !important;
+	bottom: 7px !important;
+	height: 1px !important;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rank-glow, #5865F2) 44%, rgba(255,255,255,.26)), transparent) !important;
+	box-shadow: 0 0 10px color-mix(in srgb, var(--rank-glow, #5865F2) 32%, transparent) !important;
+	z-index: 2 !important;
+}
+
+.level-info-lv-box {
+	position: relative !important;
+	z-index: 2 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 7px !important;
+	min-width: 98px !important;
+	width: 98px !important;
+	height: 52px !important;
+	padding: 7px 9px !important;
+	border-radius: 14px !important;
+	background: rgba(5,8,18,.64) !important;
+	border: 1px solid rgba(255,255,255,.12) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		0 0 14px color-mix(in srgb, var(--rank-glow, #5865F2) 12%, transparent) !important;
+}
+
+.level-info-wrap-modern .level-info-emblem-icon {
+	width: 20px !important;
+	height: 20px !important;
+	flex: 0 0 20px !important;
+	object-fit: contain !important;
+}
+
+.level-info-wrap-modern .level-info-emblem-value {
+	font-family: var(--font-stack) !important;
+	font-size: 13px !important;
+	font-weight: 1000 !important;
+	line-height: 1 !important;
+	letter-spacing: .02em !important;
+	white-space: nowrap !important;
+	color: #fff !important;
+	text-shadow: 0 0 9px color-mix(in srgb, var(--rank-glow, #5865F2) 34%, transparent) !important;
+}
+
+.level-info-wrap-modern .level-info-emblem-value .level-info-tooltip-subtitle {
+	font-size: 10px !important;
+	font-weight: 900 !important;
+	letter-spacing: .06em !important;
+	color: rgba(235,241,255,.82) !important;
+}
+
+.level-info-main-text {
+	position: relative !important;
+	z-index: 2 !important;
+	min-width: 0 !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 6px !important;
+}
+
+.level-info-tier-name {
+	font-family: var(--font-stack) !important;
+	font-size: 15px !important;
+	font-weight: 1000 !important;
+	line-height: 1.05 !important;
+	letter-spacing: .02em !important;
+	text-transform: none !important;
+	color: #fff !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	text-shadow: 0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 30%, transparent), 0 2px 4px rgba(0,0,0,.42) !important;
+}
+
+.level-info-tier-name span,
+.level-info-tier-range {
+	font-family: var(--font-stack) !important;
+	font-size: 12px !important;
+	font-weight: 800 !important;
+	letter-spacing: .01em !important;
+	text-transform: none !important;
+	color: rgba(235,241,255,.86) !important;
+}
+
+.level-info-tier-name span {
+	font-weight: 900 !important;
+	color: color-mix(in srgb, var(--rank-color, #5865F2) 46%, #ffffff) !important;
+}
+
+.level-info-wrap-modern .level-info-tier-image {
+	position: relative !important;
+	z-index: 2 !important;
+	justify-self: end !important;
+	width: 230px !important;
+	height: 70px !important;
+	max-width: 100% !important;
+	margin-left: auto !important;
+	flex: initial !important;
+}
+
+.level-info-wrap-modern .level-info-tier-image img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+	object-position: center right !important;
+	filter:
+		drop-shadow(0 5px 9px rgba(0,0,0,.38))
+		drop-shadow(0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 36%, transparent)) !important;
+}
+
+.level-info-progress-row {
+	position: relative !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	min-height: 46px !important;
+	padding: 10px 14px !important;
+	border-radius: 14px !important;
+	background:
+		linear-gradient(90deg, color-mix(in srgb, var(--rank-color, #5865F2) 18%, transparent) 0 var(--tier-progress, 0%), transparent var(--tier-progress, 0%)),
+		rgba(7,11,22,.76) !important;
+	border: 1px solid color-mix(in srgb, var(--rank-color, #5865F2) 30%, rgba(255,255,255,.07)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.05),
+		inset 0 0 18px color-mix(in srgb, var(--rank-color, #5865F2) 8%, transparent),
+		0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 10%, transparent) !important;
+	overflow: hidden !important;
+}
+
+.level-info-progress-row::before {
+	content: "" !important;
+	position: absolute !important;
+	left: 0 !important;
+	top: 0 !important;
+	bottom: 0 !important;
+	width: var(--tier-progress, 0%) !important;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--rank-color, #5865F2) 64%, transparent), color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 68%, transparent)) !important;
+	opacity: .22 !important;
+	box-shadow: 0 0 18px color-mix(in srgb, var(--rank-glow, #5865F2) 42%, transparent) !important;
+	pointer-events: none !important;
+}
+
+.level-info-progress-row::after {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	background: linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent), repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 14px) !important;
+	opacity: .42 !important;
+	pointer-events: none !important;
+}
+
+.level-info-progress-label,
+.level-info-progress-value {
+	position: relative !important;
+	z-index: 2 !important;
+	font-family: var(--font-stack) !important;
+	font-size: 12px !important;
+	font-weight: 1000 !important;
+	letter-spacing: .12em !important;
+	text-transform: uppercase !important;
+	color: #fff !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--rank-glow, #5865F2) 22%, transparent) !important;
+}
+
+.level-info-progress-value {
+	letter-spacing: 0 !important;
+}
+
+@media (max-width: 760px) {
+	.level-info-wrap-modern .level-info-tier-card {
+		grid-template-columns: 92px minmax(0, 1fr) !important;
+		gap: 10px !important;
+	}
+	.level-info-lv-box {
+		min-width: 88px !important;
+		width: 88px !important;
+	}
+	.level-info-wrap-modern .level-info-tier-image {
+		grid-column: 1 / -1 !important;
+		justify-self: end !important;
+		width: 180px !important;
+		height: 58px !important;
+	}
+	.level-info-tier-name { font-size: 14px !important; }
+}
 </style>
