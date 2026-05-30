@@ -7759,6 +7759,96 @@ body {
 		}
 	}
 
+
+/* ===== Clan fallback: Variação 5 compacta ===== */
+.clan-info-card.clan-info-card-tech.clan-empty-compact {
+	grid-template-columns: 1fr !important;
+	grid-template-rows: 1fr !important;
+	min-height: 78px !important;
+	padding: 12px 22px !important;
+	border-radius: 18px !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact::before {
+	inset: 8px !important;
+	border-radius: 14px !important;
+	clip-path: polygon(0 22%, 6% 0, 100% 0, 100% 78%, 94% 100%, 0 100%) !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact::after {
+	left: 88px !important;
+	right: 88px !important;
+	bottom: 17px !important;
+}
+
+.clan-empty-center {
+	position: relative !important;
+	z-index: 6 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 18px !important;
+	min-width: 0 !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-emblem {
+	grid-column: auto !important;
+	grid-row: auto !important;
+	width: 42px !important;
+	height: 42px !important;
+	border-radius: 13px !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-emblem img {
+	width: 27px !important;
+	height: 27px !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-emblem-fallback {
+	font-size: 24px !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-title {
+	font-family: 'Ethnocentric', sans-serif !important;
+	font-size: clamp(17px, 2vw, 24px) !important;
+	letter-spacing: .22em !important;
+	line-height: 1 !important;
+	color: var(--clan-tech-line) !important;
+	text-transform: uppercase !important;
+	text-shadow: 0 0 13px color-mix(in srgb, var(--clan-tech) 50%, transparent) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-label,
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-text,
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-subtitle,
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-watermark {
+	display: none !important;
+}
+
+@media (max-width: 760px) {
+	.clan-info-card.clan-info-card-tech.clan-empty-compact {
+		min-height: 68px !important;
+		padding: 10px 14px !important;
+	}
+
+	.clan-empty-center {
+		gap: 12px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-emblem {
+		width: 36px !important;
+		height: 36px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-title {
+		font-size: 15px !important;
+		letter-spacing: .16em !important;
+	}
+}
+
 </style>
 
 <style>
@@ -10319,17 +10409,32 @@ body.profile-route .summon-boot .summon-title::after {
 		const clan = getClanDefinition(clanName);
 
 		if (!clanName || !clan) {
+			const fallbackClan = extensionsData?.information_panel?.badges_fallbacks?.clan || extensionsData?.badges_fallbacks?.clan || {};
+			const fallbackWebsite = fallbackClan?.website || {};
+			const fallbackTitle = stripMinecraftCodes(cleanValue(fallbackClan?.label || fallbackWebsite?.title || fallbackWebsite?.label || "SEM CLA")) || "SEM CLA";
+			const fallbackColor = normalizeHexColor(fallbackWebsite?.color || "#a855f7", "#a855f7");
+			const fallbackIconUrl = getMediaUrl(fallbackWebsite?.icon);
+			const fallbackIconText = cleanValue(fallbackWebsite?.icon_codepoint || fallbackWebsite?.emoji || "◇") || "◇";
+			const fallbackIconHtml = fallbackIconUrl ? `
+				<img
+					src="${escapeHtml(fallbackIconUrl)}"
+					alt=""
+					loading="lazy"
+					referrerpolicy="no-referrer"
+					crossorigin="anonymous"
+					draggable="false"
+					onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'clan-info-emblem-fallback', textContent: '${escapeHtml(fallbackIconText)}'}))"
+				>
+			` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIconText)}</span>`;
+
 			return `
-				<div class="clan-info-card clan-info-card-premium clan-info-card-tech is-empty" style="--clan-color: #a855f7;">
-					<div class="clan-info-label">SEM CLÃ</div>
-					<div class="clan-info-emblem" aria-hidden="true">
-						<span class="clan-info-emblem-fallback">♛</span>
+				<div class="clan-info-card clan-info-card-premium clan-info-card-tech is-empty clan-empty-compact" style="--clan-color: ${escapeHtml(fallbackColor)};">
+					<div class="clan-empty-center">
+						<div class="clan-info-emblem" aria-hidden="true">
+							${fallbackIconHtml}
+						</div>
+						<div class="clan-info-title">${escapeHtml(fallbackTitle)}</div>
 					</div>
-					<div class="clan-info-text">
-						<div class="clan-info-title">Nenhum clã</div>
-						<div class="clan-info-subtitle">Este jogador não possui nenhum clã.</div>
-					</div>
-					<div class="clan-info-watermark" aria-hidden="true">♛</div>
 				</div>
 			`;
 		}
