@@ -10320,7 +10320,8 @@ body.profile-route .summon-boot .summon-title::after {
 
 		if (!clanName || !clan) {
 			return `
-				<div class="clan-info-card is-empty" style="--clan-color: #b678ff;">
+				<div class="clan-info-card clan-info-card-premium is-empty" style="--clan-color: #c9a24a;">
+					<div class="clan-info-label">CLAN</div>
 					<div class="clan-info-emblem" aria-hidden="true">
 						<span class="clan-info-emblem-fallback">♛</span>
 					</div>
@@ -10328,41 +10329,47 @@ body.profile-route .summon-boot .summon-title::after {
 						<div class="clan-info-title">Nenhum clã</div>
 						<div class="clan-info-subtitle">Este jogador não possui nenhum clã.</div>
 					</div>
+					<div class="clan-info-watermark" aria-hidden="true">♛</div>
 				</div>
 			`;
 		}
 
-		const title = stripMinecraftCodes(cleanValue(clan?.profile?.title)) || clanName;
-		const subtitle = stripMinecraftCodes(cleanValue(clan?.profile?.subtitle)) || (stripMinecraftCodes(cleanValue(clan?.rank?.name)) ? `${stripMinecraftCodes(cleanValue(clan?.rank?.name))} Clan` : "Clan");
+		const title = stripMinecraftCodes(cleanValue(clan?.title || clan?.profile?.title || clanName)) || clanName;
+		const subtitle = stripMinecraftCodes(cleanValue(clan?.sub || clan?.subtitle || clan?.profile?.sub || clan?.profile?.subtitle)) || "Clan";
 		const color = normalizeHexColor(
 			clan?.theme?.card_embed?.card_color ||
 			clan?.theme?.card_embed?.background_color ||
 			player?.theme?.card_embed?.card_color ||
-			"#a855f7",
-			"#a855f7"
+			"#c9a24a",
+			"#c9a24a"
 		);
-		const icon = getMediaUrl(clan?.rank?.icon_image) || getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || getMediaUrl(clan?.theme?.card_embed?.profile_frame_image);
-		const codepoint = cleanValue(clan?.rank?.icon_codepoint);
+		const icon = getMediaUrl(clan?.icon || clan?.emblem || clan?.image || clan?.rank?.icon_image) || getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || getMediaUrl(clan?.theme?.card_embed?.profile_frame_image);
+		const codepoint = cleanValue(clan?.icon_codepoint || clan?.rank?.icon_codepoint);
 		const fallbackIcon = codepoint || "♛";
+		const iconHtml = icon ? `
+			<img
+				src="${escapeHtml(icon)}"
+				alt=""
+				loading="lazy"
+				referrerpolicy="no-referrer"
+				crossorigin="anonymous"
+				draggable="false"
+				onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'clan-info-emblem-fallback', textContent: '${escapeHtml(fallbackIcon)}'}))"
+			>
+		` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIcon)}</span>`;
 
 		return `
-			<div class="clan-info-card" style="--clan-color: ${escapeHtml(color)};">
+			<div class="clan-info-card clan-info-card-premium" style="--clan-color: ${escapeHtml(color)};">
+				<div class="clan-info-label">CLAN</div>
 				<div class="clan-info-emblem" aria-hidden="true">
-					${icon ? `
-						<img
-							src="${escapeHtml(icon)}"
-							alt=""
-							loading="lazy"
-							referrerpolicy="no-referrer"
-							crossorigin="anonymous"
-							draggable="false"
-							onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'clan-info-emblem-fallback', textContent: '${escapeHtml(fallbackIcon)}'}))"
-						>
-					` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIcon)}</span>`}
+					${iconHtml}
 				</div>
 				<div class="clan-info-text">
 					<div class="clan-info-title">${escapeHtml(title)}</div>
 					<div class="clan-info-subtitle">${escapeHtml(subtitle)}</div>
+				</div>
+				<div class="clan-info-watermark" aria-hidden="true">
+					${icon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" draggable="false">` : `<span>${escapeHtml(fallbackIcon)}</span>`}
 				</div>
 			</div>
 		`;
@@ -12890,4 +12897,202 @@ body {
 		0 0 8px color-mix(in srgb, var(--rank-glow, #5865F2) 36%, transparent),
 		0 1px 2px rgba(0,0,0,.42) !important;
 }
+
+
+/* ===== Clan - Variante 8 Premium Dourada ===== */
+.clan-info-card.clan-info-card-premium {
+	--clan-gold: #d8b45a;
+	position: relative;
+	display: grid;
+	grid-template-columns: 76px minmax(0, 1fr);
+	grid-template-rows: auto 1fr;
+	column-gap: 18px;
+	row-gap: 8px;
+	align-items: center;
+	min-height: 132px;
+	padding: 18px 22px 18px 20px;
+	border-radius: 18px;
+	border: 1px solid color-mix(in srgb, var(--clan-gold) 72%, rgba(255,255,255,.12));
+	background:
+		linear-gradient(90deg, rgba(255,205,90,.07), transparent 30%, rgba(255,205,90,.04)),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 64px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 42px),
+		linear-gradient(180deg, rgba(10,13,22,.96), rgba(5,7,14,.98));
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.07),
+		inset 0 0 26px rgba(216,180,90,.05),
+		0 0 20px rgba(216,180,90,.10),
+		0 12px 24px rgba(0,0,0,.18);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.clan-info-card.clan-info-card-premium::before {
+	content: "";
+	position: absolute;
+	inset: 9px;
+	border-radius: 13px;
+	border: 1px solid rgba(216,180,90,.38);
+	clip-path: polygon(0 0, 100% 0, 100% 70%, 94% 100%, 6% 100%, 0 78%);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.clan-info-card.clan-info-card-premium::after {
+	content: "";
+	position: absolute;
+	left: 54px;
+	right: 42px;
+	bottom: 14px;
+	height: 2px;
+	background: linear-gradient(90deg, rgba(216,180,90,.72), transparent 58%, rgba(216,180,90,.46));
+	box-shadow: 0 0 10px rgba(216,180,90,.20);
+	pointer-events: none;
+	z-index: 2;
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-label {
+	grid-column: 1 / -1;
+	position: relative;
+	z-index: 3;
+	font-family: 'Ethnocentric', sans-serif;
+	font-size: 10px;
+	font-weight: 900;
+	letter-spacing: .22em;
+	line-height: 1;
+	color: var(--clan-gold);
+	text-shadow: 0 0 12px rgba(216,180,90,.24);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-emblem {
+	position: relative;
+	z-index: 3;
+	grid-column: 1;
+	grid-row: 2;
+	width: 72px;
+	height: 72px;
+	flex: none;
+	border-radius: 19px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(216,180,90,.62);
+	background:
+		radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 38%),
+		linear-gradient(180deg, rgba(216,180,90,.14), rgba(216,180,90,.035)),
+		rgba(4,6,13,.76);
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.12),
+		inset 0 0 18px rgba(216,180,90,.06),
+		0 0 18px rgba(216,180,90,.18);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-emblem img {
+	width: 46px;
+	height: 46px;
+	object-fit: contain;
+	filter:
+		drop-shadow(0 2px 5px rgba(0,0,0,.42))
+		drop-shadow(0 0 10px rgba(216,180,90,.34));
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-emblem-fallback {
+	font-size: 34px;
+	line-height: 1;
+	color: #ffe38b;
+	filter: drop-shadow(0 0 10px rgba(216,180,90,.38));
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-text {
+	position: relative;
+	z-index: 3;
+	grid-column: 2;
+	grid-row: 2;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-title {
+	font-size: clamp(19px, 2.2vw, 28px);
+	font-weight: 1000;
+	line-height: 1.08;
+	color: #ffffff;
+	letter-spacing: .01em;
+	text-shadow:
+		0 2px 4px rgba(0,0,0,.42),
+		0 0 12px rgba(216,180,90,.18);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-subtitle {
+	font-size: clamp(13px, 1.5vw, 17px);
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--clan-gold);
+	text-shadow: 0 0 10px rgba(216,180,90,.16);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-watermark {
+	position: absolute;
+	right: 22px;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 0;
+	width: 138px;
+	height: 138px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 116px;
+	line-height: 1;
+	color: rgba(216,180,90,.08);
+	opacity: .55;
+	filter: grayscale(1) sepia(.35) brightness(.88);
+	pointer-events: none;
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-watermark img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	opacity: .13;
+}
+
+.clan-info-card.clan-info-card-premium.is-empty {
+	opacity: .96;
+}
+
+@media (max-width: 720px) {
+	.clan-info-card.clan-info-card-premium {
+		grid-template-columns: 60px minmax(0, 1fr);
+		min-height: 112px;
+		padding: 15px 16px;
+		column-gap: 14px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-emblem {
+		width: 60px;
+		height: 60px;
+		border-radius: 17px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-emblem img {
+		width: 39px;
+		height: 39px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-watermark {
+		right: 10px;
+		width: 100px;
+		height: 100px;
+	}
+}
+
 </style>
