@@ -1392,31 +1392,59 @@
 	}
 
 	.info-verified-slot .card-verified-chip {
-		width: 64px;
-		min-height: 68px;
-		padding: 7px 7px 7px;
-		border-radius: 17px;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+		width: auto;
+		min-width: 178px;
+		max-width: min(260px, calc(100vw - 42px));
+		min-height: 58px;
+		padding: 8px 13px 8px 10px;
+		border-radius: 18px;
 	}
 
 	.info-verified-slot .card-verified-chip img {
-		width: 32px;
-		height: 32px;
+		width: 46px;
+		height: 46px;
+		flex: 0 0 46px;
 	}
 
 	.info-verified-slot .card-verified-chip::after {
-		font-size: 7px;
-		padding: 3px 4px;
+		width: auto;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		font-size: 12px;
+		font-weight: 1000;
+		letter-spacing: .06em;
+		line-height: 1.18;
+		text-align: left;
+		white-space: normal;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
 	}
 
 	.info-verified-slot .card-verified-chip .card-verified-tooltip {
-		top: calc(100% + 8px);
-		left: 50%;
-		transform: translateX(-50%) translateY(-4px);
+		top: calc(100% + 10px);
+		right: 0;
+		left: auto;
+		transform: translateY(-5px);
+		min-width: min(230px, calc(100vw - 32px));
+		max-width: min(320px, calc(100vw - 32px));
+		white-space: normal;
+		overflow-wrap: anywhere;
+		line-height: 1.35;
+		text-align: left;
 	}
 
 	.info-verified-slot .card-verified-chip:hover .card-verified-tooltip,
 	.info-verified-slot .card-verified-chip:focus-visible .card-verified-tooltip {
-		transform: translateX(-50%) translateY(0);
+		transform: translateY(0);
 	}
 
 
@@ -7237,16 +7265,27 @@ body {
 }
 
 @media (max-width: 520px) {
+	.detail-info .info-panel:first-child .info-header {
+		align-items: flex-start !important;
+	}
+
 	.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip {
-		width: 56px;
-		min-height: 60px;
-		padding: 6px;
+		min-width: 142px;
+		max-width: calc(100vw - 34px);
+		min-height: 50px;
+		padding: 7px 10px 7px 8px;
+		gap: 8px;
 		border-radius: 15px;
 	}
 
 	.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip img {
-		width: 28px;
-		height: 28px;
+		width: 38px;
+		height: 38px;
+		flex-basis: 38px;
+	}
+
+	.detail-info .info-panel:first-child .info-verified-slot .card-verified-chip::after {
+		font-size: 10px;
 	}
 }
 
@@ -9294,6 +9333,7 @@ body.profile-route .summon-boot .summon-title::after {
 
 		const label = cleanValue(emblemData?.label) || "Badge Verified";
 		const shortLabel = getShortVerifiedLabel(label, emblemId);
+		const bio = cleanValue(emblemData?.bio || emblemData?.description || emblemData?.desc || emblemData?.info) || label;
 		const color = normalizeHexColor(emblemData?.color || emblemData?.glow || "#a855f7", "#a855f7");
 
 		return `
@@ -9302,6 +9342,7 @@ body.profile-route .summon-boot .summon-title::after {
 				aria-label="${escapeHtml(label)}"
 				data-short-label="${escapeHtml(shortLabel)}"
 				data-label="${escapeHtml(label)}"
+				data-bio="${escapeHtml(bio)}"
 				style="--verified-card-color: ${escapeHtml(color)};"
 			>
 				<img
@@ -9313,7 +9354,7 @@ body.profile-route .summon-boot .summon-title::after {
 					draggable="false"
 					onerror="this.closest('.card-verified-chip')?.remove()"
 				>
-				<span class="card-verified-tooltip">${escapeHtml(label)}</span>
+				<span class="card-verified-tooltip">${escapeHtml(bio)}</span>
 			</div>
 		`;
 	}
