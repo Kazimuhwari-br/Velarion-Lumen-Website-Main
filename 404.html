@@ -10682,12 +10682,12 @@ body.profile-route .summon-boot .summon-title::after {
 										${buildLevelInfoEmblemHtml(player)}
 									</div>
 
-									<div class="info-item">
+									<div class="info-item info-item-clan-premium">
 										<span class="info-label">Clan</span>
 										${buildClanInfoCardHtml(player)}
 									</div>
 
-									<div class="info-item">
+									<div class="info-item info-item-player-title">
 										<span class="info-label">Title</span>
 										<div class="info-value">${escapeHtml(cardTitle)}</div>
 									</div>
@@ -12901,7 +12901,7 @@ body {
 
 /* ===== Clan - Variante 8 Premium Dourada ===== */
 .clan-info-card.clan-info-card-premium {
-	--clan-gold: #d8b45a;
+	--clan-gold: var(--clan-color, #d8b45a);
 	position: relative;
 	display: grid;
 	grid-template-columns: 76px minmax(0, 1fr);
@@ -13095,4 +13095,143 @@ body {
 	}
 }
 
+
+
+/* ===== Ajuste: Clan grande e Title por baixo ===== */
+.info-grid .info-item-clan-premium,
+.info-grid .info-item-player-title {
+	grid-column: 1 / -1;
+}
+
+.info-grid .info-item-clan-premium {
+	padding: 12px;
+}
+
+.info-grid .info-item-clan-premium > .info-label {
+	margin: 0 0 8px;
+}
+
+.info-grid .info-item-player-title {
+	min-height: 72px;
+}
+
+.info-grid .info-item-player-title .info-value {
+	font-size: 15px;
+	font-weight: 700;
+	color: rgba(245,247,255,.95);
+}
+
+/* ===== Clan: Variante 8 usando clanPlayers[id].theme.card_embed.card_color ===== */
+.clan-info-card.clan-info-card-premium {
+	--clan-gold: var(--clan-color, #d8b45a);
+	min-height: 150px;
+	grid-template-columns: 92px minmax(0, 1fr);
+	padding: 22px 30px 22px 26px;
+	column-gap: 22px;
+	border-color: color-mix(in srgb, var(--clan-gold) 72%, rgba(255,255,255,.12));
+	background:
+		linear-gradient(90deg, color-mix(in srgb, var(--clan-gold) 10%, transparent), transparent 31%, color-mix(in srgb, var(--clan-gold) 6%, transparent)),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 64px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 42px),
+		linear-gradient(180deg, rgba(10,13,22,.96), rgba(5,7,14,.98));
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.07),
+		inset 0 0 28px color-mix(in srgb, var(--clan-gold) 8%, transparent),
+		0 0 22px color-mix(in srgb, var(--clan-gold) 15%, transparent),
+		0 12px 24px rgba(0,0,0,.18);
+}
+
+.clan-info-card.clan-info-card-premium::before {
+	border-color: color-mix(in srgb, var(--clan-gold) 46%, rgba(255,255,255,.08));
+}
+
+.clan-info-card.clan-info-card-premium::after {
+	left: 78px;
+	right: 72px;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--clan-gold) 78%, transparent), transparent 58%, color-mix(in srgb, var(--clan-gold) 48%, transparent));
+	box-shadow: 0 0 10px color-mix(in srgb, var(--clan-gold) 24%, transparent);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-label,
+.clan-info-card.clan-info-card-premium .clan-info-subtitle {
+	color: var(--clan-gold);
+	text-shadow: 0 0 12px color-mix(in srgb, var(--clan-gold) 30%, transparent);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-emblem {
+	width: 84px;
+	height: 84px;
+	border-radius: 22px;
+	border-color: color-mix(in srgb, var(--clan-gold) 62%, rgba(255,255,255,.14));
+	background:
+		radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 38%),
+		linear-gradient(180deg, color-mix(in srgb, var(--clan-gold) 18%, transparent), color-mix(in srgb, var(--clan-gold) 5%, transparent)),
+		rgba(4,6,13,.76);
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.12),
+		inset 0 0 18px color-mix(in srgb, var(--clan-gold) 8%, transparent),
+		0 0 18px color-mix(in srgb, var(--clan-gold) 22%, transparent);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-emblem img {
+	width: 54px;
+	height: 54px;
+	filter:
+		drop-shadow(0 2px 5px rgba(0,0,0,.42))
+		drop-shadow(0 0 10px color-mix(in srgb, var(--clan-gold) 42%, transparent));
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-title {
+	font-size: clamp(25px, 3.1vw, 34px);
+	max-width: min(100%, 520px);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-subtitle {
+	font-size: clamp(15px, 1.8vw, 20px);
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-watermark {
+	right: 44px;
+	width: 166px;
+	height: 166px;
+	color: color-mix(in srgb, var(--clan-gold) 12%, transparent);
+	filter: grayscale(1) sepia(.35) brightness(.88) drop-shadow(0 0 18px color-mix(in srgb, var(--clan-gold) 13%, transparent));
+}
+
+.clan-info-card.clan-info-card-premium .clan-info-watermark img {
+	opacity: .16;
+}
+
+@media (max-width: 720px) {
+	.clan-info-card.clan-info-card-premium {
+		grid-template-columns: 64px minmax(0, 1fr);
+		min-height: 118px;
+		padding: 16px 18px;
+		column-gap: 14px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-emblem {
+		width: 62px;
+		height: 62px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-emblem img {
+		width: 40px;
+		height: 40px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-title {
+		font-size: 21px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-subtitle {
+		font-size: 13px;
+	}
+
+	.clan-info-card.clan-info-card-premium .clan-info-watermark {
+		right: 8px;
+		width: 104px;
+		height: 104px;
+	}
+}
 </style>
