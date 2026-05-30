@@ -12643,4 +12643,78 @@ body {
 		grid-column: 1 / -1 !important;
 	}
 }
+
+
+/* ===== CORREÇÃO: cabeçalho/track do mini progresso usando cor do Tier ===== */
+.level-info-tier-line {
+	align-items: center !important;
+}
+
+.level-info-mini-progress {
+	position: relative !important;
+	isolation: isolate !important;
+	min-width: 120px !important;
+	height: 8px !important;
+	border-radius: 999px !important;
+	background:
+		linear-gradient(90deg,
+			color-mix(in srgb, var(--rank-color, #5865F2) 30%, rgba(6,10,20,.72)),
+			color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 24%, rgba(6,10,20,.62))
+		),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 8px) !important;
+	border: 1px solid color-mix(in srgb, var(--rank-color, #5865F2) 54%, rgba(255,255,255,.13)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.14),
+		inset 0 0 10px color-mix(in srgb, var(--rank-color, #5865F2) 18%, transparent),
+		0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 26%, transparent) !important;
+	overflow: hidden !important;
+}
+
+.level-info-mini-progress > span {
+	position: absolute !important;
+	inset: 0 auto 0 0 !important;
+	width: var(--mini-tier-progress, 0%) !important;
+	height: 100% !important;
+	border-radius: inherit !important;
+	background:
+		linear-gradient(90deg,
+			color-mix(in srgb, var(--rank-color, #5865F2) 92%, white 10%),
+			color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 96%, white 12%)
+		) !important;
+	box-shadow:
+		0 0 14px color-mix(in srgb, var(--rank-glow, #5865F2) 72%, transparent),
+		inset 0 1px 0 rgba(255,255,255,.36),
+		inset 0 -1px 0 rgba(0,0,0,.18) !important;
+	z-index: 1 !important;
+}
+
+.level-info-mini-progress::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	background:
+		repeating-linear-gradient(90deg, rgba(255,255,255,.11) 0 1px, transparent 1px 8px),
+		linear-gradient(90deg, rgba(255,255,255,.16), transparent 45%, rgba(255,255,255,.10)) !important;
+	opacity: .52 !important;
+	z-index: 2 !important;
+	pointer-events: none !important;
+}
+
+.level-info-mini-progress::after {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rank-glow, #5865F2) 26%, rgba(255,255,255,.16)), transparent) !important;
+	opacity: .45 !important;
+	z-index: 3 !important;
+	pointer-events: none !important;
+}
+
+.level-info-tier-percent,
+.level-info-tier-range {
+	color: color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 62%, #ffffff 38%) !important;
+	text-shadow:
+		0 0 8px color-mix(in srgb, var(--rank-glow, #5865F2) 36%, transparent),
+		0 1px 2px rgba(0,0,0,.42) !important;
+}
 </style>
