@@ -1252,21 +1252,25 @@
 		--verified-card-color: #a855f7;
 		position: relative;
 		display: inline-flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
-		border-radius: 14px;
-		border: 1px solid color-mix(in srgb, var(--verified-card-color) 62%, rgba(255,255,255,.18));
+		gap: 2px;
+		width: 46px;
+		height: 60px;
+		padding: 5px 4px 4px;
+		border-radius: 16px;
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 66%, rgba(255,255,255,.20));
 		background:
-			radial-gradient(circle at 50% 25%, rgba(255,255,255,.20), transparent 34%),
-			linear-gradient(135deg, color-mix(in srgb, var(--verified-card-color) 28%, rgba(255,255,255,.06)), rgba(8,12,24,.72));
+			radial-gradient(circle at 50% 18%, rgba(255,255,255,.25), transparent 34%),
+			linear-gradient(180deg, color-mix(in srgb, var(--verified-card-color) 30%, rgba(255,255,255,.07)), rgba(8,12,24,.80));
 		box-shadow:
-			inset 0 1px 0 rgba(255,255,255,.16),
-			0 0 16px color-mix(in srgb, var(--verified-card-color) 38%, transparent),
-			0 8px 18px rgba(0,0,0,.30);
-		backdrop-filter: blur(9px);
-		-webkit-backdrop-filter: blur(9px);
+			inset 0 1px 0 rgba(255,255,255,.18),
+			inset 0 0 18px color-mix(in srgb, var(--verified-card-color) 18%, transparent),
+			0 0 16px color-mix(in srgb, var(--verified-card-color) 42%, transparent),
+			0 8px 18px rgba(0,0,0,.34);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 		overflow: hidden;
 		isolation: isolate;
 	}
@@ -1277,9 +1281,10 @@
 		inset: 0;
 		border-radius: inherit;
 		background:
-			repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 10px),
-			repeating-linear-gradient(180deg, rgba(255,255,255,.12) 0 1px, transparent 1px 10px);
-		opacity: .10;
+			linear-gradient(120deg, transparent 18%, rgba(255,255,255,.20) 35%, transparent 52%),
+			repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 10px),
+			repeating-linear-gradient(180deg, rgba(255,255,255,.10) 0 1px, transparent 1px 10px);
+		opacity: .16;
 		mix-blend-mode: screen;
 		z-index: 1;
 	}
@@ -1287,12 +1292,29 @@
 	.card-verified-chip img {
 		position: relative;
 		z-index: 2;
-		width: 30px;
-		height: 30px;
+		width: 31px;
+		height: 31px;
 		object-fit: contain;
 		filter:
-			drop-shadow(0 2px 5px rgba(0,0,0,.36))
-			drop-shadow(0 0 10px color-mix(in srgb, var(--verified-card-color) 58%, transparent));
+			drop-shadow(0 2px 5px rgba(0,0,0,.40))
+			drop-shadow(0 0 11px color-mix(in srgb, var(--verified-card-color) 62%, transparent));
+	}
+
+	.card-verified-chip::after {
+		content: attr(data-short-label);
+		position: relative;
+		z-index: 2;
+		max-width: 100%;
+		font-size: 10px;
+		font-weight: 1000;
+		line-height: 1;
+		letter-spacing: .06em;
+		text-transform: uppercase;
+		color: #fff;
+		text-shadow: 0 0 8px color-mix(in srgb, var(--verified-card-color) 65%, transparent), 0 1px 2px rgba(0,0,0,.55);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.card-verified-chip-empty {
@@ -1300,14 +1322,14 @@
 	}
 
 	.detail-top .card-verified-chip {
-		width: 50px;
-		height: 50px;
-		border-radius: 16px;
+		width: 52px;
+		height: 66px;
+		border-radius: 17px;
 	}
 
 	.detail-top .card-verified-chip img {
-		width: 34px;
-		height: 34px;
+		width: 35px;
+		height: 35px;
 	}
 
 	/* ===== CSS: Clan rico dentro de Informações ===== */
@@ -1384,6 +1406,20 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	.clan-info-card.is-empty {
+		--clan-color: #b678ff;
+		opacity: .96;
+	}
+
+	.clan-info-card.is-empty .clan-info-title {
+		font-size: 14px;
+	}
+
+	.clan-info-card.is-empty .clan-info-subtitle {
+		font-size: 12px;
+		white-space: normal;
 	}
 
 
@@ -9052,6 +9088,16 @@ body.profile-route .summon-boot .summon-title::after {
 	}
 
 
+	function getShortVerifiedLabel(label, emblemId) {
+		const raw = cleanValue(label);
+		const id = cleanValue(emblemId).toUpperCase();
+		if (/^EA$/i.test(id) || /EARLY\s*ACCESS/i.test(raw)) return "EA";
+		if (/VERIFIC/i.test(raw) || /VERIFIED/i.test(raw)) return "✓";
+		const words = raw.split(/\s+/).filter(Boolean);
+		if (words.length >= 2) return words.slice(0, 2).map(function(word) { return word.charAt(0); }).join("").toUpperCase();
+		return (raw || id || "VIP").slice(0, 3).toUpperCase();
+	}
+
 	function buildVerifiedCardBadgeHtml(player) {
 		const emblemId = getPlayerVerifiedEmblemId(player);
 		const emblemData = getVerifiedEmblemDefinition(emblemId);
@@ -9059,6 +9105,7 @@ body.profile-route .summon-boot .summon-title::after {
 		if (!icon) return `<div class="card-verified-chip-empty" aria-hidden="true"></div>`;
 
 		const label = cleanValue(emblemData?.label) || "Badge Verified";
+		const shortLabel = getShortVerifiedLabel(label, emblemId);
 		const color = normalizeHexColor(emblemData?.color || emblemData?.glow || "#a855f7", "#a855f7");
 
 		return `
@@ -9066,6 +9113,7 @@ body.profile-route .summon-boot .summon-title::after {
 				class="card-verified-chip"
 				title="${escapeHtml(label)}"
 				aria-label="${escapeHtml(label)}"
+				data-short-label="${escapeHtml(shortLabel)}"
 				style="--verified-card-color: ${escapeHtml(color)};"
 			>
 				<img
@@ -9082,7 +9130,17 @@ body.profile-route .summon-boot .summon-title::after {
 	}
 
 	function getPlayerClanName(player) {
-		return stripMinecraftCodes(cleanValue(player?.clan?.id || player?.clan?.name || player?.clan)) || "-";
+		const raw = player?.clan;
+		let value = "";
+
+		if (typeof raw === "string" || typeof raw === "number") {
+			value = raw;
+		} else if (raw && typeof raw === "object") {
+			value = raw.id || raw.name || raw.sub || raw.title || raw.clanName || raw.clan_name || "";
+		}
+
+		const cleaned = stripMinecraftCodes(cleanValue(value));
+		return cleaned && cleaned !== "[object Object]" ? cleaned : "";
 	}
 
 	function normalizeClans(data) {
@@ -9104,6 +9162,21 @@ body.profile-route .summon-boot .summon-title::after {
 	function buildClanInfoCardHtml(player) {
 		const clanName = getPlayerClanName(player);
 		const clan = getClanDefinition(clanName);
+
+		if (!clanName || !clan) {
+			return `
+				<div class="clan-info-card is-empty" style="--clan-color: #b678ff;">
+					<div class="clan-info-emblem" aria-hidden="true">
+						<span class="clan-info-emblem-fallback">♛</span>
+					</div>
+					<div class="clan-info-text">
+						<div class="clan-info-title">Nenhum clã</div>
+						<div class="clan-info-subtitle">Este jogador não possui nenhum clã.</div>
+					</div>
+				</div>
+			`;
+		}
+
 		const title = stripMinecraftCodes(cleanValue(clan?.profile?.title)) || clanName;
 		const subtitle = stripMinecraftCodes(cleanValue(clan?.profile?.subtitle)) || (stripMinecraftCodes(cleanValue(clan?.rank?.name)) ? `${stripMinecraftCodes(cleanValue(clan?.rank?.name))} Clan` : "Clan");
 		const color = normalizeHexColor(
