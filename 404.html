@@ -9565,7 +9565,7 @@ body.profile-route .summon-boot .summon-title::after {
 					<div class="level-info-main-text">
 						<div class="level-info-tier-name"><span>Tier:</span> ${escapeHtml(rankData.label)}</div>
 						<div class="level-info-tier-line">
-							<span class="level-info-mini-progress" aria-hidden="true"><span style="width:${Math.round(safeProgress)}%"></span></span>
+							<span class="level-info-mini-progress" style="--mini-tier-progress:${Math.round(safeProgress)}%" aria-hidden="true"><span></span></span>
 							<span class="level-info-tier-percent">${Math.round(safeProgress)}%</span>
 							<span class="level-info-tier-range">✦ ${escapeHtml(String(levelNumber))} / ${escapeHtml(hasMax ? String(rankData.max) : rangeText)}</span>
 						</div>
@@ -12594,6 +12594,53 @@ body {
 	.level-info-tier-name {
 		white-space: normal !important;
 		flex-wrap: wrap !important;
+	}
+}
+
+
+/* ===== CORREÇÃO: mini progresso do Tier preenchendo corretamente ===== */
+.level-info-tier-line {
+	grid-template-columns: minmax(120px, 1fr) auto auto !important;
+}
+
+.level-info-mini-progress {
+	position: relative !important;
+	isolation: isolate !important;
+	height: 8px !important;
+	min-width: 120px !important;
+	background: rgba(4,7,16,.78) !important;
+}
+
+.level-info-mini-progress > span {
+	position: absolute !important;
+	left: 0 !important;
+	top: 0 !important;
+	bottom: 0 !important;
+	width: var(--mini-tier-progress, 0%) !important;
+	display: block !important;
+	min-width: 0 !important;
+	border-radius: inherit !important;
+	background:
+		linear-gradient(90deg,
+			color-mix(in srgb, var(--rank-color, #5865F2) 86%, white 8%),
+			color-mix(in srgb, var(--rank-color-2, var(--rank-color, #5865F2)) 92%, white 10%)
+		) !important;
+	box-shadow:
+		0 0 10px color-mix(in srgb, var(--rank-glow, #5865F2) 60%, transparent),
+		inset 0 1px 0 rgba(255,255,255,.30) !important;
+	z-index: 1 !important;
+}
+
+.level-info-mini-progress::after {
+	z-index: 2 !important;
+}
+
+@media (max-width: 760px) {
+	.level-info-tier-line {
+		grid-template-columns: minmax(92px, 1fr) auto !important;
+	}
+	.level-info-tier-range {
+		grid-column: 1 / -1 !important;
 	}
 }
 </style>
