@@ -1247,6 +1247,146 @@
 	}
 
 
+	/* ===== CSS: Badge Verified flutuante dentro da Carta ===== */
+	.card-verified-chip {
+		--verified-card-color: #a855f7;
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 14px;
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 62%, rgba(255,255,255,.18));
+		background:
+			radial-gradient(circle at 50% 25%, rgba(255,255,255,.20), transparent 34%),
+			linear-gradient(135deg, color-mix(in srgb, var(--verified-card-color) 28%, rgba(255,255,255,.06)), rgba(8,12,24,.72));
+		box-shadow:
+			inset 0 1px 0 rgba(255,255,255,.16),
+			0 0 16px color-mix(in srgb, var(--verified-card-color) 38%, transparent),
+			0 8px 18px rgba(0,0,0,.30);
+		backdrop-filter: blur(9px);
+		-webkit-backdrop-filter: blur(9px);
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	.card-verified-chip::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background:
+			repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 10px),
+			repeating-linear-gradient(180deg, rgba(255,255,255,.12) 0 1px, transparent 1px 10px);
+		opacity: .10;
+		mix-blend-mode: screen;
+		z-index: 1;
+	}
+
+	.card-verified-chip img {
+		position: relative;
+		z-index: 2;
+		width: 30px;
+		height: 30px;
+		object-fit: contain;
+		filter:
+			drop-shadow(0 2px 5px rgba(0,0,0,.36))
+			drop-shadow(0 0 10px color-mix(in srgb, var(--verified-card-color) 58%, transparent));
+	}
+
+	.card-verified-chip-empty {
+		display: none;
+	}
+
+	.detail-top .card-verified-chip {
+		width: 50px;
+		height: 50px;
+		border-radius: 16px;
+	}
+
+	.detail-top .card-verified-chip img {
+		width: 34px;
+		height: 34px;
+	}
+
+	/* ===== CSS: Clan rico dentro de Informações ===== */
+	.clan-info-card {
+		--clan-color: #a855f7;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		min-height: 72px;
+		padding: 10px 12px;
+		border-radius: 16px;
+		border: 1px solid color-mix(in srgb, var(--clan-color) 42%, rgba(255,255,255,.10));
+		background:
+			radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--clan-color) 22%, transparent), transparent 34%),
+			linear-gradient(135deg, color-mix(in srgb, var(--clan-color) 12%, rgba(255,255,255,.03)), rgba(8,12,24,.60));
+		box-shadow:
+			inset 0 1px 0 rgba(255,255,255,.07),
+			0 0 18px color-mix(in srgb, var(--clan-color) 16%, transparent);
+		overflow: hidden;
+	}
+
+	.clan-info-emblem {
+		width: 54px;
+		height: 54px;
+		flex: 0 0 54px;
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid color-mix(in srgb, var(--clan-color) 54%, rgba(255,255,255,.14));
+		background:
+			radial-gradient(circle at 50% 20%, rgba(255,255,255,.20), transparent 35%),
+			linear-gradient(135deg, color-mix(in srgb, var(--clan-color) 32%, rgba(255,255,255,.06)), rgba(7,10,20,.82));
+		box-shadow:
+			inset 0 1px 0 rgba(255,255,255,.13),
+			0 0 16px color-mix(in srgb, var(--clan-color) 34%, transparent);
+	}
+
+	.clan-info-emblem img {
+		width: 38px;
+		height: 38px;
+		object-fit: contain;
+		filter: drop-shadow(0 0 9px color-mix(in srgb, var(--clan-color) 48%, transparent));
+	}
+
+	.clan-info-emblem-fallback {
+		font-size: 28px;
+		line-height: 1;
+		filter: drop-shadow(0 0 8px color-mix(in srgb, var(--clan-color) 45%, transparent));
+	}
+
+	.clan-info-text {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.clan-info-title {
+		font-size: 15px;
+		font-weight: 900;
+		line-height: 1.18;
+		color: #ffffff;
+		text-shadow: 0 0 10px color-mix(in srgb, var(--clan-color) 24%, transparent);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.clan-info-subtitle {
+		font-size: 13px;
+		line-height: 1.25;
+		color: rgba(238,244,255,.84);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+
 	/* ===== CSS: Paginação dos Cards / Lista ===== */
 	.pagination-panel {
 		--pager-glow: rgba(140, 108, 255, .34);
@@ -7158,7 +7298,9 @@ body.profile-route .summon-boot .summon-title::after {
 	// ===== JavaScript: Configuração e estado global =====
 	const DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
 	const EXTENSIONS_DATA_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com/information_panel.json";
+	const CLANS_DATA_URL = "https://kazimuhwaribedrock-clans-default-rtdb.firebaseio.com/clanPlayers.json";
 	let extensionsData = null;
+	let clansData = {};
 	
 	const LOCAL_DEFAULT_PLAYER_AVATAR = "https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/AvatarBottomImage/avatar1.png";
 	const LOCAL_DEFAULT_PLAYER_CHARACTER = "https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/CharacterImage/character2.png";
@@ -8882,7 +9024,7 @@ body.profile-route .summon-boot .summon-title::after {
 	function buildVerifiedEmblemHtml(player) {
 		const emblemId = getPlayerVerifiedEmblemId(player);
 		const emblemData = getVerifiedEmblemDefinition(emblemId);
-		const icon = getMediaUrl(emblemData?.icon);
+		const icon = getMediaUrl(emblemData?.emblem || emblemData?.icon || emblemData?.image);
 
 		if (!icon) return "";
 
@@ -8906,6 +9048,95 @@ body.profile-route .summon-boot .summon-title::after {
 					onerror="this.closest('.verified-emblem')?.remove()"
 				>
 			</span>
+		`;
+	}
+
+
+	function buildVerifiedCardBadgeHtml(player) {
+		const emblemId = getPlayerVerifiedEmblemId(player);
+		const emblemData = getVerifiedEmblemDefinition(emblemId);
+		const icon = getMediaUrl(emblemData?.emblem || emblemData?.icon || emblemData?.image);
+		if (!icon) return `<div class="card-verified-chip-empty" aria-hidden="true"></div>`;
+
+		const label = cleanValue(emblemData?.label) || "Badge Verified";
+		const color = normalizeHexColor(emblemData?.color || emblemData?.glow || "#a855f7", "#a855f7");
+
+		return `
+			<div
+				class="card-verified-chip"
+				title="${escapeHtml(label)}"
+				aria-label="${escapeHtml(label)}"
+				style="--verified-card-color: ${escapeHtml(color)};"
+			>
+				<img
+					src="${escapeHtml(icon)}"
+					alt="${escapeHtml(label)}"
+					loading="lazy"
+					referrerpolicy="no-referrer"
+					crossorigin="anonymous"
+					draggable="false"
+					onerror="this.closest('.card-verified-chip')?.remove()"
+				>
+			</div>
+		`;
+	}
+
+	function getPlayerClanName(player) {
+		return stripMinecraftCodes(cleanValue(player?.clan?.id || player?.clan?.name || player?.clan)) || "-";
+	}
+
+	function normalizeClans(data) {
+		const source = data?.clanPlayers || data || {};
+		return source && typeof source === "object" ? source : {};
+	}
+
+	function getClanDefinition(clanName) {
+		const wanted = stripMinecraftCodes(cleanValue(clanName));
+		if (!wanted || wanted === "-") return null;
+		if (clansData?.[wanted]) return clansData[wanted];
+		const lower = wanted.toLowerCase();
+		const key = Object.keys(clansData || {}).find(function(item) {
+			return stripMinecraftCodes(cleanValue(item)).toLowerCase() === lower;
+		});
+		return key ? clansData[key] : null;
+	}
+
+	function buildClanInfoCardHtml(player) {
+		const clanName = getPlayerClanName(player);
+		const clan = getClanDefinition(clanName);
+		const title = stripMinecraftCodes(cleanValue(clan?.profile?.title)) || clanName;
+		const subtitle = stripMinecraftCodes(cleanValue(clan?.profile?.subtitle)) || (stripMinecraftCodes(cleanValue(clan?.rank?.name)) ? `${stripMinecraftCodes(cleanValue(clan?.rank?.name))} Clan` : "Clan");
+		const color = normalizeHexColor(
+			clan?.theme?.card_embed?.card_color ||
+			clan?.theme?.card_embed?.background_color ||
+			player?.theme?.card_embed?.card_color ||
+			"#a855f7",
+			"#a855f7"
+		);
+		const icon = getMediaUrl(clan?.rank?.icon_image) || getMediaUrl(clan?.theme?.card_embed?.avatar_bottom_image) || getMediaUrl(clan?.theme?.card_embed?.profile_frame_image);
+		const codepoint = cleanValue(clan?.rank?.icon_codepoint);
+		const fallbackIcon = codepoint || "♛";
+
+		return `
+			<div class="clan-info-card" style="--clan-color: ${escapeHtml(color)};">
+				<div class="clan-info-emblem" aria-hidden="true">
+					${icon ? `
+						<img
+							src="${escapeHtml(icon)}"
+							alt=""
+							loading="lazy"
+							referrerpolicy="no-referrer"
+							crossorigin="anonymous"
+							draggable="false"
+							onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'clan-info-emblem-fallback', textContent: '${escapeHtml(fallbackIcon)}'}))"
+						>
+					` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIcon)}</span>`}
+				</div>
+				<div class="clan-info-text">
+					<div class="clan-info-title">${escapeHtml(title)}</div>
+					<div class="clan-info-subtitle">${escapeHtml(subtitle)}</div>
+				</div>
+			</div>
 		`;
 	}
 
@@ -8935,7 +9166,7 @@ body.profile-route .summon-boot .summon-title::after {
 		const displayName = stripMinecraftCodes(getDisplayName(player));
 		const titleHtml = buildTitleHtml(player);
 		const cardTitle = getCardTitle(player);
-		const clanName = stripMinecraftCodes(cleanValue(player?.clan?.id)) || "-";
+		const clanName = getPlayerClanName(player);
 		const characterPixelClass = isProbablyPixelArt(character) ? "pixelated" : "";
 		const titleSizeClass = getTitleSizeClass(player);
 		const summonNo = String((Number.isFinite(index) ? index : 0) + 1).padStart(3, "0");
@@ -8986,9 +9217,7 @@ body.profile-route .summon-boot .summon-title::after {
 
 				<div class="card-top">
 					${buildLevelChipHtml(player)}
-					<div class="card-chip">
-						<span class="card-chip-text">${escapeHtml(clanName)}</span>
-					</div>
+					${buildVerifiedCardBadgeHtml(player)}
 				</div>
 
 				<div class="card-bottom">
@@ -9012,7 +9241,7 @@ body.profile-route .summon-boot .summon-title::after {
 		const displayName = escapeHtml(stripMinecraftCodes(getDisplayName(player)));
 		const username = escapeHtml(stripMinecraftCodes(getUsername(player)));
 		const cardTitle = escapeHtml(stripMinecraftCodes(getCardTitle(player)));
-		const clanName = escapeHtml(stripMinecraftCodes(cleanValue(player?.clan?.id)) || "No Clan");
+		const clanName = escapeHtml(getPlayerClanName(player) === "-" ? "No Clan" : getPlayerClanName(player));
 		const levelText = escapeHtml(stripMinecraftCodes(getLevelText(player)));
 		const displayColor = getDisplayNameColor(player);
 		const displayNameClass = displayColor.type === "gradient" ? "list-displayname gradient" : "list-displayname";
@@ -9124,7 +9353,7 @@ body.profile-route .summon-boot .summon-title::after {
 		const titleHtml = buildTitleHtml(player);
 		const cardTitle = getCardTitle(player);
 		const rankName = stripMinecraftCodes(cleanValue(player?.badges?.rank)) || "-";
-		const clanName = stripMinecraftCodes(cleanValue(player?.clan?.id)) || "-";
+		const clanName = getPlayerClanName(player);
 		const desc = cleanValue(player?.profile?.bio) || "Sem descrição.";
 		const country = cleanValue(player?.country?.code) || "-";
 		const characterPixelClass = isProbablyPixelArt(character) ? "pixelated" : "";
@@ -9143,9 +9372,7 @@ body.profile-route .summon-boot .summon-title::after {
 						>
 							<div class="detail-top">
 								${buildLevelChipHtml(player)}
-								<div class="card-chip">
-									<span class="card-chip-text">${escapeHtml(clanName)}</span>
-								</div>
+								${buildVerifiedCardBadgeHtml(player)}
 							</div>
 
 							<div class="side-rail"></div>
@@ -9222,7 +9449,7 @@ body.profile-route .summon-boot .summon-title::after {
 
 									<div class="info-item">
 										<span class="info-label">Clan</span>
-										<div class="info-value">${escapeHtml(clanName)}</div>
+										${buildClanInfoCardHtml(player)}
 									</div>
 
 									<div class="info-item">
@@ -9921,9 +10148,10 @@ body.profile-route .summon-boot .summon-title::after {
 		const detailEl = document.getElementById("detailView");
 
 		try {
-			const [playersRes, extensionsRes] = await Promise.all([
+			const [playersRes, extensionsRes, clansRes] = await Promise.all([
 				fetch(DATA_URL, { cache: "no-store" }),
-				fetch(EXTENSIONS_DATA_URL, { cache: "no-store" })
+				fetch(EXTENSIONS_DATA_URL, { cache: "no-store" }),
+				fetch(CLANS_DATA_URL, { cache: "no-store" }).catch(function() { return null; })
 			]);
 
 			if (!playersRes.ok) throw new Error("Players HTTP " + playersRes.status + " - " + playersRes.statusText);
@@ -9931,8 +10159,10 @@ body.profile-route .summon-boot .summon-title::after {
 
 			const playersJson = await playersRes.json();
 			const extensionsJson = await extensionsRes.json();
+			const clansJson = clansRes?.ok ? await clansRes.json() : {};
 
 			extensionsData = extensionsJson || {};
+			clansData = normalizeClans(clansJson);
 			applyExtensionDataConfig();
 			playersData = normalize(playersJson);
 			filteredPlayers = playersData.slice();
