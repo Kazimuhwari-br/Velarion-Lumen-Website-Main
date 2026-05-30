@@ -13461,4 +13461,230 @@ body {
 		opacity: .24 !important;
 	}
 }
+
+
+/* ===== AJUSTE FINAL: Clan compacto, com espaço para textos ===== */
+.info-item:has(.clan-info-card-tech) {
+	grid-column: 1 / -1 !important;
+}
+
+.info-grid .info-item-clan-premium {
+	padding: 10px !important;
+}
+
+.clan-info-card.clan-info-card-tech {
+	--clan-tech: var(--clan-color, #a855f7);
+	--clan-tech-line: color-mix(in srgb, var(--clan-tech) 72%, #ffffff 14%);
+
+	position: relative !important;
+	display: grid !important;
+	grid-template-columns: 72px minmax(0, 1fr) !important;
+	grid-template-rows: auto auto !important;
+	column-gap: 18px !important;
+	row-gap: 10px !important;
+	align-items: center !important;
+
+	min-height: 126px !important;
+	padding: 18px 22px !important;
+	border-radius: 20px !important;
+	overflow: hidden !important;
+	isolation: isolate !important;
+
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 68%, rgba(255,255,255,.16)) !important;
+	background:
+		radial-gradient(circle at 88% 48%, color-mix(in srgb, var(--clan-tech) 14%, transparent), transparent 32%),
+		linear-gradient(90deg, color-mix(in srgb, var(--clan-tech) 12%, rgba(255,255,255,.02)), transparent 44%),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 52px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.014) 0 1px, transparent 1px 36px),
+		linear-gradient(180deg, rgba(9,13,25,.96), rgba(4,7,15,.98)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		inset 0 0 24px color-mix(in srgb, var(--clan-tech) 9%, transparent),
+		0 0 18px color-mix(in srgb, var(--clan-tech) 16%, transparent) !important;
+}
+
+.clan-info-card.clan-info-card-tech::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 10px !important;
+	border-radius: 15px !important;
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 54%, rgba(255,255,255,.10)) !important;
+	clip-path: polygon(0 10%, 4% 0, 76% 0, 79% 8%, 100% 8%, 100% 82%, 96% 100%, 7% 100%, 0 90%) !important;
+	box-shadow: inset 0 0 16px color-mix(in srgb, var(--clan-tech) 8%, transparent) !important;
+	pointer-events: none !important;
+	z-index: 1 !important;
+}
+
+.clan-info-card.clan-info-card-tech::after {
+	content: "" !important;
+	position: absolute !important;
+	left: 86px !important;
+	right: 44px !important;
+	bottom: 16px !important;
+	height: 2px !important;
+	background: linear-gradient(90deg, var(--clan-tech-line), transparent 72%) !important;
+	box-shadow: 0 0 10px color-mix(in srgb, var(--clan-tech) 28%, transparent) !important;
+	z-index: 3 !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-label {
+	grid-column: 1 / -1 !important;
+	grid-row: 1 !important;
+	position: relative !important;
+	z-index: 5 !important;
+	font-family: 'Ethnocentric', sans-serif !important;
+	font-size: 11px !important;
+	font-weight: 900 !important;
+	letter-spacing: .20em !important;
+	line-height: 1 !important;
+	max-width: calc(100% - 80px) !important;
+	color: var(--clan-tech-line) !important;
+	text-transform: uppercase !important;
+	text-shadow: 0 0 12px color-mix(in srgb, var(--clan-tech) 44%, transparent) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem {
+	grid-column: 1 !important;
+	grid-row: 2 !important;
+	position: relative !important;
+	z-index: 5 !important;
+	width: 68px !important;
+	height: 68px !important;
+	border-radius: 19px !important;
+	border: 1px solid color-mix(in srgb, var(--clan-tech) 70%, rgba(255,255,255,.18)) !important;
+	background:
+		radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 40%),
+		linear-gradient(180deg, color-mix(in srgb, var(--clan-tech) 20%, rgba(255,255,255,.04)), rgba(5,8,16,.78)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.14),
+		0 0 16px color-mix(in srgb, var(--clan-tech) 28%, transparent) !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem img {
+	width: 46px !important;
+	height: 46px !important;
+	object-fit: contain !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-emblem-fallback {
+	font-size: 34px !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-text {
+	grid-column: 2 !important;
+	grid-row: 2 !important;
+	position: relative !important;
+	z-index: 5 !important;
+	min-width: 0 !important;
+	max-width: calc(100% - 92px) !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 5px !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-title {
+	font-size: clamp(22px, 2.5vw, 32px) !important;
+	font-weight: 1000 !important;
+	line-height: 1.05 !important;
+	letter-spacing: .01em !important;
+	color: #ffffff !important;
+	text-shadow:
+		0 2px 5px rgba(0,0,0,.50),
+		0 0 14px color-mix(in srgb, var(--clan-tech) 24%, transparent) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-subtitle {
+	font-size: 13px !important;
+	font-weight: 700 !important;
+	line-height: 1.25 !important;
+	max-width: 100% !important;
+	color: rgba(239,244,255,.88) !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--clan-tech) 20%, transparent) !important;
+	white-space: normal !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 2 !important;
+	line-clamp: 2 !important;
+	-webkit-box-orient: vertical !important;
+	overflow: hidden !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-watermark {
+	position: absolute !important;
+	grid-column: auto !important;
+	grid-row: auto !important;
+	right: 22px !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	z-index: 2 !important;
+	width: 126px !important;
+	height: 126px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 105px !important;
+	line-height: 1 !important;
+	color: color-mix(in srgb, var(--clan-tech) 16%, transparent) !important;
+	opacity: .36 !important;
+	filter: drop-shadow(0 0 18px color-mix(in srgb, var(--clan-tech) 16%, transparent)) !important;
+	pointer-events: none !important;
+}
+
+.clan-info-card.clan-info-card-tech .clan-info-watermark img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+	opacity: .18 !important;
+}
+
+.info-grid .info-item-player-title {
+	min-height: 68px !important;
+}
+
+@media (max-width: 760px) {
+	.clan-info-card.clan-info-card-tech {
+		grid-template-columns: 58px minmax(0, 1fr) !important;
+		min-height: 112px !important;
+		padding: 15px 16px !important;
+		column-gap: 13px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-label {
+		font-size: 9px !important;
+		max-width: calc(100% - 56px) !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-emblem {
+		width: 56px !important;
+		height: 56px !important;
+		border-radius: 16px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-emblem img {
+		width: 38px !important;
+		height: 38px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-title {
+		font-size: 20px !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-subtitle {
+		font-size: 12px !important;
+		-webkit-line-clamp: 2 !important;
+		line-clamp: 2 !important;
+	}
+
+	.clan-info-card.clan-info-card-tech .clan-info-watermark {
+		right: 10px !important;
+		width: 86px !important;
+		height: 86px !important;
+		opacity: .22 !important;
+	}
+}
 </style>
