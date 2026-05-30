@@ -1259,22 +1259,22 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 3px;
-		width: 48px;
-		min-height: 58px;
-		padding: 7px 6px 6px;
-		border-radius: 16px;
-		border: 1px solid color-mix(in srgb, var(--verified-card-color) 58%, rgba(255,255,255,.20));
+		gap: 5px;
+		width: 72px;
+		min-height: 78px;
+		padding: 9px 8px 8px;
+		border-radius: 19px;
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 66%, rgba(255,255,255,.24));
 		background:
-			radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--verified-card-color) 32%, white 8%), transparent 46%),
-			linear-gradient(180deg, color-mix(in srgb, var(--verified-card-color) 18%, rgba(255,255,255,.08)), rgba(9,12,24,.78));
+			radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--verified-card-color) 42%, white 10%), transparent 50%),
+			linear-gradient(180deg, color-mix(in srgb, var(--verified-card-color) 26%, rgba(255,255,255,.08)), rgba(9,12,24,.82));
 		box-shadow:
-			inset 0 1px 0 rgba(255,255,255,.16),
-			inset 0 0 18px color-mix(in srgb, var(--verified-card-color) 12%, transparent),
-			0 0 14px color-mix(in srgb, var(--verified-card-color) 34%, transparent),
-			0 8px 18px rgba(0,0,0,.26);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
+			inset 0 1px 0 rgba(255,255,255,.18),
+			inset 0 0 22px color-mix(in srgb, var(--verified-card-color) 18%, transparent),
+			0 0 18px color-mix(in srgb, var(--verified-card-color) 42%, transparent),
+			0 10px 22px rgba(0,0,0,.32);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		overflow: visible;
 		isolation: isolate;
 	}
@@ -1282,13 +1282,14 @@
 	.card-verified-chip::before {
 		content: "";
 		position: absolute;
-		inset: 4px;
-		border-radius: 13px;
-		border: 1px solid rgba(255,255,255,.07);
+		inset: 5px;
+		border-radius: 15px;
+		border: 1px solid rgba(255,255,255,.09);
 		background:
-			repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 9px),
-			repeating-linear-gradient(180deg, rgba(255,255,255,.07) 0 1px, transparent 1px 9px);
-		opacity: .24;
+			linear-gradient(135deg, rgba(255,255,255,.16), transparent 42%, rgba(255,255,255,.06)),
+			repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 10px),
+			repeating-linear-gradient(180deg, rgba(255,255,255,.07) 0 1px, transparent 1px 10px);
+		opacity: .28;
 		pointer-events: none;
 		z-index: 0;
 	}
@@ -1297,33 +1298,34 @@
 		position: relative;
 		z-index: 2;
 		display: block;
-		width: 30px;
-		height: 30px;
+		width: 38px;
+		height: 38px;
 		object-fit: contain;
 		filter:
-			drop-shadow(0 2px 5px rgba(0,0,0,.45))
-			drop-shadow(0 0 10px color-mix(in srgb, var(--verified-card-color) 62%, transparent));
+			drop-shadow(0 2px 5px rgba(0,0,0,.48))
+			drop-shadow(0 0 12px color-mix(in srgb, var(--verified-card-color) 68%, transparent));
 	}
 
 	.card-verified-chip::after {
-		content: attr(data-short-label);
+		content: attr(data-label);
 		position: relative;
 		z-index: 2;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 22px;
-		height: 17px;
-		padding: 0 6px;
+		display: block;
+		width: 100%;
+		padding: 3px 5px;
 		border-radius: 999px;
-		background: rgba(5,8,18,.68);
-		border: 1px solid color-mix(in srgb, var(--verified-card-color) 50%, rgba(255,255,255,.12));
-		font-size: 9px;
+		background: rgba(5,8,18,.72);
+		border: 1px solid color-mix(in srgb, var(--verified-card-color) 52%, rgba(255,255,255,.14));
+		font-size: 8px;
 		font-weight: 1000;
-		letter-spacing: .08em;
-		line-height: 1;
+		letter-spacing: .05em;
+		line-height: 1.1;
 		color: #fff;
-		text-shadow: 0 0 8px color-mix(in srgb, var(--verified-card-color) 65%, transparent), 0 1px 2px rgba(0,0,0,.55);
+		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-shadow: 0 0 8px color-mix(in srgb, var(--verified-card-color) 70%, transparent), 0 1px 2px rgba(0,0,0,.55);
 	}
 
 	.card-verified-chip .card-verified-tooltip {
@@ -1332,12 +1334,12 @@
 		left: calc(100% + 8px);
 		transform: translateY(-50%) translateX(-4px);
 		min-width: max-content;
-		max-width: 190px;
+		max-width: 210px;
 		padding: 7px 10px;
 		border-radius: 9px;
-		background: rgba(5,8,18,.92);
+		background: rgba(5,8,18,.94);
 		border: 1px solid color-mix(in srgb, var(--verified-card-color) 45%, rgba(255,255,255,.12));
-		box-shadow: 0 10px 24px rgba(0,0,0,.28), 0 0 14px color-mix(in srgb, var(--verified-card-color) 22%, transparent);
+		box-shadow: 0 10px 24px rgba(0,0,0,.30), 0 0 14px color-mix(in srgb, var(--verified-card-color) 24%, transparent);
 		color: #fff;
 		font-size: 12px;
 		font-weight: 800;
@@ -1362,13 +1364,13 @@
 	}
 
 	.detail-top .card-verified-chip {
-		width: 54px;
-		min-height: 62px;
+		width: 76px;
+		min-height: 82px;
 	}
 
 	.detail-top .card-verified-chip img {
-		width: 32px;
-		height: 32px;
+		width: 40px;
+		height: 40px;
 	}
 
 
@@ -7262,6 +7264,74 @@ body {
 	font-weight: 900;
 	text-decoration: none;
 }
+
+
+/* ===== Correção final: Verified da carta maior + Clan em Informações premium ===== */
+.card-top {
+	align-items: flex-start;
+}
+
+.card-top .card-rank-chip {
+	margin-top: 4px;
+}
+
+.clan-info-card {
+	min-height: 78px;
+	padding: 12px 13px;
+	gap: 13px;
+	border-radius: 17px;
+	background:
+		radial-gradient(circle at 12% 45%, color-mix(in srgb, var(--clan-color) 28%, transparent), transparent 38%),
+		linear-gradient(135deg, color-mix(in srgb, var(--clan-color) 17%, rgba(255,255,255,.04)), rgba(8,12,24,.72));
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		0 0 22px color-mix(in srgb, var(--clan-color) 18%, transparent),
+		0 10px 24px rgba(0,0,0,.18);
+}
+
+.clan-info-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--clan-color) 38%, transparent), transparent 42%);
+	opacity: .18;
+	pointer-events: none;
+}
+
+.clan-info-emblem {
+	width: 58px;
+	height: 58px;
+	flex-basis: 58px;
+	border-radius: 18px;
+}
+
+.clan-info-emblem img {
+	width: 38px;
+	height: 38px;
+}
+
+.clan-info-title {
+	font-size: 14px;
+	line-height: 1.15;
+}
+
+.clan-info-subtitle {
+	font-size: 12px;
+	line-height: 1.25;
+}
+
+.clan-info-card.is-empty {
+	--clan-color: #9f6cff;
+	opacity: .96;
+}
+
+.clan-info-card.is-empty .clan-info-emblem {
+	background:
+		radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 44%),
+		linear-gradient(135deg, rgba(159,108,255,.24), rgba(7,10,20,.82));
+}
+
 </style>
 
 <style>
@@ -9102,7 +9172,7 @@ body.profile-route .summon-boot .summon-title::after {
 	function buildVerifiedEmblemHtml(player) {
 		const emblemId = getPlayerVerifiedEmblemId(player);
 		const emblemData = getVerifiedEmblemDefinition(emblemId);
-		const icon = getMediaUrl(emblemData?.emblem || emblemData?.icon || emblemData?.image);
+		const icon = getMediaUrl(emblemData?.icon);
 
 		if (!icon) return "";
 
@@ -9155,6 +9225,7 @@ body.profile-route .summon-boot .summon-title::after {
 				class="card-verified-chip"
 				aria-label="${escapeHtml(label)}"
 				data-short-label="${escapeHtml(shortLabel)}"
+				data-label="${escapeHtml(label)}"
 				style="--verified-card-color: ${escapeHtml(color)};"
 			>
 				<img
@@ -9175,14 +9246,29 @@ body.profile-route .summon-boot .summon-title::after {
 		const raw = player?.clan || player?.profile?.clan || player?.profile?.clan_name || player?.profile?.clanName;
 		let value = "";
 
-		if (typeof raw === "string" || typeof raw === "number") {
-			value = raw;
-		} else if (raw && typeof raw === "object") {
-			value = raw.id || raw.name || raw.sub || raw.title || raw.clanName || raw.clan_name || "";
+		function pickClanText(input) {
+			if (input == null) return "";
+			if (typeof input === "string" || typeof input === "number") return cleanValue(input);
+			if (Array.isArray(input)) {
+				for (const item of input) {
+					const found = pickClanText(item);
+					if (found) return found;
+				}
+				return "";
+			}
+			if (typeof input === "object") {
+				const keys = ["id", "name", "sub", "clanName", "clan_name", "title"];
+				for (const key of keys) {
+					const found = pickClanText(input[key]);
+					if (found) return found;
+				}
+			}
+			return "";
 		}
 
+		value = pickClanText(raw);
 		const cleaned = stripMinecraftCodes(cleanValue(value));
-		if (cleaned && cleaned !== "-") return cleaned;
+		if (cleaned && cleaned !== "-" && !/^\?\[object object\]$/i.test(cleaned)) return cleaned;
 
 		const found = findClanForPlayer(player);
 		return found?.name || "";
@@ -9194,7 +9280,9 @@ body.profile-route .summon-boot .summon-title::after {
 			cleanProfileSlug(player?.id || ""),
 			cleanProfileSlug(player?.xuid || ""),
 			cleanProfileSlug(player?.profile?.display_username || ""),
-			cleanProfileSlug(player?.profile?.display_nickname || "")
+			cleanProfileSlug(player?.profile?.display_nickname || ""),
+			cleanProfileSlug(player?.profile?.username || ""),
+			cleanProfileSlug(player?.username || "")
 		].map(function(v) { return String(v || "").toLowerCase(); }).filter(Boolean);
 
 		function check(value) {
@@ -9205,7 +9293,8 @@ body.profile-route .summon-boot .summon-title::after {
 			}
 			if (Array.isArray(value)) return value.some(check);
 			if (typeof value === "object") {
-				return check(value.id || value.playerId || value.player_id || value.xuid || value.username || value.name || value.sub);
+				if (check(value.id || value.playerId || value.player_id || value.xuid || value.username || value.name || value.sub)) return true;
+				return Object.values(value).some(check);
 			}
 			return false;
 		}
@@ -9396,7 +9485,8 @@ body.profile-route .summon-boot .summon-title::after {
 		const displayName = escapeHtml(stripMinecraftCodes(getDisplayName(player)));
 		const username = escapeHtml(stripMinecraftCodes(getUsername(player)));
 		const cardTitle = escapeHtml(stripMinecraftCodes(getCardTitle(player)));
-		const clanName = escapeHtml(getPlayerClanName(player) === "-" ? "No Clan" : getPlayerClanName(player));
+		const foundClanName = getPlayerClanName(player);
+		const clanName = escapeHtml(foundClanName && foundClanName !== "-" ? foundClanName : "No Clan");
 		const levelText = escapeHtml(stripMinecraftCodes(getLevelText(player)));
 		const displayColor = getDisplayNameColor(player);
 		const displayNameClass = displayColor.type === "gradient" ? "list-displayname gradient" : "list-displayname";
