@@ -7849,6 +7849,21 @@ body {
 	}
 }
 
+
+
+/* ===== Ajuste: fallback de clã sem ícone quadrado ===== */
+.clan-info-card.is-empty .clan-info-emblem {
+	display: none !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-empty-center {
+	gap: 0 !important;
+}
+
+.clan-info-card.clan-info-card-tech.clan-empty-compact .clan-info-title {
+	text-align: center !important;
+}
+
 </style>
 
 <style>
@@ -8850,248 +8865,9 @@ body.profile-route .summon-boot .summon-title::after {
 
 
 	// ===== JavaScript: Tabela de ranks por level =====
-	let CARD_LEVEL_RANKS = [
-
-		// UNRANKED
-		{
-			min: 0,
-			max: 0,
-			color: "#FFFFFF",
-			color2: "#DDE7FF",
-			glow: "#FFFFFF",
-			shimmer: false,
-			particles: false,
-			label: "Unranked",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_unranked_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,255,255,.16), rgba(105,122,150,.10) 48%, rgba(8,12,24,.82))",
-			checkerOpacity: 0.08
-		},
-
-		// STARTER TIER
-		{
-			min: 1,
-			max: 70,
-			color: "#8D99AE",
-			color2: "#DDE2EA",
-			glow: "#AEB8C8",
-			shimmer: false,
-			particles: false,
-			label: "Awakened",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_awakened_tier.png",
-			banner: "linear-gradient(135deg, rgba(141,153,174,.24), rgba(43,51,72,.34) 48%, rgba(8,12,24,.86))",
-			checkerOpacity: 0.10
-		},
-		{
-			min: 71,
-			max: 150,
-			color: "#B8C0CC",
-			color2: "#F4F7FB",
-			glow: "#DDE2EA",
-			shimmer: false,
-			particles: false,
-			label: "Invoked",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_invoked_tier.png",
-			banner: "linear-gradient(135deg, rgba(184,192,204,.28), rgba(76,88,108,.30) 50%, rgba(8,12,24,.86))",
-			checkerOpacity: 0.11
-		},
-
-		// SOCIAL / ENERGY TIER
-		{
-			min: 151,
-			max: 230,
-			color: "#74D3AE",
-			color2: "#D9FFF1",
-			glow: "#9CF5D0",
-			shimmer: false,
-			particles: false,
-			label: "Drifter",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_drifter_tier.png",
-			banner: "linear-gradient(135deg, rgba(116,211,174,.28), rgba(29,82,67,.28) 50%, rgba(8,12,24,.86))",
-			checkerOpacity: 0.12
-		},
-		{
-			min: 231,
-			max: 310,
-			color: "#55D6BE",
-			color2: "#B8FFF0",
-			glow: "#6FFFE9",
-			shimmer: false,
-			particles: false,
-			label: "Echo",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_echo_tier.png",
-			banner: "linear-gradient(135deg, rgba(85,214,190,.30), rgba(17,91,92,.26) 50%, rgba(8,12,24,.88))",
-			checkerOpacity: 0.13
-		},
-		{
-			min: 311,
-			max: 390,
-			color: "#4DA3FF",
-			color2: "#9ED2FF",
-			glow: "#6CB6FF",
-			shimmer: false,
-			particles: false,
-			label: "Pulse",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_pulse_tier.png",
-			banner: "linear-gradient(135deg, rgba(77,163,255,.32), rgba(28,68,132,.28) 50%, rgba(8,12,24,.88))",
-			checkerOpacity: 0.14
-		},
-		{
-			min: 391,
-			max: 470,
-			color: "#A66CFF",
-			color2: "#D7B6FF",
-			glow: "#C79BFF",
-			shimmer: false,
-			particles: false,
-			label: "Mirage",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_mirage_tier.png",
-			banner: "linear-gradient(135deg, rgba(166,108,255,.34), rgba(63,35,118,.30) 52%, rgba(8,12,24,.88))",
-			checkerOpacity: 0.15
-		},
-
-		// FANTASY TIER
-		{
-			min: 471,
-			max: 550,
-			color: "#FFD166",
-			color2: "#FFF2A8",
-			glow: "#FFE082",
-			shimmer: true,
-			particles: false,
-			label: "Arcane",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_arcane_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,209,102,.38), rgba(122,82,19,.26) 48%, rgba(8,12,24,.88))",
-			checkerOpacity: 0.16
-		},
-		{
-			min: 551,
-			max: 630,
-			color: "#FF8A3D",
-			color2: "#FFD0A8",
-			glow: "#FFA45F",
-			shimmer: true,
-			particles: false,
-			label: "Eclipse",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_eclipse_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,138,61,.38), rgba(128,48,25,.30) 50%, rgba(8,12,24,.90))",
-			checkerOpacity: 0.17
-		},
-		{
-			min: 631,
-			max: 710,
-			color: "#FF4D8D",
-			color2: "#FFC1D8",
-			glow: "#FF78AA",
-			shimmer: true,
-			particles: true,
-			label: "Revenant",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_revenant_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,77,141,.40), rgba(105,20,62,.34) 52%, rgba(8,12,24,.90))",
-			checkerOpacity: 0.18
-		},
-
-		// LEGEND TIER
-		{
-			min: 711,
-			max: 790,
-			color: "#C77DFF",
-			color2: "#F0C4FF",
-			glow: "#E0AAFF",
-			shimmer: true,
-			particles: true,
-			label: "Phantom",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_phantom_tier.png",
-			banner: "linear-gradient(135deg, rgba(199,125,255,.44), rgba(72,31,135,.34) 50%, rgba(8,12,24,.92))",
-			checkerOpacity: 0.20
-		},
-		{
-			min: 791,
-			max: 870,
-			color: "#FFE66D",
-			color2: "#FFFFFF",
-			glow: "#FFF3A3",
-			shimmer: true,
-			particles: true,
-			label: "Radiant",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_radiant_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,230,109,.48), rgba(178,112,28,.30) 44%, rgba(8,12,24,.92))",
-			checkerOpacity: 0.21
-		},
-		{
-			min: 871,
-			max: 940,
-			color: "#72F7FF",
-			color2: "#E9FEFF",
-			glow: "#A8FBFF",
-			shimmer: true,
-			particles: true,
-			label: "Celestial",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_celestial_tier.png",
-			banner: "linear-gradient(135deg, rgba(114,247,255,.46), rgba(34,96,138,.32) 48%, rgba(8,12,24,.92))",
-			checkerOpacity: 0.22
-		},
-
-		// FINAL TIER
-		{
-			min: 941,
-			max: 999,
-			color: "#FF2E63",
-			color2: "#9B5CFF",
-			glow: "#FF5C8A",
-			shimmer: true,
-			particles: true,
-			label: "Voidborn",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_voidborn_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,46,99,.48), rgba(155,92,255,.28) 46%, rgba(8,12,24,.94))",
-			checkerOpacity: 0.24
-		},
-		{
-			min: 1000,
-			max: 1000,
-			color: "#F8F7FF",
-			color2: "#FFD166",
-			glow: "#FFFFFF",
-			shimmer: true,
-			particles: true,
-			label: "Sovereign",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_sovereign_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,255,255,.52), rgba(255,209,102,.32) 36%, rgba(114,247,255,.22) 62%, rgba(8,12,24,.94))",
-			checkerOpacity: 0.26
-		},
-
-		// UNKNOWN / ERROR
-		{
-			min: 1001,
-			max: null,
-			color: "#FFFFFF",
-			color2: "#DDE7FF",
-			glow: "#FFFFFF",
-			shimmer: false,
-			particles: false,
-			label: "Unknown",
-			icon: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/NoRank_Tier.png",
-			title: "https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/title_unknown_tier.png",
-			banner: "linear-gradient(135deg, rgba(255,255,255,.16), rgba(105,122,150,.10) 48%, rgba(8,12,24,.82))",
-			checkerOpacity: 0.08
-		},
-	];
-
-	const LOCAL_CARD_LEVEL_RANKS = CARD_LEVEL_RANKS.slice();
+	// Os ranks locais foram removidos oficialmente.
+	// Agora a página usa somente extensionsData.badges_levelranks.
+	let CARD_LEVEL_RANKS = [];
 
 	function readExtensionFallback(kind, fallbackValue, key = "undefined") {
 		const value = extensionsData?.badges_fallbacks?.[kind]?.website?.[key];
@@ -9154,7 +8930,7 @@ body.profile-route .summon-boot .summon-title::after {
 	}
 
 	function applyExtensionLevelRanks() {
-		CARD_LEVEL_RANKS = getFirebaseCardLevelRanks() || LOCAL_CARD_LEVEL_RANKS.slice();
+		CARD_LEVEL_RANKS = getFirebaseCardLevelRanks() || [];
 	}
 
 	function applyExtensionDataConfig() {
@@ -9205,7 +8981,7 @@ body.profile-route .summon-boot .summon-title::after {
 		const level = getPlayerLevelNumber(player);
 		const ranks = Array.isArray(CARD_LEVEL_RANKS) && CARD_LEVEL_RANKS.length
 			? CARD_LEVEL_RANKS
-			: LOCAL_CARD_LEVEL_RANKS;
+			: [];
 
 		return ranks.find(function(rank) {
 			if (!rank || typeof rank !== "object") return false;
@@ -10413,26 +10189,10 @@ body.profile-route .summon-boot .summon-title::after {
 			const fallbackWebsite = fallbackClan?.website || {};
 			const fallbackTitle = stripMinecraftCodes(cleanValue(fallbackClan?.label || fallbackWebsite?.title || fallbackWebsite?.label || "SEM CLA")) || "SEM CLA";
 			const fallbackColor = normalizeHexColor(fallbackWebsite?.color || "#a855f7", "#a855f7");
-			const fallbackIconUrl = getMediaUrl(fallbackWebsite?.icon);
-			const fallbackIconText = cleanValue(fallbackWebsite?.icon_codepoint || fallbackWebsite?.emoji || "◇") || "◇";
-			const fallbackIconHtml = fallbackIconUrl ? `
-				<img
-					src="${escapeHtml(fallbackIconUrl)}"
-					alt=""
-					loading="lazy"
-					referrerpolicy="no-referrer"
-					crossorigin="anonymous"
-					draggable="false"
-					onerror="this.replaceWith(Object.assign(document.createElement('span'), {className: 'clan-info-emblem-fallback', textContent: '${escapeHtml(fallbackIconText)}'}))"
-				>
-			` : `<span class="clan-info-emblem-fallback">${escapeHtml(fallbackIconText)}</span>`;
 
 			return `
 				<div class="clan-info-card clan-info-card-premium clan-info-card-tech is-empty clan-empty-compact" style="--clan-color: ${escapeHtml(fallbackColor)};">
 					<div class="clan-empty-center">
-						<div class="clan-info-emblem" aria-hidden="true">
-							${fallbackIconHtml}
-						</div>
 						<div class="clan-info-title">${escapeHtml(fallbackTitle)}</div>
 					</div>
 				</div>
