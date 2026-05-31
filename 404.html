@@ -9829,7 +9829,7 @@ body.profile-route .summon-boot .summon-title::after {
 					<div class="level-info-main-text">
 						<div class="level-info-tier-name"><span>Tier:</span> ${escapeHtml(rankData.label)}</div>
 						<div class="level-info-tier-line">
-							<span class="level-info-mini-progress" style="--mini-tier-progress:${Math.round(safeProgress)}%" aria-hidden="true"><span></span></span>
+							<span class="level-info-mini-progress" style="--mini-tier-progress:${Math.round(safeProgress)}%;" aria-hidden="true"><span style="width:${Math.round(safeProgress)}%;"></span></span>
 							<span class="level-info-tier-percent">${Math.round(safeProgress)}%</span>
 						</div>
 					</div>
@@ -13791,5 +13791,20 @@ body {
 		height: 86px !important;
 		opacity: .22 !important;
 	}
+}
+
+
+/* ===== CORREÇÃO FINAL: preenchimento real da barra do Tier ===== */
+.level-info-mini-progress > span {
+	width: var(--mini-tier-progress, 0%) !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	transform: none !important;
+	clip-path: none !important;
+	opacity: 1 !important;
+}
+
+.level-info-mini-progress[style*="100%"] > span {
+	width: 100% !important;
 }
 </style>
