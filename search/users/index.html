@@ -217,21 +217,58 @@
 		grid-template-columns: 68px minmax(0, 1fr) auto;
 		align-items: center;
 		gap: 14px;
+
 		width: 100%;
 		max-width: 100%;
+
 		min-height: 94px;
 		padding: 12px 16px;
+
 		border-radius: 18px;
 		overflow: hidden;
 		isolation: isolate;
+
 		border: 1px solid rgba(255,255,255,.08);
-		background: linear-gradient(180deg, rgba(15,20,35,.94), rgba(7,10,20,.98));
+
+		background: linear-gradient(
+			180deg,
+			rgba(15,20,35,.94),
+			rgba(7,10,20,.98)
+		);
+
 		box-shadow:
 			0 0 0 1px rgba(255,255,255,.03),
 			0 16px 34px rgba(0,0,0,.24);
+
 		transform: none !important;
-		transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+
+		transition:
+			border-color .2s ease,
+			box-shadow .2s ease,
+			background .2s ease;
+
 		cursor: pointer;
+
+		color: var(--accent);
+	}
+
+	.grid.list-mode .card .card-frame-svg {
+		position: absolute;
+
+		inset: 0;
+
+		width: 100%;
+		height: 100%;
+
+		pointer-events: none;
+
+		z-index: 1;
+
+		opacity: .65;
+
+		filter:
+			drop-shadow(0 0 8px currentColor)
+			drop-shadow(0 0 16px currentColor);
 	}
 
 	.grid.list-mode .card:hover,
@@ -4734,12 +4771,49 @@ body {
 	}
 
 	.grid.list-mode .list-avatar {
-		position: relative !important;
-		z-index: 3 !important;
-		grid-column: 1 !important;
-		width: 54px !important;
-		height: 54px !important;
-		border-radius: 12px !important;
+	position: relative;
+	z-index: 3;
+
+	width: 64px;
+	height: 64px;
+
+	border-radius: 14px;
+	overflow: visible;
+
+	color: var(--accent);
+
+	border: 1px solid rgba(255,255,255,.12);
+	background: rgba(255,255,255,.06);
+
+	box-shadow:
+		0 8px 20px rgba(0,0,0,.28),
+		0 0 0 1px rgba(255,255,255,.04);
+}
+
+	.grid.list-mode .list-avatar img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border-radius: 14px;
+	}
+
+	.grid.list-mode .list-avatar .avatar-frame-svg {
+		position: absolute;
+
+		top: -10px;
+		left: -10px;
+
+		width: calc(100% + 20px);
+		height: calc(100% + 20px);
+
+		pointer-events: none;
+
+		z-index: 10;
+
+		filter:
+			drop-shadow(0 0 6px currentColor)
+			drop-shadow(0 0 12px currentColor);
 	}
 
 	.grid.list-mode .list-info {
@@ -6967,7 +7041,3075 @@ body {
 	}
 }
 
+
+
+/* ==========================================================
+   UPGRADE VISUAL PREMIUM - MODO LISTA / GACHA RPG
+   Adicionado para aproximar a prévia gerada sem mudar a estrutura JS.
+   ========================================================== */
+.grid.list-mode {
+	gap: 12px !important;
+}
+
+.grid.list-mode .card {
+	min-height: 118px !important;
+	height: 118px !important;
+	grid-template-columns: minmax(430px, 1fr) minmax(300px, 420px) 126px !important;
+	column-gap: 18px !important;
+	padding: 12px 18px 12px 82px !important;
+	border-radius: 16px !important;
+	clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px) !important;
+	background:
+		radial-gradient(circle at 58% 50%, var(--list-accent-glow-hover, rgba(150,80,255,.20)), transparent 31%),
+		linear-gradient(90deg, var(--list-accent-soft, rgba(128,72,255,.22)) 0%, rgba(4,6,16,.84) 34%, rgba(4,6,16,.52) 61%, rgba(4,6,16,.86) 100%) !important;
+	border: 1px solid var(--list-accent-border-hover, rgba(180,110,255,.34)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		inset 0 0 46px var(--list-accent-inner, rgba(120,70,255,.08)),
+		0 10px 26px rgba(0,0,0,.30),
+		0 0 22px var(--list-accent-glow, rgba(170,90,255,.18)) !important;
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
+}
+
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible {
+	transform: translateY(-2px) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.12),
+		inset 0 0 60px var(--list-accent-inner, rgba(120,70,255,.14)),
+		0 16px 34px rgba(0,0,0,.38),
+		0 0 34px var(--list-accent-glow-hover, rgba(170,90,255,.26)) !important;
+}
+
+.grid.list-mode .list-banner img {
+	filter: brightness(.48) saturate(1.25) contrast(1.08) blur(.1px) !important;
+	transform: scale(1.065) !important;
+}
+
+.grid.list-mode .list-banner::before {
+	background:
+		radial-gradient(circle at 54% 48%, var(--list-accent-glow-hover, rgba(160,80,255,.30)), transparent 28%),
+		radial-gradient(circle at 76% 35%, rgba(255,255,255,.10), transparent 18%),
+		linear-gradient(90deg, var(--list-accent-soft, rgba(88,101,242,.24)) 0%, transparent 28%, var(--list-accent-fade, rgba(88,101,242,.13)) 100%) !important;
+	opacity: .95 !important;
+}
+
+.grid.list-mode .list-banner::after {
+	background:
+		linear-gradient(90deg, rgba(2,5,13,.86) 0%, rgba(2,5,13,.63) 34%, rgba(2,5,13,.24) 58%, rgba(2,5,13,.76) 100%),
+		linear-gradient(180deg, rgba(255,255,255,.065), transparent 48%, rgba(0,0,0,.28)) !important;
+}
+
+.grid.list-mode .list-rarity-strip {
+	position: absolute !important;
+	left: 10px !important;
+	top: 8px !important;
+	bottom: 8px !important;
+	width: 44px !important;
+	z-index: 6 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	border-radius: 12px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 58%, rgba(255,255,255,.20)) !important;
+	background:
+		linear-gradient(180deg, color-mix(in srgb, var(--accent) 34%, rgba(255,255,255,.10)), rgba(5,8,18,.66)),
+		radial-gradient(circle at 50% 16%, rgba(255,255,255,.28), transparent 32%) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.16),
+		0 0 18px color-mix(in srgb, var(--accent) 34%, transparent) !important;
+}
+
+.grid.list-mode .list-rarity-strip span {
+	writing-mode: vertical-rl !important;
+	transform: rotate(180deg) !important;
+	font-family: 'Ethnocentric', var(--font-stack) !important;
+	font-size: 9px !important;
+	line-height: 1 !important;
+	font-weight: 900 !important;
+	letter-spacing: .16em !important;
+	text-transform: uppercase !important;
+	color: #fff !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 72%, transparent) !important;
+}
+
+.grid.list-mode .list-rail {
+	left: 0 !important;
+	width: 4px !important;
+	z-index: 7 !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-template-columns: 72px minmax(0, 1fr) !important;
+	column-gap: 18px !important;
+}
+
+.grid.list-mode .list-avatar {
+	width: 66px !important;
+	height: 66px !important;
+	min-width: 66px !important;
+	min-height: 66px !important;
+	border-radius: 16px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 42%, rgba(255,255,255,.18)) !important;
+	box-shadow:
+		0 9px 22px rgba(0,0,0,.38),
+		0 0 18px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+
+.grid.list-mode .list-displayname {
+	font-size: 16px !important;
+	line-height: 1.15 !important;
+	letter-spacing: .02em !important;
+}
+
+.grid.list-mode .list-username {
+	font-size: 12px !important;
+	color: #9fb0d4 !important;
+}
+
+.grid.list-mode .list-title {
+	margin-top: 4px !important;
+	font-size: 12px !important;
+	color: color-mix(in srgb, var(--accent) 54%, #ffffff 46%) !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+
+.grid.list-mode .list-group2 {
+	grid-template-columns: minmax(170px, 1fr) minmax(120px, 170px) !important;
+	column-gap: 14px !important;
+	align-self: stretch !important;
+}
+
+.grid.list-mode .list-character {
+	height: 112px !important;
+	z-index: 5 !important;
+	align-self: end !important;
+	filter:
+		drop-shadow(0 12px 18px rgba(0,0,0,.52))
+		drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 22%, transparent)) !important;
+}
+
+.grid.list-mode .list-character img {
+	max-height: 168px !important;
+	max-width: 145% !important;
+	transform: translateY(4px) scale(1.12) !important;
+}
+
+.grid.list-mode .card:hover .list-character img,
+.grid.list-mode .card:focus-visible .list-character img {
+	transform: translateY(-1px) scale(1.16) !important;
+}
+
+.grid.list-mode .list-rank-title {
+	height: 76px !important;
+	max-width: 176px !important;
+	z-index: 5 !important;
+}
+
+.grid.list-mode .list-rank-title img {
+	transform: scale(1.10) !important;
+	filter:
+		drop-shadow(0 6px 10px rgba(0,0,0,.42))
+		drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 32%, transparent)) !important;
+}
+
+.grid.list-mode .list-group3 {
+	width: 118px !important;
+	min-width: 118px !important;
+	max-width: 118px !important;
+	gap: 8px !important;
+}
+
+.grid.list-mode .list-level,
+.grid.list-mode .list-clan {
+	width: 112px !important;
+	min-width: 112px !important;
+	max-width: 112px !important;
+	height: 30px !important;
+	min-height: 30px !important;
+	max-height: 30px !important;
+	border-radius: 999px !important;
+	font-size: 10px !important;
+	letter-spacing: .08em !important;
+	background:
+		linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+		rgba(5,8,18,.72) !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 44%, rgba(255,255,255,.12)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.08),
+		0 0 14px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+
+@media (max-width: 1080px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(330px, 1fr) minmax(210px, 300px) 112px !important;
+		padding-left: 70px !important;
+	}
+	.grid.list-mode .list-rarity-strip { width: 38px !important; }
+	.grid.list-mode .list-character img { max-height: 148px !important; }
+	.grid.list-mode .list-rank-title { max-width: 138px !important; }
+}
+
+@media (max-width: 760px) {
+	.grid.list-mode { width: 100% !important; max-width: 100% !important; margin-left: 0 !important; }
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) 96px !important;
+		min-height: 94px !important;
+		height: auto !important;
+		padding: 12px 12px 12px 60px !important;
+	}
+	.grid.list-mode .list-group1 { grid-column: 1 !important; grid-template-columns: 58px minmax(0,1fr) !important; column-gap: 12px !important; }
+	.grid.list-mode .list-group2 { display: none !important; }
+	.grid.list-mode .list-group3 { grid-column: 2 !important; width: 96px !important; min-width: 96px !important; max-width: 96px !important; }
+	.grid.list-mode .list-avatar { width: 54px !important; height: 54px !important; min-width: 54px !important; min-height: 54px !important; }
+	.grid.list-mode .list-displayname { font-size: 13px !important; }
+	.grid.list-mode .list-username, .grid.list-mode .list-title { font-size: 10px !important; }
+	.grid.list-mode .list-level, .grid.list-mode .list-clan { width: 90px !important; min-width: 90px !important; max-width: 90px !important; height: 26px !important; }
+}
+
+
+
+/* ==========================================================
+   PREVIEW FINAL LISTA + TIER: mistura layout atual com o comportamento
+   visual da Tier do perfil, sem jogar Lv/Clan para o lado direito.
+   ========================================================== */
+.grid.list-mode .card {
+	grid-template-columns: 150px minmax(0, 1fr) clamp(180px, 24vw, 260px) !important;
+	min-height: 150px !important;
+	height: auto !important;
+	padding: 16px 20px !important;
+	align-items: center !important;
+	gap: 18px !important;
+	border-radius: 18px !important;
+	clip-path: none !important;
+	background:
+		linear-gradient(90deg, rgba(3, 7, 15, .96) 0%, rgba(3, 7, 15, .86) 44%, var(--list-accent-fade, rgba(88,101,242,.10)) 100%) !important;
+}
+
+.grid.list-mode .list-rarity-strip,
+.grid.list-mode .list-rank-title,
+.grid.list-mode .list-group3,
+.grid.list-mode .list-extra-row {
+	display: none !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-column: 1 / 3 !important;
+	position: relative !important;
+	z-index: 5 !important;
+	display: grid !important;
+	grid-template-columns: 118px minmax(0, 1fr) !important;
+	align-items: center !important;
+	gap: 18px !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-avatar {
+	grid-column: 1 !important;
+	width: 104px !important;
+	height: 104px !important;
+	min-width: 104px !important;
+	min-height: 104px !important;
+	max-width: 104px !important;
+	max-height: 104px !important;
+	border-radius: 20px !important;
+	box-shadow:
+		0 10px 24px rgba(0,0,0,.38),
+		0 0 0 1px rgba(255,255,255,.08),
+		0 0 18px var(--list-accent-glow, rgba(185,133,255,.20)) !important;
+}
+
+.grid.list-mode .list-info {
+	grid-column: 2 !important;
+	height: auto !important;
+	max-height: none !important;
+	gap: 7px !important;
+	justify-content: center !important;
+}
+
+.grid.list-mode .list-displayname {
+	font-size: 21px !important;
+	line-height: 1.1 !important;
+	margin-bottom: 1px !important;
+}
+
+.grid.list-mode .list-username {
+	font-size: 13px !important;
+	font-weight: 900 !important;
+	color: rgba(230,238,255,.92) !important;
+}
+
+.grid.list-mode .list-title-box {
+	width: min(470px, 100%) !important;
+	min-height: 32px !important;
+	padding: 7px 12px !important;
+	border-radius: 7px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 42%, rgba(255,255,255,.13)) !important;
+	background: rgba(0, 0, 0, .58) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.04),
+		0 0 14px var(--list-accent-glow, rgba(185,133,255,.12)) !important;
+	font-size: 13px !important;
+	font-weight: 700 !important;
+	color: #ffffff !important;
+}
+
+.list-combat-badges {
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
+	flex-wrap: wrap !important;
+	width: min(620px, 100%) !important;
+}
+
+.list-combat-pill {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 8px !important;
+	min-height: 31px !important;
+	padding: 6px 13px !important;
+	border-radius: 7px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 40%, rgba(255,255,255,.13)) !important;
+	background: rgba(0, 0, 0, .58) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.04),
+		0 0 12px var(--list-accent-glow, rgba(185,133,255,.10)) !important;
+	font-size: 13px !important;
+	font-weight: 900 !important;
+	color: #f6f8ff !important;
+	white-space: nowrap !important;
+}
+
+.list-combat-pill .list-status-dot {
+	width: 9px !important;
+	height: 9px !important;
+	border-radius: 999px !important;
+	background: #798196 !important;
+	box-shadow: 0 0 10px rgba(121,129,150,.35) !important;
+}
+
+.list-combat-pill.is-online .list-status-dot {
+	background: #25ff72 !important;
+	box-shadow: 0 0 12px rgba(37,255,114,.55) !important;
+}
+
+.list-lv-pill {
+	color: #f0b4ff !important;
+	text-shadow: 0 0 10px rgba(217,117,255,.36) !important;
+}
+
+.list-clan-pill {
+	min-width: 92px !important;
+}
+
+.list-tier-progress {
+	--tier-bg: rgba(0,0,0,.54);
+	position: relative !important;
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) auto !important;
+	align-items: center !important;
+	gap: 10px !important;
+	width: min(690px, 100%) !important;
+	margin-top: 3px !important;
+	isolation: isolate !important;
+}
+
+.list-tier-main,
+.list-tier-next {
+	position: relative !important;
+	overflow: hidden !important;
+	border-radius: 8px !important;
+	border: 1px solid color-mix(in srgb, var(--rank-color, #5865F2) 42%, rgba(255,255,255,.12)) !important;
+	background:
+		var(--rank-banner, linear-gradient(135deg, color-mix(in srgb, var(--rank-color, #5865F2) 18%, rgba(255,255,255,.05)), rgba(8,12,24,.92))),
+		var(--tier-bg) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.06),
+		0 0 16px color-mix(in srgb, var(--rank-glow, #5865F2) 20%, transparent) !important;
+}
+
+.list-tier-main::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	background:
+		repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 10px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.09) 0 1px, transparent 1px 10px) !important;
+	opacity: var(--rank-checker-opacity, .10) !important;
+	mix-blend-mode: screen !important;
+	pointer-events: none !important;
+}
+
+.list-tier-main {
+	display: grid !important;
+	grid-template-columns: 42px auto minmax(160px, 1fr) 46px !important;
+	align-items: center !important;
+	gap: 10px !important;
+	min-height: 38px !important;
+	padding: 5px 11px 5px 6px !important;
+}
+
+.list-tier-icon {
+	position: relative !important;
+	z-index: 1 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 36px !important;
+	height: 36px !important;
+	font-size: 22px !important;
+	color: color-mix(in srgb, var(--rank-color, #5865F2) 70%, #ffffff 30%) !important;
+	filter: drop-shadow(0 0 9px color-mix(in srgb, var(--rank-glow, #5865F2) 58%, transparent));
+}
+
+.list-tier-icon img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+}
+
+.list-tier-name {
+	position: relative !important;
+	z-index: 1 !important;
+	font-size: 18px !important;
+	font-weight: 1000 !important;
+	letter-spacing: .06em !important;
+	text-transform: uppercase !important;
+	color: #ffd86d !important;
+	text-shadow:
+		0 1px 2px rgba(0,0,0,.55),
+		0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 42%, transparent) !important;
+}
+
+.list-tier-bar {
+	position: relative !important;
+	z-index: 1 !important;
+	height: 12px !important;
+	border-radius: 999px !important;
+	background: rgba(255,255,255,.10) !important;
+	border: 1px solid rgba(255,255,255,.07) !important;
+	overflow: hidden !important;
+}
+
+.list-tier-bar span {
+	display: block !important;
+	height: 100% !important;
+	border-radius: inherit !important;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--rank-color, #5865F2) 86%, #ffffff 8%), color-mix(in srgb, var(--rank-color-2, #75d7ff) 86%, #ffffff 8%)) !important;
+	box-shadow: 0 0 16px color-mix(in srgb, var(--rank-glow, #5865F2) 42%, transparent) !important;
+}
+
+.list-tier-percent {
+	position: relative !important;
+	z-index: 1 !important;
+	font-size: 13px !important;
+	font-weight: 1000 !important;
+	color: color-mix(in srgb, var(--rank-color-2, #75d7ff) 78%, #ffffff 22%) !important;
+	text-align: right !important;
+}
+
+.list-tier-next {
+	min-height: 38px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	padding: 6px 14px !important;
+	font-size: 13px !important;
+	font-weight: 800 !important;
+	color: rgba(245,248,255,.92) !important;
+	white-space: nowrap !important;
+}
+
+.list-tier-next::first-letter {
+	color: color-mix(in srgb, var(--rank-color-2, #b985ff) 72%, #ffffff 28%) !important;
+}
+
+.grid.list-mode .list-group2 {
+	grid-column: 3 !important;
+	position: relative !important;
+	z-index: 4 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-width: 0 !important;
+	align-self: stretch !important;
+}
+
+.grid.list-mode .list-character {
+	position: relative !important;
+	width: 100% !important;
+	height: 132px !important;
+	transform: none !important;
+	grid-column: auto !important;
+	align-self: center !important;
+}
+
+.grid.list-mode .list-character img {
+	max-height: 172px !important;
+	max-width: 100% !important;
+	transform: scale(1.04) !important;
+}
+
+@media (max-width: 980px) {
+	.grid.list-mode .card {
+		grid-template-columns: 1fr !important;
+		min-height: auto !important;
+	}
+	.grid.list-mode .list-group1 {
+		grid-column: 1 !important;
+		grid-template-columns: 82px minmax(0, 1fr) !important;
+		gap: 12px !important;
+	}
+	.grid.list-mode .list-avatar {
+		width: 74px !important;
+		height: 74px !important;
+		min-width: 74px !important;
+		min-height: 74px !important;
+	}
+	.grid.list-mode .list-displayname { font-size: 16px !important; }
+	.list-tier-progress { grid-template-columns: 1fr !important; }
+	.list-tier-main { grid-template-columns: 36px auto minmax(80px, 1fr) 42px !important; }
+	.grid.list-mode .list-group2 { display: none !important; }
+}
+
+
+
+/* ==========================================================
+   OFICIAL FIX LISTA UPGRADE - Clan style + dados limpos
+   Remove visualmente Tier/SOVEREIGN/Lv da lista e organiza avatar,
+   nome, username, título, país/status/clan e character.
+   ========================================================== */
+.grid.list-mode {
+	gap: 12px !important;
+}
+
+.grid.list-mode .card {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) 210px !important;
+	min-height: 136px !important;
+	height: 136px !important;
+	padding: 14px 18px 14px 10px !important;
+	column-gap: 18px !important;
+	align-items: center !important;
+	border-radius: 18px 24px 18px 18px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 46%, rgba(255,255,255,.12)) !important;
+	background:
+		linear-gradient(90deg, rgba(5,8,17,.92) 0%, rgba(10,16,29,.86) 50%, rgba(6,10,20,.96) 100%),
+		linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.09),
+		0 0 0 1px rgba(255,255,255,.025),
+		0 18px 42px rgba(0,0,0,.34),
+		0 0 24px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+	overflow: hidden !important;
+}
+
+.grid.list-mode .card::before {
+	display: block !important;
+	content: "" !important;
+	position: absolute !important;
+	left: 42px !important;
+	right: 210px !important;
+	top: 10px !important;
+	height: 1px !important;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 56%, #ffffff 20%), transparent) !important;
+	opacity: .72 !important;
+	z-index: 3 !important;
+}
+
+.grid.list-mode .card::after {
+	display: block !important;
+	content: "" !important;
+	position: absolute !important;
+	left: 118px !important;
+	right: 42px !important;
+	bottom: 12px !important;
+	height: 1px !important;
+	background: linear-gradient(90deg, transparent, rgba(220,245,255,.45), transparent) !important;
+	opacity: .56 !important;
+	z-index: 3 !important;
+}
+
+.grid.list-mode .list-banner {
+	inset: 0 !important;
+	z-index: 0 !important;
+}
+.grid.list-mode .list-banner img {
+	filter: brightness(.24) saturate(1.05) blur(.15px) !important;
+	transform: scale(1.06) !important;
+}
+.grid.list-mode .list-banner::after {
+	background:
+		linear-gradient(90deg, rgba(4,7,15,.18) 0%, rgba(7,12,23,.60) 42%, rgba(5,8,17,.90) 100%),
+		radial-gradient(circle at 13% 54%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 22%) !important;
+}
+
+.grid.list-mode .list-rail,
+.grid.list-mode .list-rarity-strip,
+.grid.list-mode .list-rank-title,
+.grid.list-mode .list-tier-progress,
+.grid.list-mode .list-level,
+.grid.list-mode .list-meta,
+.grid.list-mode .list-group3 {
+	display: none !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-column: 1 !important;
+	display: grid !important;
+	grid-template-columns: 92px minmax(0, 1fr) !important;
+	column-gap: 14px !important;
+	align-items: center !important;
+	min-width: 0 !important;
+	z-index: 5 !important;
+}
+
+.grid.list-mode .list-avatar {
+	width: 82px !important;
+	height: 82px !important;
+	min-width: 82px !important;
+	min-height: 82px !important;
+	border-radius: 16px !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 60%, rgba(255,255,255,.22)) !important;
+	background: rgba(7,10,20,.72) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.11),
+		0 12px 24px rgba(0,0,0,.38),
+		0 0 18px color-mix(in srgb, var(--accent) 28%, transparent) !important;
+}
+
+.grid.list-mode .list-info {
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: center !important;
+	align-items: flex-start !important;
+	gap: 6px !important;
+	min-width: 0 !important;
+	height: auto !important;
+	max-height: none !important;
+	overflow: visible !important;
+	z-index: 6 !important;
+}
+
+.grid.list-mode .list-displayname {
+	font-size: 24px !important;
+	line-height: 1.05 !important;
+	font-weight: 1000 !important;
+	letter-spacing: .01em !important;
+	max-width: 100% !important;
+	text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 32%, transparent), 0 2px 4px rgba(0,0,0,.42) !important;
+}
+
+.grid.list-mode .list-displayname .list-displayname-text {
+	max-width: calc(100% - 28px) !important;
+}
+
+.grid.list-mode .list-displayname .verified-emblem {
+	width: 18px !important;
+	height: 18px !important;
+	flex-basis: 18px !important;
+}
+
+.grid.list-mode .list-username-line,
+.grid.list-mode .list-username {
+	font-size: 13px !important;
+	font-weight: 1000 !important;
+	line-height: 1 !important;
+	color: #e9eefb !important;
+	text-shadow: 0 0 10px rgba(255,255,255,.13) !important;
+}
+
+.grid.list-mode .list-title {
+	width: min(100%, 470px) !important;
+	min-height: 29px !important;
+	display: flex !important;
+	align-items: center !important;
+	padding: 6px 12px !important;
+	border-radius: 8px !important;
+	border: 1px solid rgba(210,230,255,.52) !important;
+	background: rgba(2,5,12,.50) !important;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 12px rgba(150,210,255,.10) !important;
+	font-size: 12px !important;
+	font-weight: 900 !important;
+	color: #ffffff !important;
+}
+
+.grid.list-mode .list-combat-badges {
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
+	flex-wrap: wrap !important;
+	margin-top: 0 !important;
+}
+
+.grid.list-mode .list-combat-pill {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 7px !important;
+	min-width: 92px !important;
+	min-height: 31px !important;
+	padding: 6px 14px !important;
+	border-radius: 8px !important;
+	border: 1px solid rgba(210,230,255,.28) !important;
+	background: rgba(3,7,15,.62) !important;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 12px color-mix(in srgb, var(--accent) 10%, transparent) !important;
+	font-size: 13px !important;
+	font-weight: 1000 !important;
+	line-height: 1 !important;
+	color: #f3f6ff !important;
+	white-space: nowrap !important;
+}
+
+.grid.list-mode .list-combat-pill.list-clan-pill {
+	min-width: 92px !important;
+	text-transform: uppercase !important;
+	letter-spacing: .03em !important;
+}
+
+.grid.list-mode .country-flag-img {
+	width: 18px !important;
+	height: 12px !important;
+}
+
+.grid.list-mode .list-status-dot {
+	width: 8px !important;
+	height: 8px !important;
+	border-radius: 999px !important;
+	background: #7d8596 !important;
+	box-shadow: 0 0 10px rgba(125,133,150,.45) !important;
+}
+.grid.list-mode .list-status-pill.is-online .list-status-dot {
+	background: #39ff72 !important;
+	box-shadow: 0 0 14px rgba(57,255,114,.78) !important;
+}
+.grid.list-mode .list-status-pill.is-offline .list-status-dot {
+	background: #858da0 !important;
+	box-shadow: 0 0 10px rgba(133,141,160,.38) !important;
+}
+
+.grid.list-mode .list-group2 {
+	grid-column: 2 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 210px !important;
+	height: 120px !important;
+	z-index: 5 !important;
+}
+
+.grid.list-mode .list-character {
+	position: relative !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
+	height: 120px !important;
+	top: auto !important;
+	right: auto !important;
+	bottom: auto !important;
+	left: auto !important;
+	transform: none !important;
+	filter: drop-shadow(0 12px 18px rgba(0,0,0,.45)) drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 22%, transparent)) !important;
+}
+
+.grid.list-mode .list-character img {
+	max-width: 100% !important;
+	max-height: 145px !important;
+	object-fit: contain !important;
+	object-position: center bottom !important;
+	transform: translateY(4px) scale(1.04) !important;
+}
+
+.grid.list-mode .card:hover .list-character img,
+.grid.list-mode .card:focus-visible .list-character img {
+	transform: translateY(0) scale(1.08) !important;
+}
+
+@media (max-width: 980px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) 150px !important;
+		min-height: 126px !important;
+		height: 126px !important;
+	}
+	.grid.list-mode .list-group1 {
+		grid-template-columns: 76px minmax(0, 1fr) !important;
+	}
+	.grid.list-mode .list-avatar {
+		width: 68px !important;
+		height: 68px !important;
+		min-width: 68px !important;
+		min-height: 68px !important;
+	}
+	.grid.list-mode .list-displayname { font-size: 19px !important; }
+	.grid.list-mode .list-title { width: min(100%, 410px) !important; }
+	.grid.list-mode .list-combat-pill { min-width: 76px !important; font-size: 11px !important; padding: 5px 9px !important; }
+	.grid.list-mode .list-group2 { width: 150px !important; }
+	.grid.list-mode .list-character img { max-height: 128px !important; }
+}
+
+@media (max-width: 680px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) !important;
+		height: auto !important;
+		min-height: 128px !important;
+		padding-right: 12px !important;
+	}
+	.grid.list-mode .list-group2 { display: none !important; }
+	.grid.list-mode .list-group1 { grid-template-columns: 70px minmax(0, 1fr) !important; }
+	.grid.list-mode .list-avatar { width: 62px !important; height: 62px !important; min-width: 62px !important; min-height: 62px !important; }
+	.grid.list-mode .list-displayname { font-size: 16px !important; }
+	.grid.list-mode .list-username { font-size: 11px !important; }
+	.grid.list-mode .list-title { font-size: 10px !important; min-height: 26px !important; }
+}
+
+
+
+/* ===== Upgrade: sombra duplicada do character no modo lista ===== */
+.grid.list-mode .list-character {
+	position: relative !important;
+	isolation: isolate !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-character img.list-character-shadow {
+	position: absolute !important;
+	left: 50% !important;
+	bottom: 0 !important;
+	z-index: 0 !important;
+	max-height: 148px !important;
+	max-width: 132% !important;
+	width: auto !important;
+	height: auto !important;
+	object-fit: contain !important;
+	object-position: center bottom !important;
+	transform: translate(18px, 5px) translateX(-50%) scale(1.08) !important;
+	opacity: .24 !important;
+	filter: grayscale(1) brightness(.36) contrast(1.1) blur(.35px) !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-character img.list-character-main,
+.grid.list-mode .list-character img:not(.list-character-shadow) {
+	position: relative !important;
+	z-index: 2 !important;
+}
+
+.grid.list-mode .card:hover .list-character img.list-character-shadow,
+.grid.list-mode .card:focus-visible .list-character img.list-character-shadow {
+	transform: translate(24px, 2px) translateX(-50%) scale(1.12) !important;
+	opacity: .30 !important;
+}
+
+.grid.list-mode .list-character.pixelated img.list-character-shadow {
+	image-rendering: pixelated !important;
+}
+
+
+
+/* ===== Ajuste final: list-character-shadow no lado direito, abaixo do list-group3, sem aumentar o card ===== */
+.grid.list-mode .card {
+	position: relative !important;
+	overflow: hidden !important;
+}
+
+.grid.list-mode .list-group1,
+.grid.list-mode .list-group2 {
+	position: relative !important;
+	z-index: 6 !important;
+}
+
+.grid.list-mode .list-group3 {
+	display: none !important;
+}
+
+.grid.list-mode .list-character {
+	position: relative !important;
+	z-index: 7 !important;
+	isolation: auto !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-character img.list-character-main,
+.grid.list-mode .list-character img:not(.list-character-shadow) {
+	position: relative !important;
+	z-index: 7 !important;
+}
+
+.grid.list-mode .list-character img.list-character-shadow {
+	display: none !important;
+}
+
+.grid.list-mode .list-character-shadow {
+	position: absolute !important;
+	right: -62px !important;
+	bottom: -96px !important;
+	width: 355px !important;
+	height: 355px !important;
+	display: flex !important;
+	align-items: flex-end !important;
+	justify-content: center !important;
+	z-index: 2 !important;
+	opacity: .15 !important;
+	pointer-events: none !important;
+	transform: none !important;
+	filter: grayscale(1) brightness(.34) contrast(1.08) blur(.25px) !important;
+}
+
+.grid.list-mode .list-character-shadow img {
+	width: auto !important;
+	height: auto !important;
+	max-width: 100% !important;
+	max-height: 100% !important;
+	object-fit: contain !important;
+	object-position: center bottom !important;
+	transform: scale(1.18) !important;
+}
+
+.grid.list-mode .list-character-shadow.pixelated img {
+	image-rendering: pixelated !important;
+}
+
+.grid.list-mode .card:hover .list-character-shadow,
+.grid.list-mode .card:focus-visible .list-character-shadow {
+	opacity: .20 !important;
+	right: -54px !important;
+}
+
+@media (max-width: 980px) {
+	.grid.list-mode .list-character-shadow {
+		right: -74px !important;
+		bottom: -94px !important;
+		width: 300px !important;
+		height: 300px !important;
+		opacity: .12 !important;
+	}
+}
+
+@media (max-width: 680px) {
+	.grid.list-mode .list-character-shadow {
+		display: none !important;
+	}
+}
+
+
+
+/* ==========================================================
+   MODO LISTA PREMIUM V1 - somente visual dos cards da lista
+   Mantém o HTML dinâmico, sem criar card/PFP como imagem fixa.
+   ========================================================== */
+.grid.list-mode{
+    gap:14px !important;
+}
+
+.grid.list-mode .card{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(430px, 1fr) minmax(190px, 285px) 136px !important;
+    align-items:center !important;
+    min-height:132px !important;
+    height:132px !important;
+    padding:14px 18px 14px 18px !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+    isolation:isolate !important;
+    border:1px solid color-mix(in srgb, var(--accent) 46%, rgba(220,235,255,.30)) !important;
+    background:
+        radial-gradient(620px 180px at 18% 42%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 72%),
+        radial-gradient(390px 170px at 72% 46%, rgba(120,175,255,.10), transparent 76%),
+        linear-gradient(90deg, rgba(16,25,42,.94) 0%, rgba(8,13,26,.90) 52%, rgba(5,9,18,.96) 100%) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.14),
+        inset 0 -1px 0 rgba(0,0,0,.38),
+        0 0 0 1px rgba(255,255,255,.025),
+        0 12px 28px rgba(0,0,0,.26),
+        0 0 22px color-mix(in srgb, var(--accent) 16%, transparent) !important;
+    transform:none !important;
+}
+
+.grid.list-mode .card::before{
+    content:"" !important;
+    display:block !important;
+    position:absolute !important;
+    inset:0 !important;
+    z-index:1 !important;
+    pointer-events:none !important;
+    border-radius:inherit !important;
+    background:
+        linear-gradient(90deg, transparent 0 3%, color-mix(in srgb, var(--accent) 48%, transparent) 3% 6%, transparent 6% 44%, rgba(255,255,255,.16) 44% 45%, transparent 45% 100%),
+        repeating-linear-gradient(90deg, rgba(180,220,255,.050) 0 1px, transparent 1px 44px),
+        repeating-linear-gradient(180deg, rgba(180,220,255,.035) 0 1px, transparent 1px 34px) !important;
+    opacity:.48 !important;
+    mask-image:linear-gradient(90deg, black 0%, black 74%, transparent 98%) !important;
+    -webkit-mask-image:linear-gradient(90deg, black 0%, black 74%, transparent 98%) !important;
+}
+
+.grid.list-mode .card::after{
+    content:"" !important;
+    display:block !important;
+    position:absolute !important;
+    left:28px !important;
+    top:9px !important;
+    width:min(58%, 620px) !important;
+    height:2px !important;
+    z-index:6 !important;
+    pointer-events:none !important;
+    border-radius:999px !important;
+    background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 72%, #ffffff 28%), rgba(255,255,255,.42), transparent) !important;
+    box-shadow:0 0 12px color-mix(in srgb, var(--accent) 48%, transparent) !important;
+    opacity:.78 !important;
+}
+
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible,
+.grid.list-mode .card.is-touching{
+    border-color:color-mix(in srgb, var(--accent) 72%, rgba(255,255,255,.42)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        inset 0 -1px 0 rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.04),
+        0 16px 34px rgba(0,0,0,.31),
+        0 0 28px color-mix(in srgb, var(--accent) 24%, transparent) !important;
+}
+
+.grid.list-mode .list-banner{
+    display:block !important;
+    position:absolute !important;
+    inset:0 !important;
+    z-index:0 !important;
+    opacity:.42 !important;
+}
+
+.grid.list-mode .list-banner img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    filter:brightness(.20) saturate(.78) blur(.2px) !important;
+    transform:scale(1.05) !important;
+}
+
+.grid.list-mode .list-banner::after{
+    content:"" !important;
+    position:absolute !important;
+    inset:0 !important;
+    background:
+        linear-gradient(90deg, rgba(8,13,24,.72), rgba(8,13,24,.82) 43%, rgba(5,9,18,.94) 100%),
+        radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 42%) !important;
+}
+
+.grid.list-mode .list-rail{
+    display:block !important;
+    position:absolute !important;
+    left:0 !important;
+    right:auto !important;
+    top:18px !important;
+    bottom:18px !important;
+    width:4px !important;
+    border-radius:0 999px 999px 0 !important;
+    z-index:7 !important;
+    background:linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent) 84%, #ffffff 16%), transparent) !important;
+    box-shadow:0 0 14px color-mix(in srgb, var(--accent) 56%, transparent) !important;
+}
+
+.grid.list-mode .list-rarity-strip{
+    display:block !important;
+    position:absolute !important;
+    left:24px !important;
+    bottom:13px !important;
+    width:64px !important;
+    height:15px !important;
+    z-index:9 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    opacity:.82 !important;
+    pointer-events:none !important;
+}
+
+.grid.list-mode .list-rarity-strip span{
+    display:block !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    letter-spacing:.08em !important;
+    color:color-mix(in srgb, var(--accent) 52%, #ffffff 48%) !important;
+    text-shadow:0 0 8px color-mix(in srgb, var(--accent) 40%, transparent) !important;
+    opacity:.55 !important;
+}
+
+.grid.list-mode .list-group1,
+.grid.list-mode .list-group2,
+.grid.list-mode .list-group3{
+    position:relative !important;
+    z-index:8 !important;
+}
+
+.grid.list-mode .list-group1{
+    grid-column:1 !important;
+    display:grid !important;
+    grid-template-columns:88px minmax(0, 1fr) !important;
+    align-items:center !important;
+    gap:18px !important;
+    min-width:0 !important;
+}
+
+.grid.list-mode .list-avatar{
+    width:82px !important;
+    height:82px !important;
+    border-radius:18px !important;
+    overflow:hidden !important;
+    border:1px solid color-mix(in srgb, var(--accent) 70%, rgba(255,255,255,.22)) !important;
+    background:rgba(7,10,20,.82) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.10),
+        0 8px 20px rgba(0,0,0,.36),
+        0 0 18px color-mix(in srgb, var(--accent) 24%, transparent) !important;
+}
+
+.grid.list-mode .list-avatar::before,
+.grid.list-mode .list-avatar::after{
+    content:"" !important;
+    position:absolute !important;
+    inset:5px !important;
+    border-radius:14px !important;
+    pointer-events:none !important;
+    z-index:2 !important;
+}
+
+.grid.list-mode .list-avatar::before{
+    border:1px solid rgba(255,255,255,.18) !important;
+    box-shadow:inset 0 0 16px color-mix(in srgb, var(--accent) 16%, transparent) !important;
+}
+
+.grid.list-mode .list-avatar::after{
+    inset:auto 7px 7px auto !important;
+    width:16px !important;
+    height:2px !important;
+    background:color-mix(in srgb, var(--accent) 80%, #ffffff 20%) !important;
+    box-shadow:0 0 8px color-mix(in srgb, var(--accent) 70%, transparent) !important;
+}
+
+.grid.list-mode .list-avatar img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    filter:saturate(1.06) contrast(1.04) !important;
+}
+
+.grid.list-mode .list-info{
+    gap:5px !important;
+    min-width:0 !important;
+    padding-right:6px !important;
+}
+
+.grid.list-mode .list-displayname{
+    font-size:18px !important;
+    line-height:1.05 !important;
+    font-weight:1000 !important;
+    letter-spacing:.015em !important;
+    text-shadow:0 0 12px color-mix(in srgb, var(--accent) 24%, transparent) !important;
+}
+
+.grid.list-mode .list-username{
+    font-size:12px !important;
+    font-weight:950 !important;
+    color:#c4cff0 !important;
+    text-shadow:0 1px 8px rgba(0,0,0,.42) !important;
+}
+
+.grid.list-mode .list-title-box{
+    width:min(100%, 560px) !important;
+    min-height:27px !important;
+    display:flex !important;
+    align-items:center !important;
+    padding:5px 13px !important;
+    border-radius:10px !important;
+    border:1px solid rgba(210,230,255,.42) !important;
+    background:linear-gradient(180deg, rgba(4,8,18,.58), rgba(4,8,18,.78)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 0 12px rgba(80,130,200,.10) !important;
+    font-size:12px !important;
+    font-weight:900 !important;
+    color:#ffffff !important;
+}
+
+.grid.list-mode .list-extra-row{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:7px !important;
+    margin-top:2px !important;
+}
+
+.grid.list-mode .list-extra-pill{
+    min-width:92px !important;
+    min-height:29px !important;
+    padding:5px 12px !important;
+    border-radius:10px !important;
+    border:1px solid rgba(205,225,255,.20) !important;
+    background:linear-gradient(180deg, rgba(9,15,30,.76), rgba(4,8,18,.88)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 0 10px rgba(0,0,0,.18) !important;
+    font-size:12px !important;
+    font-weight:950 !important;
+    justify-content:center !important;
+}
+
+.grid.list-mode .list-extra-pill:hover{
+    border-color:color-mix(in srgb, var(--accent) 54%, rgba(255,255,255,.24)) !important;
+}
+
+.grid.list-mode .list-group2{
+    grid-column:2 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:100% !important;
+    min-width:0 !important;
+}
+
+.grid.list-mode .list-character{
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    width:210px !important;
+    height:128px !important;
+    transform:none !important;
+    display:flex !important;
+    align-items:flex-end !important;
+    justify-content:center !important;
+    z-index:9 !important;
+    opacity:1 !important;
+    filter:drop-shadow(0 12px 18px rgba(0,0,0,.48)) drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 18%, transparent)) !important;
+}
+
+.grid.list-mode .list-character img{
+    max-height:154px !important;
+    max-width:144% !important;
+    object-fit:contain !important;
+    object-position:center bottom !important;
+    transform:translateY(12px) scale(1.03) !important;
+}
+
+.grid.list-mode .card:hover .list-character img,
+.grid.list-mode .card:focus-visible .list-character img{
+    transform:translateY(7px) scale(1.07) !important;
+}
+
+.grid.list-mode .list-group3{
+    grid-column:3 !important;
+    width:136px !important;
+    min-width:136px !important;
+    height:100% !important;
+    display:block !important;
+    z-index:5 !important;
+    pointer-events:none !important;
+}
+
+.grid.list-mode .list-character-shadow{
+    position:absolute !important;
+    top:50% !important;
+    right:-54px !important;
+    bottom:auto !important;
+    width:315px !important;
+    height:220px !important;
+    transform:translateY(-50%) scale(1.18) !important;
+    z-index:4 !important;
+    opacity:.145 !important;
+    pointer-events:none !important;
+    overflow:visible !important;
+    filter:grayscale(100%) brightness(.42) contrast(.94) blur(.3px) !important;
+    mix-blend-mode:screen !important;
+}
+
+.grid.list-mode .list-character-shadow img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:contain !important;
+    object-position:center bottom !important;
+    transform:none !important;
+}
+
+.grid.list-mode .card:hover .list-character-shadow,
+.grid.list-mode .card:focus-visible .list-character-shadow{
+    opacity:.20 !important;
+    right:-45px !important;
+}
+
+.grid.list-mode .card > *:not(.list-banner):not(.list-character-shadow){
+    position:relative;
+}
+
+@media (max-width:1080px){
+    .grid.list-mode .card{
+        grid-template-columns:minmax(360px, 1fr) minmax(160px, 230px) 112px !important;
+        min-height:124px !important;
+        height:124px !important;
+        padding:12px 14px !important;
+    }
+    .grid.list-mode .list-group1{grid-template-columns:76px minmax(0, 1fr) !important; gap:14px !important;}
+    .grid.list-mode .list-avatar{width:72px !important;height:72px !important;}
+    .grid.list-mode .list-displayname{font-size:16px !important;}
+    .grid.list-mode .list-title-box{min-height:25px !important;font-size:11px !important;}
+    .grid.list-mode .list-extra-pill{min-width:82px !important;min-height:27px !important;font-size:11px !important;}
+    .grid.list-mode .list-character{width:180px !important;height:116px !important;}
+    .grid.list-mode .list-character img{max-height:140px !important;}
+    .grid.list-mode .list-character-shadow{right:-70px !important;width:285px !important;height:205px !important;}
+}
+
+@media (max-width:760px){
+    .grid.list-mode .card{
+        grid-template-columns:minmax(0, 1fr) 92px !important;
+        min-height:116px !important;
+        height:116px !important;
+        padding:11px 12px !important;
+    }
+    .grid.list-mode .list-group1{grid-column:1 !important; grid-template-columns:66px minmax(0, 1fr) !important; gap:11px !important;}
+    .grid.list-mode .list-avatar{width:62px !important;height:62px !important;border-radius:15px !important;}
+    .grid.list-mode .list-displayname{font-size:13px !important;}
+    .grid.list-mode .list-username{font-size:10px !important;}
+    .grid.list-mode .list-title-box{min-height:23px !important;font-size:10px !important;padding:4px 9px !important;}
+    .grid.list-mode .list-extra-pill{min-width:auto !important;min-height:23px !important;font-size:9px !important;padding:3px 7px !important;}
+    .grid.list-mode .list-group2{grid-column:2 !important;}
+    .grid.list-mode .list-character{width:94px !important;height:100px !important;}
+    .grid.list-mode .list-character img{max-height:116px !important;transform:translateY(12px) scale(1) !important;}
+    .grid.list-mode .list-group3{display:none !important;}
+    .grid.list-mode .list-character-shadow{display:none !important;}
+}
+
+
+/* ==========================================================
+   FIX DEFINITIVO v3:
+   DisplayName completo + @username ao lado, sem reticências.
+   ========================================================== */
+
+.grid.list-mode .list-info {
+	min-width: 0 !important;
+	max-width: none !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-name-inline-row {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 6px !important;
+	width: max-content !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+	flex-wrap: nowrap !important;
+}
+
+.grid.list-mode .list-name-inline-row .list-displayname,
+.grid.list-mode .list-name-inline-row .list-displayname.gradient {
+	display: inline-block !important;
+	flex: 0 0 auto !important;
+	width: max-content !important;
+	max-width: none !important;
+	min-width: max-content !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+	contain: none !important;
+}
+
+.grid.list-mode .list-name-inline-row .list-displayname-text {
+	display: inline !important;
+	width: auto !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+}
+
+.grid.list-mode .list-name-inline-row .list-username-inline {
+	display: inline-block !important;
+	flex: 0 0 auto !important;
+	width: max-content !important;
+	max-width: none !important;
+	min-width: max-content !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+
+	background: none !important;
+	background-image: none !important;
+	-webkit-background-clip: border-box !important;
+	background-clip: border-box !important;
+	-webkit-text-fill-color: #cfd7eb !important;
+	color: #cfd7eb !important;
+	text-shadow: 0 2px 8px rgba(0,0,0,.35) !important;
+	filter: none !important;
+	opacity: 1 !important;
+
+	font-size: 12px !important;
+	font-weight: 800 !important;
+	line-height: 1.15 !important;
+}
+
+.grid.list-mode .list-name-inline-row .verified-emblem {
+	display: inline-flex !important;
+	flex: 0 0 15px !important;
+	width: 15px !important;
+	height: 15px !important;
+	min-width: 15px !important;
+	margin-left: 2px !important;
+}
+
+.grid.list-mode .list-info > .list-username-line {
+	display: none !important;
+}
+
+
+.grid.list-mode .card {
+	color: var(--accent, #75d7ff) !important;
+}
+
+.grid.list-mode .card > .card-frame-svg {
+	position: absolute !important;
+	left: 0 !important;
+	top: 50% !important;
+
+	width: 100% !important;
+	height: auto !important;
+	aspect-ratio: 1200 / 180 !important;
+
+	display: block !important;
+	pointer-events: none !important;
+
+	z-index: 1 !important;
+	opacity: .42 !important;
+
+	transform: translateY(-50%) !important;
+
+	filter:
+		drop-shadow(0 0 5px color-mix(in srgb, var(--accent, #75d7ff) 45%, transparent))
+		drop-shadow(0 0 12px color-mix(in srgb, var(--accent, #75d7ff) 22%, transparent)) !important;
+}
+
+
+
+/* ==========================================================
+   AJUSTE FINAL 02/06 - LISTA COMPACTA SEM CORTES
+   Corrige exatamente: .list-avatar, .list-group2 e .list-group3.
+   O modo Cards não é alterado porque tudo fica preso em .grid.list-mode.
+   ========================================================== */
+.grid.list-mode{
+	gap:12px !important;
+}
+
+.grid.list-mode .card{
+	grid-template-columns:minmax(0,1fr) clamp(150px, 18vw, 190px) clamp(54px, 7vw, 82px) !important;
+	grid-template-areas:"info char emblem" !important;
+	min-height:118px !important;
+	height:118px !important;
+	padding:12px 18px 12px 18px !important;
+	column-gap:12px !important;
+	overflow:hidden !important;
+}
+
+/* list-avatar = Principal: menor, sem moldura estourando o card */
+.grid.list-mode .list-group1{
+	grid-area:info !important;
+	grid-template-columns:72px minmax(0,1fr) !important;
+	gap:12px !important;
+	min-width:0 !important;
+	align-items:center !important;
+}
+
+.grid.list-mode .list-avatar{
+	width:62px !important;
+	height:62px !important;
+	min-width:62px !important;
+	min-height:62px !important;
+	max-width:62px !important;
+	max-height:62px !important;
+	border-radius:14px !important;
+	overflow:hidden !important;
+	align-self:center !important;
+	justify-self:center !important;
+	margin:0 !important;
+	transform:none !important;
+}
+
+.grid.list-mode .list-avatar img{
+	position:static !important;
+	inset:auto !important;
+	width:100% !important;
+	height:100% !important;
+	border-radius:12px !important;
+	object-fit:cover !important;
+}
+
+.grid.list-mode .list-avatar .avatar-frame-svg{
+	inset:-6px !important;
+	width:calc(100% + 12px) !important;
+	height:calc(100% + 12px) !important;
+	opacity:.76 !important;
+}
+
+.grid.list-mode .list-info{
+	gap:5px !important;
+	min-width:0 !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-name-inline-row{
+	gap:6px !important;
+	min-width:0 !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-displayname{
+	font-size:16px !important;
+	line-height:1.1 !important;
+	max-width:100% !important;
+	overflow:hidden !important;
+	text-overflow:ellipsis !important;
+	white-space:nowrap !important;
+}
+
+.grid.list-mode .list-displayname-text{
+	overflow:hidden !important;
+	text-overflow:ellipsis !important;
+	white-space:nowrap !important;
+	max-width:100% !important;
+}
+
+.grid.list-mode .list-username-inline,
+.grid.list-mode .list-username{
+	font-size:11px !important;
+	line-height:1 !important;
+}
+
+/* list-group2 = título e badges: controla altura para não esmagar/cortar */
+.grid.list-mode .list-title-box{
+	width:min(480px,100%) !important;
+	height:26px !important;
+	min-height:26px !important;
+	padding:0 12px !important;
+	font-size:11px !important;
+	line-height:1 !important;
+	border-radius:9px !important;
+	overflow:hidden !important;
+	text-overflow:ellipsis !important;
+	white-space:nowrap !important;
+}
+
+.grid.list-mode .list-badges-inline,
+.grid.list-mode .list-combat-badges{
+	display:flex !important;
+	align-items:center !important;
+	gap:8px !important;
+	flex-wrap:nowrap !important;
+	min-width:0 !important;
+	max-width:100% !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-combat-pill,
+.grid.list-mode .list-status-pill,
+.grid.list-mode .list-clan-pill{
+	min-width:74px !important;
+	max-width:150px !important;
+	min-height:26px !important;
+	height:26px !important;
+	padding:0 10px !important;
+	font-size:11px !important;
+	line-height:1 !important;
+	border-radius:8px !important;
+	overflow:hidden !important;
+	text-overflow:ellipsis !important;
+	white-space:nowrap !important;
+}
+
+.grid.list-mode .country-flag-img{
+	width:16px !important;
+	height:11px !important;
+	flex:0 0 auto !important;
+}
+
+.grid.list-mode .list-status-dot{
+	width:7px !important;
+	height:7px !important;
+	flex:0 0 7px !important;
+}
+
+/* Personagem do meio menor, para sobrar espaço e não cortar */
+.grid.list-mode .list-group2{
+	grid-area:char !important;
+	width:100% !important;
+	height:118px !important;
+	min-width:0 !important;
+	align-self:center !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-character{
+	width:100% !important;
+	height:118px !important;
+	align-items:flex-end !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-character img{
+	max-width:150px !important;
+	max-height:132px !important;
+	transform:translateY(5px) scale(1) !important;
+}
+
+.grid.list-mode .list-character-shadow{
+	width:150px !important;
+	height:118px !important;
+	opacity:.10 !important;
+	overflow:hidden !important;
+}
+
+/* list-group3 = Principal: emblema menor e dentro do limite */
+.grid.list-mode .list-group3{
+	grid-area:emblem !important;
+	width:100% !important;
+	min-width:0 !important;
+	height:100% !important;
+	display:flex !important;
+	align-items:center !important;
+	justify-content:center !important;
+	overflow:hidden !important;
+}
+
+.grid.list-mode .list-group3::before{
+	font-size:30px !important;
+}
+
+.grid.list-mode .list-group3::after{
+	left:-22px !important;
+	width:42px !important;
+	height:26px !important;
+	border-left-width:2px !important;
+	border-bottom-width:1px !important;
+	opacity:.55 !important;
+}
+
+@media (min-width:901px) and (max-width:1100px){
+	.grid.list-mode .card{
+		grid-template-columns:minmax(0,1fr) 165px 64px !important;
+		min-height:112px !important;
+		height:112px !important;
+		padding:11px 15px !important;
+		column-gap:10px !important;
+	}
+	.grid.list-mode .list-group1{grid-template-columns:66px minmax(0,1fr) !important;gap:11px !important;}
+	.grid.list-mode .list-avatar{width:58px !important;height:58px !important;min-width:58px !important;min-height:58px !important;}
+	.grid.list-mode .list-displayname{font-size:14px !important;}
+	.grid.list-mode .list-title-box{height:24px !important;min-height:24px !important;font-size:10px !important;padding:0 10px !important;}
+	.grid.list-mode .list-combat-pill,.grid.list-mode .list-status-pill,.grid.list-mode .list-clan-pill{min-width:66px !important;height:24px !important;min-height:24px !important;padding:0 8px !important;font-size:10px !important;}
+	.grid.list-mode .list-group2,.grid.list-mode .list-character{height:112px !important;}
+	.grid.list-mode .list-character img{max-width:138px !important;max-height:122px !important;transform:translateY(5px) scale(1) !important;}
+	.grid.list-mode .list-character-shadow{width:138px !important;height:112px !important;}
+	.grid.list-mode .list-group3::before{font-size:26px !important;}
+}
+
+@media (max-width:900px){
+	.grid.list-mode .card{
+		grid-template-columns:minmax(0,1fr) 130px !important;
+		grid-template-areas:"info char" !important;
+		min-height:108px !important;
+		height:auto !important;
+		padding:11px 12px !important;
+	}
+	.grid.list-mode .list-group3{display:none !important;}
+	.grid.list-mode .list-group1{grid-template-columns:62px minmax(0,1fr) !important;gap:10px !important;}
+	.grid.list-mode .list-avatar{width:54px !important;height:54px !important;min-width:54px !important;min-height:54px !important;}
+	.grid.list-mode .list-displayname{font-size:13px !important;}
+	.grid.list-mode .list-title-box{height:23px !important;min-height:23px !important;font-size:10px !important;padding:0 9px !important;}
+	.grid.list-mode .list-badges-inline,.grid.list-mode .list-combat-badges{gap:6px !important;}
+	.grid.list-mode .list-combat-pill,.grid.list-mode .list-status-pill,.grid.list-mode .list-clan-pill{min-width:58px !important;height:23px !important;min-height:23px !important;padding:0 7px !important;font-size:9px !important;}
+	.grid.list-mode .list-group2,.grid.list-mode .list-character{height:104px !important;}
+	.grid.list-mode .list-character img{max-width:116px !important;max-height:116px !important;}
+}
+
+
+
+/* ===== Ajuste final balanceado v4: corrige visual em 1024px sem mexer no modo Cards ===== */
+@media (min-width: 901px) {
+	.grid.list-mode .card{
+		grid-template-columns: minmax(0, 1fr) 210px 72px !important;
+		grid-template-areas: "info char emblem" !important;
+		min-height: 128px !important;
+		height: 128px !important;
+		padding: 13px 16px 13px 22px !important;
+		overflow: hidden !important;
+	}
+
+	/* list-avatar = principal: volta para tamanho legível, mas sem estourar moldura */
+	.grid.list-mode .list-group1{
+		grid-area: info !important;
+		grid-template-columns: 78px minmax(0, 1fr) !important;
+		gap: 12px !important;
+		align-items: center !important;
+		min-width: 0 !important;
+	}
+
+	.grid.list-mode .list-avatar{
+		width: 68px !important;
+		height: 68px !important;
+		min-width: 68px !important;
+		min-height: 68px !important;
+		max-width: 68px !important;
+		max-height: 68px !important;
+		border-radius: 15px !important;
+		overflow: visible !important;
+		margin: 0 !important;
+		align-self: center !important;
+		justify-self: center !important;
+	}
+
+	.grid.list-mode .list-avatar img{
+		inset: 8px !important;
+		width: calc(100% - 16px) !important;
+		height: calc(100% - 16px) !important;
+		border-radius: 11px !important;
+		object-fit: cover !important;
+	}
+
+	.grid.list-mode .list-avatar .avatar-frame-svg{
+		inset: -6px !important;
+		width: calc(100% + 12px) !important;
+		height: calc(100% + 12px) !important;
+		filter: drop-shadow(0 0 6px currentColor) !important;
+	}
+
+	/* list-group2 = título + badges + personagem: altura controlada e sem esmagar */
+	.grid.list-mode .list-info{
+		gap: 6px !important;
+		min-width: 0 !important;
+		max-width: 100% !important;
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-name-inline-row{
+		height: 18px !important;
+		max-height: 18px !important;
+		overflow: hidden !important;
+		align-items: center !important;
+	}
+
+	.grid.list-mode .list-displayname{
+		font-size: 15px !important;
+		line-height: 1 !important;
+		max-width: 52% !important;
+	}
+
+	.grid.list-mode .list-username-inline{
+		font-size: 11px !important;
+		line-height: 1 !important;
+		max-width: 40% !important;
+	}
+
+	.grid.list-mode .list-title-box{
+		width: min(395px, 100%) !important;
+		height: 26px !important;
+		min-height: 26px !important;
+		padding: 0 13px !important;
+		border-radius: 10px !important;
+		font-size: 10.5px !important;
+		line-height: 1 !important;
+		align-items: center !important;
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-badges-inline{
+		gap: 8px !important;
+		flex-wrap: nowrap !important;
+		max-width: 100% !important;
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-combat-pill,
+	.grid.list-mode .list-status-pill,
+	.grid.list-mode .list-clan-pill{
+		height: 26px !important;
+		min-height: 26px !important;
+		padding: 0 12px !important;
+		border-radius: 9px !important;
+		font-size: 10.5px !important;
+		line-height: 1 !important;
+		align-items: center !important;
+		white-space: nowrap !important;
+	}
+
+	.grid.list-mode .list-group2{
+		grid-area: char !important;
+		width: 210px !important;
+		max-width: 210px !important;
+		height: 128px !important;
+		max-height: 128px !important;
+		overflow: hidden !important;
+		display: flex !important;
+		align-items: flex-end !important;
+		justify-content: center !important;
+		align-self: center !important;
+		justify-self: center !important;
+	}
+
+	.grid.list-mode .list-character{
+		width: 210px !important;
+		max-width: 210px !important;
+		height: 128px !important;
+		max-height: 128px !important;
+		overflow: visible !important;
+		display: flex !important;
+		align-items: flex-end !important;
+		justify-content: center !important;
+	}
+
+	.grid.list-mode .list-character img{
+		max-width: 198px !important;
+		max-height: 148px !important;
+		transform: translateY(6px) scale(1) !important;
+		object-fit: contain !important;
+		object-position: center bottom !important;
+	}
+
+	/* list-group3 = emblema principal à direita: centralizado sem ficar gigante/cortado */
+	.grid.list-mode .list-group3{
+		grid-area: emblem !important;
+		width: 72px !important;
+		min-width: 72px !important;
+		max-width: 72px !important;
+		height: 128px !important;
+		max-height: 128px !important;
+		overflow: hidden !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		align-self: center !important;
+		justify-self: center !important;
+	}
+
+	.grid.list-mode .list-group3::before{
+		font-size: 25px !important;
+		line-height: 1 !important;
+		filter: drop-shadow(0 0 8px currentColor) !important;
+	}
+
+	.grid.list-mode .list-group3::after{
+		display: none !important;
+	}
+
+	.grid.list-mode .list-character-shadow{
+		right: 76px !important;
+		width: 150px !important;
+		height: 128px !important;
+		top: 0 !important;
+		opacity: .10 !important;
+		overflow: hidden !important;
+	}
+}
+
+@media (min-width: 901px) and (max-width: 1100px){
+	.grid.list-mode .card{
+		grid-template-columns: minmax(0, 1fr) 190px 64px !important;
+		min-height: 124px !important;
+		height: 124px !important;
+		padding: 12px 14px 12px 20px !important;
+	}
+	.grid.list-mode .list-group1{grid-template-columns: 74px minmax(0, 1fr) !important; gap: 10px !important;}
+	.grid.list-mode .list-avatar{width:64px !important;height:64px !important;min-width:64px !important;min-height:64px !important;}
+	.grid.list-mode .list-title-box{width:min(380px, 100%) !important;height:25px !important;min-height:25px !important;}
+	.grid.list-mode .list-combat-pill,
+	.grid.list-mode .list-status-pill,
+	.grid.list-mode .list-clan-pill{height:25px !important;min-height:25px !important;padding:0 10px !important;}
+	.grid.list-mode .list-group2,
+	.grid.list-mode .list-character{width:190px !important;max-width:190px !important;height:124px !important;max-height:124px !important;}
+	.grid.list-mode .list-character img{max-width:182px !important;max-height:142px !important;transform:translateY(6px) scale(1) !important;}
+	.grid.list-mode .list-group3{width:64px !important;min-width:64px !important;max-width:64px !important;height:124px !important;max-height:124px !important;}
+	.grid.list-mode .list-group3::before{font-size:23px !important;}
+	.grid.list-mode .list-character-shadow{right:64px !important;width:132px !important;height:124px !important;}
+}
+
+
+
+/* ==========================================================
+   AJUSTE FINAL - list-group3 + list-character-shadow
+   Mantém o modo Cards intacto. Só altera .grid.list-mode.
+   ========================================================== */
+@media (min-width: 901px) {
+  .grid.list-mode .card{
+    grid-template-columns: minmax(0, 1fr) 218px 86px !important;
+    grid-template-areas: "info char emblem" !important;
+    min-height: 130px !important;
+    height: 130px !important;
+    padding-right: 18px !important;
+    column-gap: 10px !important;
+  }
+
+  .grid.list-mode .list-group2{
+    grid-area: char !important;
+    width: 218px !important;
+    max-width: 218px !important;
+    height: 130px !important;
+    max-height: 130px !important;
+    overflow: visible !important;
+    z-index: 7 !important;
+  }
+
+  .grid.list-mode .list-character{
+    width: 218px !important;
+    max-width: 218px !important;
+    height: 130px !important;
+    max-height: 130px !important;
+    overflow: visible !important;
+    z-index: 8 !important;
+  }
+
+  .grid.list-mode .list-character img:not(.list-character-shadow){
+    max-width: 210px !important;
+    max-height: 158px !important;
+    transform: translateY(8px) scale(1.04) !important;
+    z-index: 8 !important;
+  }
+
+  .grid.list-mode .card:hover .list-character img:not(.list-character-shadow),
+  .grid.list-mode .card:focus-visible .list-character img:not(.list-character-shadow){
+    transform: translateY(4px) scale(1.08) !important;
+  }
+
+  .grid.list-mode .list-group3{
+    grid-area: emblem !important;
+    position: relative !important;
+    width: 86px !important;
+    min-width: 86px !important;
+    max-width: 86px !important;
+    height: 130px !important;
+    max-height: 130px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    z-index: 9 !important;
+    pointer-events: none !important;
+  }
+
+  .grid.list-mode .list-group3::before{
+    font-size: 30px !important;
+    line-height: 1 !important;
+    opacity: .96 !important;
+    filter:
+      drop-shadow(0 0 8px currentColor)
+      drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 36%, transparent)) !important;
+  }
+
+  .grid.list-mode .list-group3::after{
+    display: block !important;
+    content: "" !important;
+    position: absolute !important;
+    right: 8px !important;
+    bottom: 19px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 22px !important;
+    border-right: 2px solid color-mix(in srgb, var(--accent) 58%, rgba(255,255,255,.24)) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 44%, rgba(255,255,255,.18)) !important;
+    border-left: 0 !important;
+    opacity: .54 !important;
+  }
+
+  .grid.list-mode .list-character-shadow{
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    bottom: auto !important;
+    width: 178px !important;
+    height: 132px !important;
+    transform: translateY(-50%) scale(1.04) !important;
+    z-index: 3 !important;
+    opacity: .105 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    filter: grayscale(100%) brightness(.38) contrast(.96) blur(.25px) !important;
+    mix-blend-mode: screen !important;
+  }
+
+  .grid.list-mode .list-character-shadow img{
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    transform: translateX(-8px) scale(1.04) !important;
+  }
+
+  .grid.list-mode .card:hover .list-character-shadow,
+  .grid.list-mode .card:focus-visible .list-character-shadow{
+    right: 14px !important;
+    opacity: .145 !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1100px){
+  .grid.list-mode .card{
+    grid-template-columns: minmax(0, 1fr) 206px 78px !important;
+    min-height: 126px !important;
+    height: 126px !important;
+    column-gap: 8px !important;
+  }
+  .grid.list-mode .list-group2,
+  .grid.list-mode .list-character{
+    width: 206px !important;
+    max-width: 206px !important;
+    height: 126px !important;
+    max-height: 126px !important;
+  }
+  .grid.list-mode .list-character img:not(.list-character-shadow){
+    max-width: 198px !important;
+    max-height: 152px !important;
+    transform: translateY(8px) scale(1.04) !important;
+  }
+  .grid.list-mode .list-group3{
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    height: 126px !important;
+    max-height: 126px !important;
+  }
+  .grid.list-mode .list-group3::before{
+    font-size: 28px !important;
+  }
+  .grid.list-mode .list-character-shadow{
+    right: 8px !important;
+    width: 164px !important;
+    height: 126px !important;
+    opacity: .10 !important;
+  }
+}
+
+
+
+/* ==========================================================
+   FIX FINAL — list-character-shadow transparente sem quebrar
+   Corrige a versão fantasma do personagem no modo Lista:
+   - não corta dentro de uma caixa pequena;
+   - usa o mesmo enquadramento do personagem principal;
+   - fica atrás do personagem/emblema sem invadir os textos;
+   - mantém o modo Cards sem alteração.
+   ========================================================== */
+@media (min-width: 901px) {
+	.grid.list-mode .card {
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-group1,
+	.grid.list-mode .list-group2,
+	.grid.list-mode .list-group3 {
+		position: relative !important;
+	}
+
+	.grid.list-mode .list-group1 { z-index: 12 !important; }
+	.grid.list-mode .list-group2 { z-index: 11 !important; }
+	.grid.list-mode .list-group3 { z-index: 13 !important; }
+
+	.grid.list-mode .list-character {
+		position: relative !important;
+		z-index: 11 !important;
+		isolation: isolate !important;
+		overflow: visible !important;
+	}
+
+	.grid.list-mode .list-character img,
+	.grid.list-mode .list-character img.list-character-main,
+	.grid.list-mode .list-character img:not(.list-character-shadow) {
+		position: relative !important;
+		z-index: 3 !important;
+	}
+
+	.grid.list-mode .list-character-shadow {
+		display: flex !important;
+		position: absolute !important;
+		left: auto !important;
+		top: auto !important;
+		right: 66px !important;
+		bottom: -1px !important;
+		width: 188px !important;
+		height: 122px !important;
+		max-width: none !important;
+		max-height: none !important;
+		align-items: flex-end !important;
+		justify-content: center !important;
+		overflow: visible !important;
+		z-index: 5 !important;
+		opacity: .115 !important;
+		pointer-events: none !important;
+		transform: none !important;
+		mix-blend-mode: normal !important;
+		filter: grayscale(1) brightness(.74) contrast(1.05) blur(.18px) !important;
+	}
+
+	.grid.list-mode .list-character-shadow img {
+		position: relative !important;
+		display: block !important;
+		width: auto !important;
+		height: auto !important;
+		max-width: 178px !important;
+		max-height: 138px !important;
+		object-fit: contain !important;
+		object-position: center bottom !important;
+		transform: translateY(5px) scale(1.03) !important;
+		transform-origin: center bottom !important;
+		filter: none !important;
+		opacity: 1 !important;
+	}
+
+	.grid.list-mode .card:hover .list-character-shadow,
+	.grid.list-mode .card:focus-visible .list-character-shadow,
+	.grid.list-mode .card.is-touching .list-character-shadow {
+		right: 66px !important;
+		bottom: -1px !important;
+		opacity: .135 !important;
+		transform: none !important;
+	}
+
+	.grid.list-mode .card:hover .list-character-shadow img,
+	.grid.list-mode .card:focus-visible .list-character-shadow img,
+	.grid.list-mode .card.is-touching .list-character-shadow img {
+		transform: translateY(3px) scale(1.055) !important;
+	}
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+	.grid.list-mode .list-character-shadow {
+		right: 48px !important;
+		bottom: -1px !important;
+		width: 160px !important;
+		height: 112px !important;
+	}
+
+	.grid.list-mode .list-character-shadow img {
+		max-width: 154px !important;
+		max-height: 126px !important;
+		transform: translateY(5px) scale(1.03) !important;
+	}
+
+	.grid.list-mode .card:hover .list-character-shadow,
+	.grid.list-mode .card:focus-visible .list-character-shadow,
+	.grid.list-mode .card.is-touching .list-character-shadow {
+		right: 48px !important;
+	}
+}
+
+@media (max-width: 900px) {
+	.grid.list-mode .list-character-shadow {
+		display: none !important;
+	}
+}
+
+
+
+/* ==========================================================
+   LISTA V3 REFEITA: isolada do modo Cards
+   - sem wallpaper real no fundo
+   - sem kanji/emblema na direita
+   - avatar em escala segura
+   - menos brilho
+   - SVG/xadrez/circuito por CSS
+   - sem animação do modo Cards na Lista
+   ========================================================== */
+.grid.list-mode {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 14px !important;
+}
+
+.grid.list-mode .card:not(.list-card-v3) {
+	display: none !important;
+}
+
+.grid.list-mode .list-card-v3,
+.grid.list-mode article.card.list-card-v3 {
+	--lx: 50%;
+	--ly: 50%;
+	position: relative !important;
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) 250px !important;
+	grid-template-areas: "info char" !important;
+	align-items: center !important;
+	gap: 14px !important;
+	width: 100% !important;
+	max-width: none !important;
+	min-height: 116px !important;
+	height: 116px !important;
+	padding: 12px 24px 12px 20px !important;
+	border-radius: 18px !important;
+	clip-path: none !important;
+	overflow: hidden !important;
+	isolation: isolate !important;
+	color: var(--accent) !important;
+	background:
+		linear-gradient(90deg, rgba(7, 11, 24, .94) 0%, rgba(10, 15, 30, .84) 48%, rgba(6, 10, 22, .94) 100%),
+		linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012)) !important;
+	border: 1px solid var(--list-accent-border, rgba(255,255,255,.18)) !important;
+	box-shadow:
+		inset 0 0 0 1px rgba(255,255,255,.025),
+		0 12px 26px rgba(0,0,0,.24) !important;
+	transform: none !important;
+	transform-style: flat !important;
+	perspective: none !important;
+	will-change: auto !important;
+	transition: border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
+	animation: none !important;
+}
+
+.grid.list-mode .list-card-v3::before,
+.grid.list-mode .list-card-v3::after {
+	display: block !important;
+	content: "" !important;
+	position: absolute !important;
+	inset: 0 !important;
+	border-radius: inherit !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-card-v3::before {
+	z-index: 1 !important;
+	background:
+		radial-gradient(260px circle at var(--lx) var(--ly), color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%),
+		linear-gradient(90deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 35%, color-mix(in srgb, var(--accent) 6%, transparent)) !important;
+	opacity: .55 !important;
+	transition: opacity .18s ease !important;
+}
+
+.grid.list-mode .list-card-v3::after {
+	z-index: 2 !important;
+	background:
+		linear-gradient(90deg, transparent 0%, rgba(255,255,255,.035) 48%, transparent 56%),
+		repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 92px),
+		repeating-linear-gradient(180deg, rgba(255,255,255,.026) 0 1px, transparent 1px 38px) !important;
+	opacity: .34 !important;
+	transform: none !important;
+	animation: none !important;
+}
+
+.grid.list-mode .list-svg-bg {
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 0 !important;
+	pointer-events: none !important;
+	background:
+		linear-gradient(45deg, rgba(255,255,255,.027) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.027) 75%),
+		linear-gradient(45deg, rgba(255,255,255,.027) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.027) 75%) !important;
+	background-position: 0 0, 16px 16px !important;
+	background-size: 32px 32px !important;
+	mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%) !important;
+	-webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%) !important;
+	opacity: .45 !important;
+}
+
+.grid.list-mode .list-circuit-bg {
+	position: absolute !important;
+	top: 20px !important;
+	right: 20px !important;
+	bottom: 20px !important;
+	width: 235px !important;
+	z-index: 3 !important;
+	pointer-events: none !important;
+	background:
+		linear-gradient(90deg, transparent 0 26px, currentColor 26px 28px, transparent 28px 64px, currentColor 64px 66px, transparent 66px),
+		linear-gradient(0deg, transparent 0 22px, currentColor 22px 24px, transparent 24px 52px, currentColor 52px 54px, transparent 54px),
+		radial-gradient(circle at 12% 50%, currentColor 0 3px, transparent 4px),
+		radial-gradient(circle at 78% 24%, currentColor 0 3px, transparent 4px),
+		radial-gradient(circle at 82% 74%, currentColor 0 2px, transparent 3px) !important;
+	opacity: .16 !important;
+	filter: drop-shadow(0 0 8px currentColor) !important;
+}
+
+.grid.list-mode .list-card-frame {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	z-index: 4 !important;
+	pointer-events: none !important;
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 18%, transparent)) !important;
+	opacity: .78 !important;
+}
+
+.grid.list-mode .card-frame-svg,
+.grid.list-mode .list-banner,
+.grid.list-mode .list-rail,
+.grid.list-mode .list-group3,
+.grid.list-mode .list-character-shadow,
+.grid.list-mode .list-meta,
+.grid.list-mode .list-rank-title,
+.grid.list-mode .card-bg,
+.grid.list-mode .card-outline,
+.grid.list-mode .card-top,
+.grid.list-mode .card-visual,
+.grid.list-mode .card-bottom,
+.grid.list-mode .side-rail {
+	display: none !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-area: info !important;
+	position: relative !important;
+	z-index: 8 !important;
+	display: grid !important;
+	grid-template-columns: 76px minmax(0, 1fr) !important;
+	align-items: center !important;
+	gap: 14px !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-avatar {
+	position: relative !important;
+	z-index: 8 !important;
+	width: 64px !important;
+	height: 64px !important;
+	min-width: 64px !important;
+	min-height: 64px !important;
+	border-radius: 15px !important;
+	overflow: visible !important;
+	background: rgba(8,13,26,.78) !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 35%, rgba(255,255,255,.18)) !important;
+	box-shadow:
+		0 7px 16px rgba(0,0,0,.28),
+		0 0 12px color-mix(in srgb, var(--accent) 12%, transparent) !important;
+}
+
+.grid.list-mode .list-avatar img {
+	position: absolute !important;
+	inset: 6px !important;
+	width: calc(100% - 12px) !important;
+	height: calc(100% - 12px) !important;
+	border-radius: 11px !important;
+	object-fit: cover !important;
+	display: block !important;
+	filter: none !important;
+	transform: none !important;
+}
+
+.grid.list-mode .list-avatar .avatar-frame-svg {
+	display: block !important;
+	position: absolute !important;
+	inset: -5px !important;
+	width: calc(100% + 10px) !important;
+	height: calc(100% + 10px) !important;
+	z-index: 3 !important;
+	color: var(--accent) !important;
+	filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 28%, transparent)) !important;
+	opacity: .9 !important;
+}
+
+.grid.list-mode .list-info {
+	position: relative !important;
+	z-index: 8 !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 6px !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-name-inline-row {
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+}
+
+.grid.list-mode .list-displayname {
+	font-size: 16px !important;
+	line-height: 1.12 !important;
+	font-weight: 1000 !important;
+	white-space: nowrap !important;
+	min-width: 0 !important;
+	max-width: max-content !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+	text-shadow: 0 0 7px color-mix(in srgb, var(--display-color,#ffffff) 20%, transparent) !important;
+}
+
+.grid.list-mode .list-displayname.gradient {
+	animation: gradientMove 5.5s linear infinite !important;
+}
+
+.grid.list-mode .list-displayname-text {
+	display: inline-block !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-username-inline,
+.grid.list-mode .list-username {
+	font-size: 12px !important;
+	font-weight: 850 !important;
+	color: rgba(226,232,246,.92) !important;
+	text-shadow: none !important;
+	min-width: 0 !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	white-space: nowrap !important;
+}
+
+.grid.list-mode .verified-emblem {
+	width: 15px !important;
+	height: 15px !important;
+	flex: 0 0 15px !important;
+	filter: drop-shadow(0 0 5px color-mix(in srgb, var(--verified-glow, #ffffff) 28%, transparent)) !important;
+}
+
+.grid.list-mode .list-title-box {
+	width: min(460px, 100%) !important;
+	height: 27px !important;
+	display: flex !important;
+	align-items: center !important;
+	padding: 0 13px !important;
+	border-radius: 999px !important;
+	background: rgba(4,8,18,.54) !important;
+	border: 1px solid rgba(190,205,255,.22) !important;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.045) !important;
+	font-size: 11px !important;
+	font-weight: 850 !important;
+	color: rgba(243,247,255,.92) !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.grid.list-mode .list-badges-inline,
+.grid.list-mode .list-extra-row {
+	display: flex !important;
+	align-items: center !important;
+	flex-wrap: wrap !important;
+	gap: 7px !important;
+	margin: 0 !important;
+}
+
+.grid.list-mode .list-combat-pill,
+.grid.list-mode .list-status-pill,
+.grid.list-mode .list-clan-pill,
+.grid.list-mode .list-extra-pill {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	min-height: 25px !important;
+	height: 25px !important;
+	padding: 0 12px !important;
+	border-radius: 999px !important;
+	background: rgba(5,9,20,.62) !important;
+	border: 1px solid rgba(190,205,255,.18) !important;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.045) !important;
+	color: rgba(245,248,255,.95) !important;
+	font-size: 11px !important;
+	font-weight: 950 !important;
+	letter-spacing: .04em !important;
+	text-transform: none !important;
+	white-space: nowrap !important;
+}
+
+.grid.list-mode .list-status-pill.is-offline,
+.grid.list-mode .list-extra-pill.is-offline {
+	color: rgba(232,238,250,.82) !important;
+	background: rgba(6,10,20,.48) !important;
+}
+
+.grid.list-mode .list-group2 {
+	grid-area: char !important;
+	position: relative !important;
+	z-index: 7 !important;
+	display: flex !important;
+	align-items: flex-end !important;
+	justify-content: center !important;
+	height: 116px !important;
+	width: 250px !important;
+	overflow: hidden !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-character {
+	position: relative !important;
+	top: auto !important;
+	right: auto !important;
+	width: 230px !important;
+	height: 116px !important;
+	max-width: 230px !important;
+	max-height: 116px !important;
+	display: flex !important;
+	align-items: flex-end !important;
+	justify-content: center !important;
+	transform: none !important;
+	opacity: .96 !important;
+	filter: drop-shadow(0 8px 12px rgba(0,0,0,.42)) !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-character img {
+	width: auto !important;
+	height: auto !important;
+	max-width: 220px !important;
+	max-height: 136px !important;
+	object-fit: contain !important;
+	object-position: center bottom !important;
+	display: block !important;
+	transform: translateY(8px) scale(1) !important;
+	filter: none !important;
+	transition: transform .2s ease, filter .2s ease !important;
+}
+
+.grid.list-mode .list-character.is-empty::before {
+	content: "" !important;
+	display: block !important;
+	width: 150px !important;
+	height: 80px !important;
+	border-radius: 18px !important;
+	border: 1px dashed color-mix(in srgb, var(--accent) 24%, transparent) !important;
+	background: color-mix(in srgb, var(--accent) 5%, transparent) !important;
+}
+
+.grid.list-mode .list-card-v3:hover,
+.grid.list-mode .list-card-v3:focus-visible,
+.grid.list-mode .list-card-v3.is-touching {
+	border-color: var(--list-accent-border-hover, rgba(255,255,255,.28)) !important;
+	box-shadow:
+		inset 0 0 0 1px rgba(255,255,255,.035),
+		0 14px 30px rgba(0,0,0,.29),
+		0 0 14px color-mix(in srgb, var(--accent) 14%, transparent) !important;
+	transform: none !important;
+}
+
+.grid.list-mode .list-card-v3:hover::before,
+.grid.list-mode .list-card-v3:focus-visible::before,
+.grid.list-mode .list-card-v3.is-touching::before {
+	opacity: .72 !important;
+}
+
+.grid.list-mode .list-card-v3:hover .list-character img,
+.grid.list-mode .list-card-v3:focus-visible .list-character img,
+.grid.list-mode .list-card-v3.is-touching .list-character img {
+	transform: translateY(5px) scale(1.025) !important;
+}
+
+.grid.list-mode.transitioning .card,
+.grid.list-mode .card.card-faded,
+.grid.list-mode .card.card-selected-source {
+	opacity: 1 !important;
+	filter: none !important;
+	visibility: visible !important;
+	transform: none !important;
+	transition: none !important;
+}
+
+.grid.list-mode .transition-clone,
+.grid.list-mode .transition-layer {
+	display: none !important;
+}
+
+@media (max-width: 900px) {
+	.grid.list-mode .list-card-v3,
+	.grid.list-mode article.card.list-card-v3 {
+		grid-template-columns: minmax(0, 1fr) 180px !important;
+		height: 108px !important;
+		min-height: 108px !important;
+		padding: 10px 16px !important;
+	}
+	.grid.list-mode .list-group1 { grid-template-columns: 66px minmax(0, 1fr) !important; gap: 10px !important; }
+	.grid.list-mode .list-avatar { width: 58px !important; height: 58px !important; min-width: 58px !important; min-height: 58px !important; }
+	.grid.list-mode .list-group2 { width: 180px !important; height: 108px !important; }
+	.grid.list-mode .list-character { width: 176px !important; height: 108px !important; }
+	.grid.list-mode .list-character img { max-width: 170px !important; max-height: 124px !important; }
+	.grid.list-mode .list-circuit-bg { width: 175px !important; }
+}
+
+@media (max-width: 680px) {
+	.grid.list-mode .list-card-v3,
+	.grid.list-mode article.card.list-card-v3 {
+		grid-template-columns: minmax(0, 1fr) !important;
+		grid-template-areas: "info" !important;
+		height: auto !important;
+		min-height: 112px !important;
+	}
+	.grid.list-mode .list-group2,
+	.grid.list-mode .list-circuit-bg { display: none !important; }
+	.grid.list-mode .list-title-box { width: 100% !important; }
+}
+
+
+/* =========================================================
+   V5 - Ajustes combinados: glow personagem, avatar frame,
+   avatar 76x76, personagem maior e glow lateral do card.
+   Somente modo Lista. Não altera modo Cards.
+   ========================================================= */
+.grid.list-mode .card {
+	min-height: 128px !important;
+	height: 128px !important;
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.035),
+		0 16px 34px rgba(0,0,0,.30),
+		inset 0 1px 0 rgba(255,255,255,.05),
+		-3px 0 18px color-mix(in srgb, var(--accent) 18%, transparent),
+		3px 0 22px color-mix(in srgb, var(--accent) 12%, transparent) !important;
+}
+
+.grid.list-mode .card::before {
+	opacity: .90 !important;
+	background:
+		radial-gradient(360px 150px at 92% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 68%),
+		radial-gradient(180px 120px at 8% 50%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+		linear-gradient(90deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 19%, transparent 81%, color-mix(in srgb, var(--accent) 13%, transparent)) !important;
+}
+
+.grid.list-mode .card::after {
+	background:
+		linear-gradient(90deg,
+			color-mix(in srgb, var(--accent) 62%, white 10%) 0 2px,
+			transparent 2px calc(100% - 2px),
+			color-mix(in srgb, var(--accent) 62%, white 10%) calc(100% - 2px) 100%
+		),
+		radial-gradient(260px 130px at var(--lx, 52%) var(--ly, 50%), color-mix(in srgb, var(--accent) 25%, white 8%), transparent 66%) !important;
+	opacity: .20 !important;
+}
+
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible,
+.grid.list-mode .card.is-touching {
+	border-color: color-mix(in srgb, var(--accent) 60%, rgba(255,255,255,.28)) !important;
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.07),
+		0 20px 42px rgba(0,0,0,.34),
+		inset 0 1px 0 rgba(255,255,255,.08),
+		-4px 0 24px color-mix(in srgb, var(--accent) 38%, transparent),
+		4px 0 30px color-mix(in srgb, var(--accent) 30%, transparent),
+		0 0 42px color-mix(in srgb, var(--accent) 16%, transparent) !important;
+}
+
+.grid.list-mode .card:hover::after,
+.grid.list-mode .card:focus-visible::after,
+.grid.list-mode .card.is-touching::after {
+	opacity: .42 !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-template-columns: 86px minmax(0, 1fr) !important;
+}
+
+.grid.list-mode .list-avatar {
+	position: relative !important;
+	width: 76px !important;
+	height: 76px !important;
+	min-width: 76px !important;
+	min-height: 76px !important;
+	border-radius: 15px !important;
+	padding: 4px !important;
+	overflow: visible !important;
+	border: 1px solid color-mix(in srgb, var(--accent) 62%, rgba(255,255,255,.24)) !important;
+	background:
+		linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, rgba(255,255,255,.08)), rgba(3,7,15,.90) 50%, color-mix(in srgb, var(--accent) 15%, rgba(255,255,255,.04))) !important;
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.08),
+		0 0 14px color-mix(in srgb, var(--accent) 42%, transparent),
+		0 0 34px color-mix(in srgb, var(--accent) 20%, transparent),
+		inset 0 0 20px color-mix(in srgb, var(--accent) 16%, transparent),
+		0 10px 22px rgba(0,0,0,.38) !important;
+}
+
+.grid.list-mode .list-avatar::before {
+	content: "" !important;
+	position: absolute !important;
+	inset: -7px !important;
+	border-radius: 20px !important;
+	background:
+		linear-gradient(90deg, transparent 0 14%, color-mix(in srgb, var(--accent) 95%, white 8%) 14% 28%, transparent 28% 72%, color-mix(in srgb, var(--accent) 95%, white 8%) 72% 86%, transparent 86% 100%),
+		linear-gradient(0deg, transparent 0 14%, color-mix(in srgb, var(--accent) 95%, white 8%) 14% 28%, transparent 28% 72%, color-mix(in srgb, var(--accent) 95%, white 8%) 72% 86%, transparent 86% 100%) !important;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent)) !important;
+	opacity: .82 !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-avatar::after {
+	content: "" !important;
+	position: absolute !important;
+	inset: 5px !important;
+	border-radius: 11px !important;
+	border: 1px solid rgba(255,255,255,.20) !important;
+	box-shadow: inset 0 0 14px rgba(255,255,255,.08) !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-avatar img {
+	position: relative !important;
+	z-index: 1 !important;
+	width: 100% !important;
+	height: 100% !important;
+	border-radius: 10px !important;
+	object-fit: cover !important;
+	box-shadow: 0 0 0 1px rgba(0,0,0,.35) !important;
+}
+
+.grid.list-mode .card:hover .list-avatar,
+.grid.list-mode .card:focus-visible .list-avatar,
+.grid.list-mode .card.is-touching .list-avatar {
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.12),
+		0 0 18px color-mix(in srgb, var(--accent) 58%, transparent),
+		0 0 42px color-mix(in srgb, var(--accent) 28%, transparent),
+		inset 0 0 24px color-mix(in srgb, var(--accent) 20%, transparent),
+		0 12px 24px rgba(0,0,0,.42) !important;
+}
+
+.grid.list-mode .list-group2 {
+	width: 235px !important;
+	height: 128px !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-character {
+	height: 145px !important;
+	width: 235px !important;
+	overflow: visible !important;
+	isolation: isolate !important;
+	transform: translateY(2px) !important;
+}
+
+.grid.list-mode .list-character::before {
+	content: "" !important;
+	position: absolute !important;
+	left: 50% !important;
+	bottom: 0 !important;
+	width: 190px !important;
+	height: 150px !important;
+	border-radius: 999px !important;
+	transform: translateX(-50%) !important;
+	background:
+		radial-gradient(circle, color-mix(in srgb, var(--accent) 48%, white 10%) 0%, color-mix(in srgb, var(--accent) 24%, transparent) 34%, transparent 72%) !important;
+	filter: blur(24px) !important;
+	opacity: .58 !important;
+	z-index: 0 !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-character::after {
+	content: "" !important;
+	position: absolute !important;
+	left: 50% !important;
+	bottom: 4px !important;
+	width: 150px !important;
+	height: 150px !important;
+	border-radius: 999px !important;
+	transform: translateX(-50%) !important;
+	background:
+		repeating-radial-gradient(circle, color-mix(in srgb, var(--accent) 36%, transparent) 0 1px, transparent 1px 16px),
+		conic-gradient(from 0deg, transparent 0 9%, color-mix(in srgb, var(--accent) 30%, transparent) 9% 11%, transparent 11% 28%, color-mix(in srgb, var(--accent) 20%, transparent) 28% 30%, transparent 30% 100%) !important;
+	opacity: .28 !important;
+	z-index: 1 !important;
+	pointer-events: none !important;
+}
+
+.grid.list-mode .list-character img.list-character-main,
+.grid.list-mode .list-character img:not(.list-character-shadow) {
+	position: relative !important;
+	z-index: 3 !important;
+	max-height: 160px !important;
+	max-width: 112% !important;
+	object-fit: contain !important;
+	object-position: center bottom !important;
+	transform: translateY(8px) scale(1.10) !important;
+	filter:
+		drop-shadow(0 13px 16px rgba(0,0,0,.46))
+		drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 30%, transparent)) !important;
+}
+
+.grid.list-mode .card:hover .list-character::before,
+.grid.list-mode .card:focus-visible .list-character::before,
+.grid.list-mode .card.is-touching .list-character::before {
+	opacity: .76 !important;
+	filter: blur(22px) !important;
+}
+
+.grid.list-mode .card:hover .list-character img.list-character-main,
+.grid.list-mode .card:focus-visible .list-character img.list-character-main,
+.grid.list-mode .card.is-touching .list-character img.list-character-main,
+.grid.list-mode .card:hover .list-character img:not(.list-character-shadow),
+.grid.list-mode .card:focus-visible .list-character img:not(.list-character-shadow),
+.grid.list-mode .card.is-touching .list-character img:not(.list-character-shadow) {
+	transform: translateY(4px) scale(1.14) !important;
+}
+
+@media (max-width: 980px) {
+	.grid.list-mode .card { min-height: 126px !important; height: 126px !important; }
+	.grid.list-mode .list-group1 { grid-template-columns: 80px minmax(0, 1fr) !important; }
+	.grid.list-mode .list-avatar { width: 70px !important; height: 70px !important; min-width: 70px !important; min-height: 70px !important; }
+	.grid.list-mode .list-group2 { width: 170px !important; height: 126px !important; }
+	.grid.list-mode .list-character { width: 170px !important; height: 138px !important; }
+	.grid.list-mode .list-character::before { width: 150px !important; height: 122px !important; }
+	.grid.list-mode .list-character img.list-character-main,
+	.grid.list-mode .list-character img:not(.list-character-shadow) { max-height: 145px !important; transform: translateY(8px) scale(1.06) !important; }
+}
+
+@media (max-width: 680px) {
+	.grid.list-mode .card { height: auto !important; min-height: 128px !important; }
+	.grid.list-mode .list-group1 { grid-template-columns: 72px minmax(0, 1fr) !important; }
+	.grid.list-mode .list-avatar { width: 62px !important; height: 62px !important; min-width: 62px !important; min-height: 62px !important; }
+}
+
 </style>
+
+
+<!-- ===== PATCH V4: hover/toque visível apenas na LISTA ===== -->
+<style id="list-hover-visible-v4">
+/* Deixa o card inteiro reagir no hover/touch, não só o personagem */
+.grid.list-mode article.card.list-card-v3,
+.grid.list-mode .card.list-card-v3{
+	transition:
+		border-color .18s ease,
+		box-shadow .18s ease,
+		background .18s ease,
+		filter .18s ease !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover,
+.grid.list-mode .card.list-card-v3:focus-visible,
+.grid.list-mode .card.list-card-v3.is-touching{
+	border-color: color-mix(in srgb, var(--accent) 58%, rgba(255,255,255,.48)) !important;
+	background:
+		radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), color-mix(in srgb, var(--accent) 15%, transparent), transparent 62%),
+		linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, rgba(7,11,24,.95)) 0%, rgba(12,18,34,.91) 48%, color-mix(in srgb, var(--accent) 10%, rgba(6,10,22,.96)) 100%),
+		linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.016)) !important;
+	box-shadow:
+		inset 0 0 0 1px rgba(255,255,255,.055),
+		inset 0 0 34px color-mix(in srgb, var(--accent) 10%, transparent),
+		0 14px 30px rgba(0,0,0,.30),
+		0 0 18px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+	filter: brightness(1.06) saturate(1.06) !important;
+	transform: none !important;
+}
+
+.grid.list-mode .card.list-card-v3::before{
+	transition: opacity .18s ease, background .18s ease !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover::before,
+.grid.list-mode .card.list-card-v3:focus-visible::before,
+.grid.list-mode .card.list-card-v3.is-touching::before{
+	opacity: .98 !important;
+	background:
+		radial-gradient(330px circle at var(--lx, 50%) var(--ly, 50%), color-mix(in srgb, var(--accent) 25%, transparent), transparent 66%),
+		linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 38%, color-mix(in srgb, var(--accent) 12%, transparent)) !important;
+}
+
+.grid.list-mode .card.list-card-v3::after{
+	transition: opacity .18s ease, transform .18s ease !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover::after,
+.grid.list-mode .card.list-card-v3:focus-visible::after,
+.grid.list-mode .card.list-card-v3.is-touching::after{
+	opacity: .58 !important;
+	transform: translateX(4px) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg{
+	opacity: .72 !important;
+	filter: drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 18%, transparent)) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-circuit,
+.grid.list-mode .card.list-card-v3:focus-visible .list-circuit,
+.grid.list-mode .card.list-card-v3.is-touching .list-circuit{
+	opacity: .92 !important;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 34%, transparent)) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-avatar,
+.grid.list-mode .card.list-card-v3:focus-visible .list-avatar,
+.grid.list-mode .card.list-card-v3.is-touching .list-avatar{
+	box-shadow:
+		0 8px 18px rgba(0,0,0,.30),
+		0 0 0 1px color-mix(in srgb, var(--accent) 28%, rgba(255,255,255,.10)),
+		0 0 16px color-mix(in srgb, var(--accent) 26%, transparent) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-displayname,
+.grid.list-mode .card.list-card-v3:focus-visible .list-displayname,
+.grid.list-mode .card.list-card-v3.is-touching .list-displayname{
+	text-shadow:
+		0 1px 0 rgba(255,255,255,.08),
+		0 0 9px color-mix(in srgb, var(--accent) 28%, transparent) !important;
+}
+
+/* mantém a animação do personagem bem leve, só como complemento */
+.grid.list-mode .card.list-card-v3:hover .list-character img,
+.grid.list-mode .card.list-card-v3:focus-visible .list-character img,
+.grid.list-mode .card.list-card-v3.is-touching .list-character img{
+	transform: translateY(5px) scale(1.018) !important;
+	filter: drop-shadow(0 8px 10px rgba(0,0,0,.34)) !important;
+}
+</style>
+
+
+
+<!-- ===== PATCH V10: corrigir escala do Hangar + xadrez visível ===== -->
+<style id="list-v10-xadrez-hangar-scale">
+/* V10 - Somente modo Lista.
+   Correções:
+   1) Hangar menos ampliado/menos "zoomado".
+   2) Xadrez tecnológico mais visível sem cobrir a personagem.
+*/
+.grid.list-mode .card.list-card-v3 .list-svg-bg::before{
+  inset: 0 !important;
+  background-image: var(--list-hangar-wallpaper) !important;
+  background-size: auto 112% !important;
+  background-position: center 52% !important;
+  background-repeat: no-repeat !important;
+  opacity: .32 !important;
+  filter: blur(.45px) brightness(.82) saturate(.68) contrast(1.05) !important;
+  transform: none !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-svg-bg::after{
+  background:
+    linear-gradient(90deg,
+      rgba(2,6,14,.86) 0%,
+      rgba(3,7,16,.66) 20%,
+      rgba(3,7,16,.30) 50%,
+      rgba(2,6,14,.62) 100%
+    ),
+    radial-gradient(360px circle at 78% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 72%) !important;
+  opacity: .76 !important;
+}
+
+/* Xadrez em camada própria acima do Hangar. */
+.grid.list-mode .card.list-card-v3::after{
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.072) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.072) 75%),
+    linear-gradient(45deg, rgba(255,255,255,.044) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.044) 75%) !important;
+  background-size: 26px 26px !important;
+  background-position: 0 0, 13px 13px !important;
+  opacity: .48 !important;
+  mix-blend-mode: soft-light !important;
+}
+
+/* Reforça um pouco o circuito, porque o xadrez agora aparece mais. */
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  opacity: .52 !important;
+  filter:
+    drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 52%, transparent))
+    drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 24%, transparent)) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg::before{
+  opacity: .38 !important;
+  filter: blur(.35px) brightness(.88) saturate(.72) contrast(1.08) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover::after,
+.grid.list-mode .card.list-card-v3:focus-visible::after,
+.grid.list-mode .card.list-card-v3.is-touching::after{
+  opacity: .58 !important;
+}
+</style>
+
+
+<!-- ===== PATCH V12 CORRIGIDO: Cards info colorido por carta ===== -->
+<style id="cards-v12-info-colors-fixed">
+/* Apenas modo Cards. Não altera .grid.list-mode. */
+.grid:not(.list-mode) .card-bottom,
+.detail-card .detail-bottom {
+	border: 1px solid color-mix(in srgb, var(--accent, #5865F2) 48%, rgba(255,255,255,.16)) !important;
+	background:
+		radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--accent, #5865F2) 34%, transparent) 0%, transparent 42%),
+		radial-gradient(circle at 88% 100%, color-mix(in srgb, var(--accent, #5865F2) 22%, transparent) 0%, transparent 48%),
+		linear-gradient(180deg, rgba(18, 16, 28, .70), rgba(4, 7, 16, .84)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.10),
+		inset 0 0 22px color-mix(in srgb, var(--accent, #5865F2) 12%, transparent),
+		0 14px 34px rgba(0,0,0,.42),
+		0 18px 0 color-mix(in srgb, var(--accent, #5865F2) 20%, transparent),
+		0 0 36px color-mix(in srgb, var(--accent, #5865F2) 10%, transparent) !important;
+	position: absolute;
+	isolation: isolate;
+}
+
+.grid:not(.list-mode) .card-bottom::before,
+.detail-card .detail-bottom::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background:
+		linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent, #5865F2) 22%, rgba(255,255,255,.08)) 50%, transparent 100%),
+		repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent, #5865F2) 18%, rgba(255,255,255,.035)) 0 1px, transparent 1px 44px) !important;
+	opacity: .55 !important;
+	pointer-events: none;
+	z-index: -1;
+}
+
+.grid:not(.list-mode) .card-bottom::after,
+.detail-card .detail-bottom::after {
+	content: "";
+	position: absolute;
+	left: 14px;
+	right: 14px;
+	top: 0;
+	height: 2px;
+	border-radius: 999px;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent, #5865F2) 88%, white 12%), transparent);
+	box-shadow: 0 0 14px color-mix(in srgb, var(--accent, #5865F2) 44%, transparent);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.grid:not(.list-mode) .player-username,
+.detail-username {
+	color: color-mix(in srgb, var(--accent, #5865F2) 22%, #ffffff 78%) !important;
+	text-shadow:
+		0 2px 8px rgba(0,0,0,.82),
+		0 0 10px color-mix(in srgb, var(--accent, #5865F2) 42%, transparent) !important;
+}
+
+.grid:not(.list-mode) .card-bottom .title,
+.detail-title {
+	text-shadow:
+		0 2px 2px rgba(0,0,0,.94),
+		0 0 10px color-mix(in srgb, var(--accent, #5865F2) 58%, transparent),
+		0 0 22px color-mix(in srgb, var(--accent, #5865F2) 28%, transparent) !important;
+}
+
+.grid:not(.list-mode) .player-title,
+.detail-subtitle {
+	color: color-mix(in srgb, var(--accent, #5865F2) 12%, #ffffff 88%) !important;
+}
+
+.grid:not(.list-mode) .summon-stars-icons {
+	color: color-mix(in srgb, var(--accent, #5865F2) 76%, #ffffff 24%) !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #5865F2) 42%, transparent) !important;
+}
+
+.grid:not(.list-mode) .summon-stars-id {
+	color: color-mix(in srgb, var(--accent, #5865F2) 20%, #ffffff 80%) !important;
+}
+
+.grid:not(.list-mode) .card:hover .card-bottom,
+.grid:not(.list-mode) .card:focus-visible .card-bottom {
+	border-color: color-mix(in srgb, var(--accent, #5865F2) 68%, rgba(255,255,255,.22)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.12),
+		inset 0 0 24px color-mix(in srgb, var(--accent, #5865F2) 16%, transparent),
+		0 16px 38px rgba(0,0,0,.46),
+		0 0 24px color-mix(in srgb, var(--accent, #5865F2) 28%, transparent),
+		0 0 48px color-mix(in srgb, var(--accent, #5865F2) 14%, transparent) !important;
+}
+</style>
+
 </head>
 <body>
 <!-- ===== HTML: Aplicação / lista de jogadores ===== -->
@@ -8588,6 +11730,119 @@ body {
 	}
 
 
+	function getListCountryText(player) {
+		const name = cleanValue(player?.country?.name);
+		const code = cleanValue(player?.country?.code);
+		return stripMinecraftCodes(name || code || "Desconhecido");
+	}
+
+	function isPlayerOnlineForList(player) {
+		return player?.status?.online === true || player?.status?.presence?.enabled === true;
+	}
+
+	function getListStatusText(player) {
+		if (isPlayerOnlineForList(player)) return "Online";
+		return "Offline";
+	}
+
+	function formatListSinceText(player) {
+		const raw = cleanValue(player?.stats?.timestamps?.account_created_at || player?.created_at || player?.createdAt);
+		if (!raw) return "Desde —";
+
+		const date = new Date(raw);
+		if (!Number.isNaN(date.getTime())) {
+			return "Desde " + date.getFullYear();
+		}
+
+		const year = String(raw).match(/(19|20)\d{2}/);
+		return year ? "Desde " + year[0] : "Desde —";
+	}
+
+	function buildListExtraInfoHtml(player) {
+		const flagHtml = buildCountryFlagHtml(player?.country?.code);
+		const countryText = escapeHtml(getListCountryText(player));
+		const online = isPlayerOnlineForList(player);
+		const statusText = escapeHtml(getListStatusText(player));
+		const sinceText = escapeHtml(formatListSinceText(player));
+
+		return `
+			<div class="list-extra-row" aria-label="Informações rápidas do jogador">
+				<span class="list-extra-pill list-country-pill" title="País">
+					${flagHtml}
+					<span>${countryText}</span>
+				</span>
+				<span class="list-extra-pill list-status-pill ${online ? 'is-online' : 'is-offline'}" title="Status">
+					<span class="list-status-dot" aria-hidden="true"></span>
+					<span>${statusText}</span>
+				</span>
+				<span class="list-extra-pill list-since-pill" title="Conta criada">
+					<span class="list-extra-icon" aria-hidden="true">▣</span>
+					<span>${sinceText}</span>
+				</span>
+			</div>
+		`;
+	}
+
+
+	function buildListBadgesInlineHtml(player) {
+		const flagHtml = buildCountryFlagHtml(player?.country?.code);
+		const countryText = escapeHtml(getListCountryText(player));
+		const online = isPlayerOnlineForList(player);
+		const statusText = escapeHtml(getListStatusText(player));
+		const clanName = escapeHtml(stripMinecraftCodes(cleanValue(player?.clan?.id)) || "No Clan");
+
+		return `
+			<div class="list-combat-badges" aria-label="País, status e clan do jogador">
+				<span class="list-combat-pill list-country-pill" title="País">${flagHtml}<span>${countryText}</span></span>
+				<span class="list-combat-pill list-status-pill ${online ? 'is-online' : 'is-offline'}" title="Status"><span class="list-status-dot" aria-hidden="true"></span><span>${statusText}</span></span>
+				<span class="list-combat-pill list-clan-pill" title="Clan">${clanName}</span>
+			</div>
+		`;
+	}
+
+		function buildListTierProgressHtml(player) {
+		const rankData = getCardRankData(player);
+		const emblemImage = getRankImage(player);
+		const levelNumber = getPlayerLevelNumber(player);
+		const ranks = Array.isArray(CARD_LEVEL_RANKS) ? CARD_LEVEL_RANKS : [];
+		const currentIndex = ranks.findIndex(function(rank) {
+			if (!rank || typeof rank !== "object") return false;
+			const minMatch = typeof rank.min === "number" ? levelNumber >= rank.min : true;
+			const maxMatch = typeof rank.max === "number" ? levelNumber <= rank.max : true;
+			return minMatch && maxMatch;
+		});
+		const nextRank = currentIndex >= 0 ? ranks[currentIndex + 1] : null;
+		const hasMax = typeof rankData.max === "number";
+		const rawProgress = !hasMax || rankData.max <= rankData.min
+			? 100
+			: ((levelNumber - rankData.min) / (rankData.max - rankData.min)) * 100;
+		const safeProgress = Math.max(0, Math.min(100, rawProgress));
+		const progressText = Math.round(safeProgress) + "%";
+		const nextText = nextRank?.label ? `Próximo Rank: ${nextRank.label}` : "Rank máximo";
+
+		return `
+			<div
+				class="list-tier-progress"
+				style="
+					--rank-color: ${rankData.color};
+					--rank-color-2: ${rankData.color2 || rankData.color};
+					--rank-glow: ${rankData.glow || rankData.color};
+					--rank-banner: ${rankData.banner || "linear-gradient(135deg, color-mix(in srgb, " + (rankData.color || "#5865F2") + " 18%, rgba(255,255,255,.04)), rgba(8,12,24,.92))"};
+					--rank-checker-opacity: ${typeof rankData.checkerOpacity === "number" ? rankData.checkerOpacity : 0.10};
+				"
+			>
+				<div class="list-tier-main">
+					<span class="list-tier-icon">${emblemImage ? `<img src="${escapeHtml(emblemImage)}" alt="${escapeHtml(rankData.label)}" loading="lazy" onerror="this.remove()">` : "◆"}</span>
+					<span class="list-tier-name">${escapeHtml(rankData.label || "Tier")}</span>
+					<div class="list-tier-bar" aria-hidden="true"><span style="width:${safeProgress}%"></span></div>
+					<span class="list-tier-percent">${escapeHtml(progressText)}</span>
+				</div>
+				<div class="list-tier-next">${escapeHtml(nextText)}</div>
+			</div>
+		`;
+	}
+
+
 	// ===== JavaScript: Renderização dos cards e da view detalhada =====
 	function createCard(player, index) {
 		const color = normalizeHexColor(player?.theme?.card_embed?.card_color || "#5865F2");
@@ -8665,18 +11920,13 @@ body {
 	}
 
 	function createListCard(player) {
-
-
 		const color = normalizeHexColor(player?.theme?.card_embed?.card_color || "#5865F2");
-		const banner = getBanner(player);
 		const avatar = getAvatar(player);
 		const character = getCharacter(player);
 		const characterPixelClass = isProbablyPixelArt(character) ? "pixelated" : "";
 		const displayName = escapeHtml(stripMinecraftCodes(getDisplayName(player)));
 		const username = escapeHtml(stripMinecraftCodes(getUsername(player)));
 		const cardTitle = escapeHtml(stripMinecraftCodes(getCardTitle(player)));
-		const clanName = escapeHtml(stripMinecraftCodes(cleanValue(player?.clan?.id)) || "No Clan");
-		const levelText = escapeHtml(stripMinecraftCodes(getLevelText(player)));
 		const displayColor = getDisplayNameColor(player);
 		const displayNameClass = displayColor.type === "gradient" ? "list-displayname gradient" : "list-displayname";
 		const displayNameStyle = displayColor.type === "gradient"
@@ -8685,92 +11935,84 @@ body {
 
 		return `
 			<article
-				class="card"
+				class="card list-card-v3"
 				data-player-id="${escapeHtml(player._id)}"
+				data-list-card="true"
 				data-idle="false"
 				style="
 					--accent: ${color};
-					--accent-soft: ${hexToRgba(color, 0.18)};
-					--accent-mid: ${hexToRgba(color, 0.28)};
-					--list-accent-soft: ${hexToRgba(color, 0.16)};
-					--list-accent-fade: ${hexToRgba(color, 0.10)};
-					--list-accent-inner: ${hexToRgba(color, 0.07)};
-					--list-accent-glow: ${hexToRgba(color, 0.14)};
-					--list-accent-glow-hover: ${hexToRgba(color, 0.20)};
-					--list-accent-border: ${hexToRgba(color, 0.25)};
-					--list-accent-border-hover: ${hexToRgba(color, 0.34)};
-					--list-banner-base: ${hexToRgba(color, 0.22)};
-					--list-banner-a: ${hexToRgba(color, 0.32)};
-					--list-banner-b: ${hexToRgba(color, 0.18)};
-					border-color: ${hexToRgba(color, 0.25)};
+					--accent-soft: ${hexToRgba(color, 0.12)};
+					--accent-mid: ${hexToRgba(color, 0.18)};
+					--list-accent-soft: ${hexToRgba(color, 0.10)};
+					--list-accent-fade: ${hexToRgba(color, 0.07)};
+					--list-accent-inner: ${hexToRgba(color, 0.05)};
+					--list-accent-glow: ${hexToRgba(color, 0.09)};
+					--list-accent-glow-hover: ${hexToRgba(color, 0.14)};
+					--list-accent-border: ${hexToRgba(color, 0.34)};
+					--list-accent-border-hover: ${hexToRgba(color, 0.48)};
+					border-color: ${hexToRgba(color, 0.30)};
 				"
 				aria-label="${displayName}"
 				tabindex="0"
 			>
-				<div class="list-banner">
-					<img
-						src="${escapeHtml(banner)}"
-						alt="${displayName}"
-						loading="lazy"
-						referrerpolicy="no-referrer"
-						crossorigin="anonymous"
-						draggable="false"
-						onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_BANNER)}'"
-					>
+				<div class="list-svg-bg" aria-hidden="true"></div>
+				<div class="list-circuit-bg" aria-hidden="true"></div>
+				<svg class="list-card-frame" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 150" preserveAspectRatio="none" fill="none" aria-hidden="true">
+					<path d="M24 1H372L402 11H880L910 1H1176Q1199 1 1199 24V126Q1199 149 1176 149H24Q1 149 1 126V24Q1 1 24 1Z" stroke="currentColor" stroke-opacity=".54" stroke-width="2"/>
+					<path d="M40 28H210L230 18H370M828 132H1010L1030 122H1160" stroke="currentColor" stroke-opacity=".44" stroke-width="2"/>
+					<path d="M1015 33H1128V117H1015" stroke="currentColor" stroke-opacity=".18" stroke-width="1.5"/>
+					<path d="M1044 75H1090M1090 75L1106 60H1135M1090 75L1106 91H1135" stroke="currentColor" stroke-opacity=".34" stroke-width="2"/>
+					<circle cx="1146" cy="60" r="4" fill="currentColor" fill-opacity=".54"/>
+					<circle cx="1146" cy="91" r="4" fill="currentColor" fill-opacity=".34"/>
+				</svg>
+
+				<div class="list-group1">
+					<div class="list-avatar">
+						<img
+							src="${escapeHtml(avatar)}"
+							alt="Avatar de ${username}"
+							loading="lazy"
+							referrerpolicy="no-referrer"
+							crossorigin="anonymous"
+							draggable="false"
+							onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_AVATAR)}'"
+						>
+						<svg class="avatar-frame-svg" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+							<rect x="6" y="6" width="88" height="88" rx="16" stroke="currentColor" stroke-opacity=".62" stroke-width="2"/>
+							<path d="M6 34V20C6 12.3 12.3 6 20 6h14M66 6h14c7.7 0 14 6.3 14 14v14M94 66v14c0 7.7-6.3 14-14 14H66M34 94H20C12.3 94 6 87.7 6 80V66" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+						</svg>
+					</div>
+
+					<div class="list-info">
+						<div class="list-name-inline-row">
+							<div class="${displayNameClass}" style="${displayNameStyle}">
+								<span class="list-displayname-text">${displayName}</span>
+							</div>
+							<span class="list-username list-username-inline">( @${username} )</span>
+							${buildVerifiedEmblemHtml(player)}
+						</div>
+
+						<div class="list-title list-title-box">${cardTitle}</div>
+						${buildListBadgesInlineHtml(player)}
+					</div>
 				</div>
 
-				<div class="list-rail"></div>
-
-					<div class="list-group1">
-						<div class="list-avatar">
+				<div class="list-group2">
+					<div class="list-character ${character ? characterPixelClass : 'is-empty'}">
+						${character ? `
 							<img
-								src="${escapeHtml(avatar)}"
-								alt="Avatar de ${displayName}"
+								class="list-character-main"
+								src="${escapeHtml(character)}"
+								alt="Character de ${displayName}"
 								loading="lazy"
 								referrerpolicy="no-referrer"
 								crossorigin="anonymous"
 								draggable="false"
-								onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_AVATAR)}'"
+								onerror="this.onerror=null; this.remove(); this.parentElement.classList.add('is-empty')"
 							>
-						</div>
-
-						<div class="list-info">
-							<div class="${displayNameClass}" style="${displayNameStyle}">
-								<span class="username-with-emblem">
-									<span class="list-displayname-text">${displayName}</span>
-									${buildVerifiedEmblemHtml(player)}
-								</span>
-							</div>
-							<div class="list-username-line">
-								<span class="list-username">${username}</span>
-							</div>
-							<div class="list-title">${cardTitle}</div>
-						</div>
-
+						` : ""}
 					</div>
-
-					<div class="list-group2">
-						<div class="list-character ${character ? characterPixelClass : 'is-empty'}">
-							${character ? `
-								<img
-									src="${escapeHtml(character)}"
-									alt="Character de ${displayName}"
-									loading="lazy"
-									referrerpolicy="no-referrer"
-									crossorigin="anonymous"
-									draggable="false"
-									onerror="this.onerror=null; this.remove(); this.parentElement.classList.add('is-empty')"
-								>
-							` : ""}
-						</div>
-
-						${buildRankTitleMarkHtml(player, "list-rank-title")}
-					</div>
-
-					<div class="list-group3">
-						<div class="list-level">Lv. ${levelText}</div>
-						<div class="list-clan">${clanName}</div>
-					</div>
+				</div>
 			</article>
 		`;
 	}
@@ -9121,8 +12363,13 @@ body {
 		const profileUrl = makeProfileUrl(playerId);
 
 		try {
+			if (isListMode) {
+				window.location.href = profileUrl;
+				return;
+			}
+
 			if (player && sourceCard) {
-				// Abre direto com a animação da carta, sem mostrar a caixa de mensagem "Carregando perfil...".
+				// Modo Cards mantém a animação especial. A Lista abre direto para não misturar comportamento.
 				await animateOpenDetail(player, sourceCard, profileUrl);
 				return;
 			}
@@ -9388,6 +12635,7 @@ body {
 	}
 
 	function reset3DCard(card) {
+		if (card && card.closest && card.closest("#players.list-mode")) return;
 		card.style.setProperty("--rx", "0deg");
 		card.style.setProperty("--ry", "0deg");
 		card.style.setProperty("--mx", "50%");
@@ -9403,6 +12651,7 @@ body {
 
 	function update3DCard(card, clientX, clientY) {
 		if (!card) return;
+		if (card.closest && card.closest("#players.list-mode")) return;
 
 		const rect = card.getBoundingClientRect();
 		if (!rect.width || !rect.height) return;
@@ -9437,6 +12686,7 @@ body {
 
 	function attach3DEffect(cards) {
 		(cards || []).forEach(function(card) {
+			if (card && card.closest && card.closest("#players.list-mode")) return;
 			reset3DCard(card);
 
 			card.addEventListener("mousemove", function(event) {
@@ -9825,10 +13075,142 @@ body {
 		}
 	})();
 
+	(function () {
+		let pos = 0;
+
+		function tick() {
+			pos = (pos + 0.65) % 320;
+
+			document
+				.querySelectorAll(".list-displayname.gradient .list-displayname-text")
+				.forEach(function (el) {
+					const parent = el.closest(".list-displayname.gradient");
+					if (!parent) return;
+
+					const gradient = parent.style.getPropertyValue("--display-gradient");
+					if (gradient) {
+						el.style.setProperty("background-image", gradient, "important");
+					}
+
+					el.style.setProperty("background-size", "320% 100%", "important");
+					el.style.setProperty("background-position", pos + "% 50%", "important");
+					el.style.setProperty("-webkit-background-clip", "text", "important");
+					el.style.setProperty("background-clip", "text", "important");
+					el.style.setProperty("-webkit-text-fill-color", "transparent", "important");
+					el.style.setProperty("color", "transparent", "important");
+				});
+
+			requestAnimationFrame(tick);
+		}
+
+		requestAnimationFrame(tick);
+	})();
+
 
 	// Esta página é somente a busca/lista.
 	load();
 </script>
+
+
+
+<style id="list-v7-background-info-fix">
+/* =========================================================
+   V7 - LISTA: fundo Hangar mais visível + informações alinhadas
+   Afeta somente .grid.list-mode / .list-card-v3.
+   ========================================================= */
+
+/* O card continua escuro, mas deixa a Camada 0 aparecer mais. */
+.grid.list-mode .card.list-card-v3{
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--accent) 7%, rgba(4,8,18,.94)) 0%,
+      rgba(6,11,23,.92) 32%,
+      rgba(6,11,23,.88) 58%,
+      color-mix(in srgb, var(--accent) 6%, rgba(4,8,18,.94)) 100%
+    ) !important;
+}
+
+/* Camada 0: Hangar Mecha manual mais perceptível, sem virar wallpaper forte. */
+.grid.list-mode .card.list-card-v3 .list-svg-bg::before{
+  inset: -10px !important;
+  opacity: .30 !important;
+  background-size: cover !important;
+  background-position: center 54% !important;
+  filter: blur(1.1px) brightness(.86) saturate(.82) contrast(1.08) !important;
+  transform: scale(1.025) !important;
+}
+
+/* Overlay menos opaco para o hangar aparecer; mantém faixa escura onde ficam os textos. */
+.grid.list-mode .card.list-card-v3 .list-svg-bg::after{
+  background:
+    linear-gradient(90deg,
+      rgba(3,7,15,.76) 0%,
+      rgba(5,10,20,.66) 27%,
+      rgba(5,10,20,.46) 56%,
+      rgba(3,7,15,.68) 100%
+    ),
+    radial-gradient(260px circle at 78% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+    linear-gradient(45deg, rgba(255,255,255,.038) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.038) 75%),
+    linear-gradient(45deg, rgba(255,255,255,.038) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.038) 75%) !important;
+  background-size: auto, auto, 32px 32px, 32px 32px !important;
+  background-position: center, center, 0 0, 16px 16px !important;
+  opacity: .96 !important;
+}
+
+/* Circuito um pouco mais presente, mas sem cobrir a personagem. */
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  opacity: .38 !important;
+}
+
+/* Corrige a sensação de que avatar + informações desceram. */
+.grid.list-mode .card.list-card-v3 .list-group1{
+  align-self: center !important;
+  transform: translateY(-4px) !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-info{
+  transform: translateY(-2px) !important;
+  gap: 5px !important;
+}
+
+/* Mantém avatar grande, porém mais encaixado no centro visual. */
+.grid.list-mode .card.list-card-v3 .list-avatar{
+  transform: translateY(1px) !important;
+}
+
+/* Título e pills sobem levemente junto, sem esmagar o layout. */
+.grid.list-mode .card.list-card-v3 .list-title-box{
+  height: 26px !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-combat-pill,
+.grid.list-mode .card.list-card-v3 .list-status-pill,
+.grid.list-mode .card.list-card-v3 .list-clan-pill,
+.grid.list-mode .card.list-card-v3 .list-extra-pill{
+  height: 24px !important;
+  min-height: 24px !important;
+}
+
+/* Hover/toque: mostra mais a Camada 0 sem estourar brilho. */
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg::before{
+  opacity: .38 !important;
+  filter: blur(.8px) brightness(.98) saturate(.92) contrast(1.1) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg::after,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg::after,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg::after{
+  opacity: .90 !important;
+}
+
+@media (max-width: 900px){
+  .grid.list-mode .card.list-card-v3 .list-group1{
+    transform: translateY(-2px) !important;
+  }
+}
+</style>
 
 </body>
 </html>
@@ -10245,5 +13627,1474 @@ body {
 	.side-label {
 		font-size: 6.2px !important;
 	}
+}
+
+
+/* ==========================================================
+   UPGRADE LISTA: informações extras dentro da .list-group1
+   País + status + ano, seguindo a referência visual enviada
+   ========================================================== */
+.grid.list-mode .list-info {
+	gap: 5px !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-extra-row {
+	display: flex !important;
+	align-items: center !important;
+	flex-wrap: wrap !important;
+	gap: 6px 8px !important;
+	margin-top: 4px !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+}
+
+.grid.list-mode .list-extra-pill {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	min-height: 24px !important;
+	padding: 4px 9px !important;
+	border-radius: 10px !important;
+	border: 1px solid rgba(255,255,255,.08) !important;
+	background:
+		linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
+		rgba(5, 9, 19, .42) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.045),
+		0 0 12px color-mix(in srgb, var(--accent) 7%, transparent) !important;
+	backdrop-filter: blur(8px) !important;
+	-webkit-backdrop-filter: blur(8px) !important;
+	font-size: 11px !important;
+	font-weight: 800 !important;
+	line-height: 1 !important;
+	color: rgba(239,245,255,.92) !important;
+	white-space: nowrap !important;
+}
+
+.grid.list-mode .list-extra-pill .country-flag-img {
+	width: 16px !important;
+	height: 11px !important;
+	border-radius: 2px !important;
+}
+
+.grid.list-mode .list-status-dot {
+	width: 8px !important;
+	height: 8px !important;
+	border-radius: 999px !important;
+	background: #7a8296 !important;
+	box-shadow: 0 0 10px rgba(122,130,150,.35) !important;
+	flex: 0 0 auto !important;
+}
+
+.grid.list-mode .list-status-pill.is-online .list-status-dot {
+	background: #39ff72 !important;
+	box-shadow: 0 0 12px rgba(57,255,114,.72) !important;
+}
+
+.grid.list-mode .list-status-pill.is-offline .list-status-dot {
+	background: #8790a4 !important;
+	box-shadow: 0 0 10px rgba(135,144,164,.32) !important;
+}
+
+.grid.list-mode .list-extra-icon {
+	font-size: 11px !important;
+	line-height: 1 !important;
+	color: color-mix(in srgb, var(--accent) 70%, #ffffff 30%) !important;
+	filter: drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 28%, transparent)) !important;
+}
+
+@media (max-width: 980px) {
+	.grid.list-mode .list-extra-row {
+		gap: 5px !important;
+	}
+	.grid.list-mode .list-extra-pill {
+		min-height: 22px !important;
+		padding: 3px 7px !important;
+		font-size: 10px !important;
+	}
+}
+
+@media (max-width: 560px) {
+	.grid.list-mode .list-extra-row {
+		margin-top: 3px !important;
+	}
+	.grid.list-mode .list-extra-pill {
+		font-size: 9px !important;
+		padding: 3px 6px !important;
+	}
+	.grid.list-mode .list-since-pill {
+		display: none !important;
+	}
+}
+
+
+/* ==========================================================
+   FIX LISTA COMPLETA: nickname + emblema + username + título + infos
+   Corrige o texto invisível em display_nickname com gradiente quando
+   existe span interno para o emblema verificado.
+   ========================================================== */
+.grid.list-mode .card {
+	min-height: 116px !important;
+	grid-template-columns: minmax(470px, 1fr) minmax(220px, 300px) 118px !important;
+}
+
+.grid.list-mode .list-group1 {
+	grid-template-columns: 72px minmax(0, 1fr) !important;
+	column-gap: 16px !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-info {
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: center !important;
+	gap: 4px !important;
+	min-width: 0 !important;
+	overflow: visible !important;
+}
+
+.grid.list-mode .list-displayname {
+	display: block !important;
+	min-height: 18px !important;
+	font-size: 17px !important;
+	line-height: 1.12 !important;
+	font-weight: 1000 !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.grid.list-mode .list-displayname .username-with-emblem {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 7px !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+}
+
+.grid.list-mode .list-displayname .list-displayname-text {
+	display: inline-block !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	white-space: nowrap !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+	color: var(--display-color, #dfffe0) !important;
+	-webkit-text-fill-color: var(--display-color, #dfffe0) !important;
+}
+
+.grid.list-mode .list-displayname.gradient {
+	background-image: none !important;
+	-webkit-background-clip: initial !important;
+	background-clip: initial !important;
+	-webkit-text-fill-color: initial !important;
+	color: inherit !important;
+}
+
+.grid.list-mode .list-displayname.gradient .list-displayname-text {
+	background-image: var(--display-gradient) !important;
+	background-size: 220% auto !important;
+	background-position: 0% center !important;
+	-webkit-background-clip: text !important;
+	background-clip: text !important;
+	-webkit-text-fill-color: transparent !important;
+	color: transparent !important;
+	animation: gradientMove 4s linear infinite !important;
+}
+
+.grid.list-mode .list-displayname .verified-emblem {
+	width: 17px !important;
+	height: 17px !important;
+	flex: 0 0 17px !important;
+	-webkit-text-fill-color: initial !important;
+	color: initial !important;
+}
+
+.grid.list-mode .list-username-line {
+	display: flex !important;
+	align-items: center !important;
+	min-height: 14px !important;
+}
+
+.grid.list-mode .list-username {
+	display: block !important;
+	font-size: 12px !important;
+	line-height: 1.15 !important;
+	font-weight: 900 !important;
+	color: #aebce6 !important;
+	-webkit-text-fill-color: #aebce6 !important;
+	background: none !important;
+	text-shadow: none !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.grid.list-mode .list-title {
+	display: block !important;
+	min-height: 15px !important;
+	margin-top: 1px !important;
+	font-size: 12px !important;
+	line-height: 1.2 !important;
+	font-weight: 800 !important;
+	color: #f0f4ff !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.grid.list-mode .list-extra-row {
+	margin-top: 4px !important;
+	gap: 5px 7px !important;
+}
+
+.grid.list-mode .list-character {
+	height: 100px !important;
+}
+
+.grid.list-mode .list-character img {
+	max-height: 148px !important;
+	max-width: 132% !important;
+	transform: translateY(5px) scale(1.04) !important;
+}
+
+.grid.list-mode .card:hover .list-character img,
+.grid.list-mode .card:focus-visible .list-character img {
+	transform: translateY(0) scale(1.08) !important;
+}
+
+@media (max-width: 1080px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(390px, 1fr) minmax(190px, 260px) 112px !important;
+		min-height: 116px !important;
+	}
+	.grid.list-mode .list-displayname { font-size: 15px !important; }
+	.grid.list-mode .list-title { font-size: 11px !important; }
+	.grid.list-mode .list-character img { max-height: 136px !important; }
+}
+
+@media (max-width: 760px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) 96px !important;
+		min-height: 110px !important;
+	}
+	.grid.list-mode .list-displayname { font-size: 13px !important; }
+	.grid.list-mode .list-username,
+	.grid.list-mode .list-title { font-size: 10px !important; }
+	.grid.list-mode .list-extra-pill { font-size: 9px !important; padding: 3px 6px !important; }
+}
+
+
+/* ==========================================================
+   AVATAR FRAME SVG FINAL - usa a cor do próprio card (--accent)
+   Aplicado no modo lista sem depender de DATA_URL/currentColor.
+   ========================================================== */
+.grid.list-mode .list-avatar {
+	position: relative !important;
+	overflow: hidden !important;
+	border: 0 !important;
+	background: rgba(5, 8, 16, .74) !important;
+	box-shadow:
+		0 8px 18px rgba(0,0,0,.28),
+		0 0 18px color-mix(in srgb, var(--accent, #75d7ff) 24%, transparent) !important;
+}
+
+.grid.list-mode .list-avatar::before,
+.grid.list-mode .list-avatar::after {
+	display: none !important;
+}
+
+.grid.list-mode .list-avatar img {
+	position: absolute !important;
+	inset: 8px !important;
+	z-index: 1 !important;
+	width: calc(100% - 16px) !important;
+	height: calc(100% - 16px) !important;
+	max-width: none !important;
+	max-height: none !important;
+	object-fit: cover !important;
+	object-position: center !important;
+	border-radius: 10px !important;
+}
+
+.grid.list-mode .list-avatar-frame {
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 6 !important;
+	display: block !important;
+	width: 100% !important;
+	height: 100% !important;
+	color: var(--accent, #75d7ff) !important;
+	pointer-events: none !important;
+	filter:
+		drop-shadow(0 0 7px color-mix(in srgb, var(--accent, #75d7ff) 62%, transparent))
+		drop-shadow(0 0 16px color-mix(in srgb, var(--accent, #75d7ff) 34%, transparent)) !important;
+}
+
+.grid.list-mode .card:hover .list-avatar-frame,
+.grid.list-mode .card:focus-visible .list-avatar-frame,
+.grid.list-mode .card.is-touching .list-avatar-frame {
+	filter:
+		drop-shadow(0 0 9px color-mix(in srgb, var(--accent, #75d7ff) 78%, transparent))
+		drop-shadow(0 0 22px color-mix(in srgb, var(--accent, #75d7ff) 46%, transparent)) !important;
+}
+</style>
+
+
+<!-- ===== PATCH VISUAL GERADO: Lista estilo neon/futurista, sem alterar o modo Cards ===== -->
+<style id="neon-list-redesign-v1">
+:root{
+	--ui-neon-blue:#4aa8ff;
+	--ui-neon-purple:#a86cff;
+	--ui-ink:#050914;
+}
+
+body{
+	background:
+		radial-gradient(circle at 10% 8%, rgba(114,82,255,.16), transparent 28%),
+		radial-gradient(circle at 78% 20%, rgba(48,125,255,.13), transparent 30%),
+		linear-gradient(180deg,#050815 0%,#070b16 48%,#030712 100%) !important;
+}
+
+body::after{
+	content:"";
+	position:fixed;
+	inset:0;
+	z-index:0;
+	pointer-events:none;
+	background:
+		linear-gradient(90deg,rgba(110,160,255,.045) 1px,transparent 1px),
+		linear-gradient(180deg,rgba(110,160,255,.035) 1px,transparent 1px);
+	background-size:72px 72px;
+	mask:linear-gradient(180deg,#000,rgba(0,0,0,.35) 55%,transparent);
+	opacity:.24;
+}
+
+@media (min-width:901px){
+	.app{max-width:1240px !important;width:calc(100% - 34px) !important;padding-top:18px !important;}
+	.archive-side-hud{
+		background:linear-gradient(180deg,rgba(11,17,34,.94),rgba(5,8,18,.98)) !important;
+		border:1px solid rgba(160,120,255,.25) !important;
+		box-shadow:0 0 0 1px rgba(255,255,255,.035),0 0 32px rgba(136,86,255,.18),inset 0 0 22px rgba(72,112,255,.08) !important;
+		border-radius:28px !important;
+	}
+	.archive-side-crystal{
+		background:radial-gradient(circle at 50% 45%,rgba(196,119,255,.44),rgba(89,65,180,.20) 42%,rgba(6,10,22,.90) 70%) !important;
+		border-color:rgba(178,128,255,.26) !important;
+		box-shadow:0 0 28px rgba(174,92,255,.30),inset 0 0 26px rgba(125,75,255,.22) !important;
+	}
+	.archive-side-item{
+		background:linear-gradient(180deg,rgba(14,20,38,.86),rgba(7,11,24,.94)) !important;
+		border:1px solid rgba(180,205,255,.09) !important;
+		box-shadow:inset 0 1px 0 rgba(255,255,255,.045) !important;
+	}
+	.archive-side-item.is-active,
+	.archive-side-item:hover{
+		background:linear-gradient(180deg,rgba(102,61,210,.48),rgba(38,25,86,.82)) !important;
+		border-color:rgba(207,139,255,.48) !important;
+		box-shadow:0 0 22px rgba(176,76,255,.26),inset 0 0 18px rgba(151,90,255,.22) !important;
+	}
+
+	.topbar{
+		border-radius:0 24px 24px 24px !important;
+		background:linear-gradient(180deg,rgba(12,17,32,.92),rgba(7,10,22,.96)) !important;
+		border:1px solid rgba(165,190,255,.16) !important;
+		box-shadow:0 18px 42px rgba(0,0,0,.30),inset 0 0 28px rgba(79,115,255,.08) !important;
+		position:relative !important;
+	}
+	.topbar::before{
+		content:"";
+		position:absolute;
+		left:18px;right:18px;bottom:-10px;height:1px;
+		background:linear-gradient(90deg,transparent,rgba(92,128,255,.55),rgba(184,96,255,.38),transparent);
+		box-shadow:0 0 14px rgba(95,115,255,.45);
+	}
+	.brand-title{font-size:38px !important;text-shadow:0 0 18px rgba(96,150,255,.25) !important;}
+	.brand-sub{color:#b7c3df !important;}
+	.view-toggle,.search{
+		border-radius:8px !important;
+		background:linear-gradient(180deg,rgba(18,24,44,.86),rgba(8,12,26,.94)) !important;
+		border-color:rgba(164,188,255,.18) !important;
+		box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 18px rgba(101,86,255,.10) !important;
+	}
+	.view-toggle{border-color:rgba(190,145,255,.48) !important;background:linear-gradient(135deg,rgba(89,62,172,.54),rgba(20,25,48,.94)) !important;}
+
+	.summon-status-panel{
+		position:relative !important;
+		border-radius:0 18px 18px 0 !important;
+		background:linear-gradient(90deg,rgba(9,14,28,.95),rgba(7,11,24,.88) 62%,rgba(29,20,74,.34)) !important;
+		border:1px solid rgba(91,130,255,.22) !important;
+		box-shadow:inset 0 0 28px rgba(66,110,255,.10),0 0 24px rgba(80,88,255,.10) !important;
+	}
+	.summon-status-panel::after{
+		content:"";position:absolute;right:34px;bottom:14px;width:360px;height:44px;pointer-events:none;
+		background:linear-gradient(135deg,transparent 0 22%,rgba(82,92,255,.38) 23%,transparent 25% 39%,rgba(178,75,255,.45) 40%,transparent 43% 100%);
+		filter:drop-shadow(0 0 10px rgba(108,94,255,.42));opacity:.75;
+	}
+
+	/* Apenas modo lista: o modo Cards permanece com as regras antigas. */
+	.grid.list-mode{gap:16px !important;}
+	.grid.list-mode .card{
+		display:grid !important;
+		grid-template-columns:minmax(0,1fr) 250px 150px !important;
+		grid-template-areas:"info char emblem" !important;
+		min-height:148px !important;height:148px !important;
+		padding:18px 26px 16px 24px !important;
+		border-radius:18px !important;
+		clip-path:polygon(18px 0,calc(100% - 18px) 0,100% 18px,100% calc(100% - 18px),calc(100% - 18px) 100%,18px 100%,0 calc(100% - 18px),0 18px) !important;
+		background:linear-gradient(90deg,rgba(6,12,26,.96),rgba(8,14,30,.88) 48%,rgba(6,10,22,.96)) !important;
+		border:1px solid color-mix(in srgb,var(--accent) 54%,rgba(160,190,255,.20)) !important;
+		box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),inset 0 0 36px color-mix(in srgb,var(--accent) 11%,transparent),0 14px 34px rgba(0,0,0,.32),0 0 22px color-mix(in srgb,var(--accent) 18%,transparent) !important;
+		overflow:hidden !important;
+		isolation:isolate !important;
+	}
+	.grid.list-mode .card::before{
+		display:block !important;content:"" !important;position:absolute !important;inset:0 !important;z-index:1 !important;pointer-events:none !important;
+		background:
+			linear-gradient(115deg,transparent 0 57%,rgba(255,255,255,.055) 58%,transparent 64%),
+			linear-gradient(90deg,rgba(255,255,255,.035),transparent 18%,transparent 82%,rgba(255,255,255,.035)),
+			repeating-linear-gradient(90deg,rgba(130,165,255,.11) 0 2px,transparent 2px 72px);
+		mask:linear-gradient(90deg,#000,rgba(0,0,0,.82),#000);
+		opacity:.84 !important;
+	}
+	.grid.list-mode .card::after{
+		display:block !important;content:"" !important;position:absolute !important;inset:0 !important;z-index:2 !important;pointer-events:none !important;
+		background:
+			linear-gradient(90deg,color-mix(in srgb,var(--accent) 72%,transparent) 0 4px,transparent 4px),
+			linear-gradient(90deg,transparent calc(100% - 4px),color-mix(in srgb,var(--accent) 72%,transparent) calc(100% - 4px)),
+			radial-gradient(circle at 9% 50%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 18%);
+		opacity:.95 !important;
+	}
+	.grid.list-mode .card-frame-svg{opacity:.86 !important;z-index:6 !important;filter:drop-shadow(0 0 7px currentColor) drop-shadow(0 0 16px color-mix(in srgb,var(--accent) 45%,transparent)) !important;}
+	.grid.list-mode .list-banner{display:block !important;position:absolute !important;inset:0 !important;z-index:0 !important;opacity:.88 !important;}
+	.grid.list-mode .list-banner img{filter:brightness(.22) saturate(1.05) contrast(1.08) blur(.2px) !important;transform:scale(1.06) !important;}
+	.grid.list-mode .list-banner::after{content:"" !important;position:absolute !important;inset:0 !important;background:linear-gradient(90deg,rgba(5,10,22,.90),rgba(5,10,22,.76) 45%,rgba(5,10,22,.42) 70%,rgba(5,10,22,.86)) !important;}
+	.grid.list-mode .list-rail{display:none !important;}
+
+	.grid.list-mode .list-group1{grid-area:info !important;position:relative !important;z-index:7 !important;display:grid !important;grid-template-columns:98px minmax(0,1fr) !important;align-items:center !important;gap:18px !important;min-width:0 !important;}
+	.grid.list-mode .list-avatar{width:86px !important;height:86px !important;border-radius:16px !important;overflow:visible !important;background:rgba(12,18,36,.78) !important;border:1px solid color-mix(in srgb,var(--accent) 58%,rgba(255,255,255,.22)) !important;box-shadow:0 0 22px color-mix(in srgb,var(--accent) 25%,transparent),inset 0 0 16px rgba(255,255,255,.045) !important;}
+	.grid.list-mode .list-avatar img{position:absolute !important;inset:8px !important;width:calc(100% - 16px) !important;height:calc(100% - 16px) !important;border-radius:12px !important;object-fit:cover !important;}
+	.grid.list-mode .list-avatar .avatar-frame-svg{display:block !important;position:absolute !important;inset:-12px !important;width:calc(100% + 24px) !important;height:calc(100% + 24px) !important;color:var(--accent) !important;filter:drop-shadow(0 0 8px currentColor) !important;z-index:12 !important;}
+
+	.grid.list-mode .list-info{position:relative !important;z-index:7 !important;min-width:0 !important;gap:8px !important;display:flex !important;flex-direction:column !important;}
+	.grid.list-mode .list-name-inline-row{display:flex !important;align-items:center !important;gap:8px !important;min-width:0 !important;max-width:100% !important;}
+	.grid.list-mode .list-displayname{font-size:18px !important;line-height:1.15 !important;font-weight:1000 !important;min-width:0 !important;max-width:max-content !important;overflow:visible !important;text-overflow:clip !important;white-space:nowrap !important;text-shadow:0 0 13px color-mix(in srgb,var(--display-color,#fff) 38%,transparent) !important;}
+	.grid.list-mode .list-displayname-text{display:inline-block !important;max-width:100% !important;overflow:visible !important;}
+	.grid.list-mode .list-username-inline{font-size:13px !important;color:#cbd5eb !important;opacity:.95 !important;flex:0 1 auto !important;min-width:0 !important;}
+	.grid.list-mode .verified-emblem{width:16px !important;height:16px !important;flex:0 0 16px !important;}
+	.grid.list-mode .list-title-box{width:min(560px,100%) !important;height:30px !important;display:flex !important;align-items:center !important;padding:0 16px !important;border-radius:12px !important;background:rgba(3,8,18,.62) !important;border:1px solid rgba(185,205,255,.28) !important;color:#eef4ff !important;font-size:13px !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;}
+	.grid.list-mode .list-badges-inline{display:flex !important;flex-wrap:wrap !important;gap:10px !important;align-items:center !important;}
+	.grid.list-mode .list-combat-pill,.grid.list-mode .list-status-pill,.grid.list-mode .list-clan-pill{min-height:30px !important;padding:0 16px !important;border-radius:9px !important;background:rgba(5,10,22,.72) !important;border:1px solid rgba(170,195,255,.18) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;color:#f4f7ff !important;font-size:13px !important;font-weight:900 !important;}
+
+	.grid.list-mode .list-group2{grid-area:char !important;position:relative !important;z-index:7 !important;height:148px !important;display:flex !important;align-items:flex-end !important;justify-content:center !important;overflow:visible !important;}
+	.grid.list-mode .list-character{position:relative !important;display:flex !important;align-items:flex-end !important;justify-content:center !important;top:auto !important;right:auto !important;width:230px !important;height:148px !important;transform:none !important;opacity:1 !important;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55)) drop-shadow(0 0 12px color-mix(in srgb,var(--accent) 16%,transparent)) !important;}
+	.grid.list-mode .list-character img{max-width:230px !important;max-height:178px !important;transform:translateY(8px) scale(1.03) !important;object-fit:contain !important;object-position:center bottom !important;}
+	.grid.list-mode .list-character-shadow{display:block !important;position:absolute !important;right:22px !important;top:0 !important;width:210px !important;height:148px !important;z-index:3 !important;opacity:.12 !important;filter:grayscale(1) brightness(1.3) contrast(1.2) !important;pointer-events:none !important;overflow:hidden !important;}
+	.grid.list-mode .list-character-shadow img{width:100% !important;height:120% !important;object-fit:contain !important;object-position:right bottom !important;transform:translateY(4px) scale(1.12) !important;}
+
+	.grid.list-mode .list-group3{grid-area:emblem !important;position:relative !important;z-index:7 !important;height:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;}
+	.grid.list-mode .list-group3::before{content:"❖";font-size:46px;line-height:1;color:var(--accent);text-shadow:0 0 16px color-mix(in srgb,var(--accent) 70%,transparent),0 0 34px color-mix(in srgb,var(--accent) 34%,transparent);opacity:.95;}
+	.grid.list-mode .list-group3::after{content:"";position:absolute;left:-52px;width:74px;height:40px;border-left:4px solid color-mix(in srgb,var(--accent) 68%,transparent);border-bottom:2px solid color-mix(in srgb,var(--accent) 40%,transparent);transform:skewX(-28deg);opacity:.75;}
+
+	.grid.list-mode .list-meta,.grid.list-mode .list-rank-title{display:none !important;}
+	.grid.list-mode .card:hover{transform:translateY(-2px) !important;border-color:color-mix(in srgb,var(--accent) 78%,white 10%) !important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 0 48px color-mix(in srgb,var(--accent) 16%,transparent),0 18px 40px rgba(0,0,0,.38),0 0 30px color-mix(in srgb,var(--accent) 28%,transparent) !important;}
+}
+
+@media (min-width:901px) and (max-width:1100px){
+	.brand-title{font-size:28px !important;}
+	.grid.list-mode .card{grid-template-columns:minmax(0,1fr) 210px 94px !important;min-height:124px !important;height:124px !important;padding:14px 18px !important;}
+	.grid.list-mode .list-group1{grid-template-columns:82px minmax(0,1fr) !important;gap:12px !important;}
+	.grid.list-mode .list-avatar{width:72px !important;height:72px !important;}
+	.grid.list-mode .list-displayname{font-size:15px !important;}
+	.grid.list-mode .list-title-box{height:28px !important;font-size:11px !important;}
+	.grid.list-mode .list-combat-pill,.grid.list-mode .list-status-pill,.grid.list-mode .list-clan-pill{font-size:11px !important;min-height:28px !important;padding:0 12px !important;}
+	.grid.list-mode .list-group2,.grid.list-mode .list-character{height:124px !important;width:200px !important;}
+	.grid.list-mode .list-character img{max-height:154px !important;}
+	.grid.list-mode .list-character-shadow{height:124px !important;width:170px !important;}
+	.grid.list-mode .list-group3::before{font-size:34px !important;}
+}
+
+@media (max-width:900px){
+	.grid.list-mode .card{min-height:150px !important;height:auto !important;border-radius:18px !important;clip-path:none !important;}
+}
+
+
+/* ==========================================================
+   CORREÇÃO COMPACTA FINAL — somente modo Lista
+   Ajusta os blocos citados: .list-avatar, .list-group2 e .list-group3.
+   Mantém o modo Cards original sem alteração.
+   ========================================================== */
+@media (min-width: 901px) {
+	.grid.list-mode {
+		gap: 13px !important;
+	}
+
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) 188px 74px !important;
+		grid-template-areas: "info char emblem" !important;
+		min-height: 122px !important;
+		height: 122px !important;
+		padding: 12px 16px 12px 20px !important;
+		overflow: hidden !important;
+	}
+
+	/* list-group1: bloco principal da esquerda */
+	.grid.list-mode .list-group1 {
+		grid-area: info !important;
+		grid-template-columns: 74px minmax(0, 1fr) !important;
+		gap: 10px !important;
+		align-items: center !important;
+		min-width: 0 !important;
+	}
+
+	/* list-avatar: reduzido e sem moldura estourando para fora */
+	.grid.list-mode .list-avatar {
+		width: 62px !important;
+		height: 62px !important;
+		min-width: 62px !important;
+		min-height: 62px !important;
+		max-width: 62px !important;
+		max-height: 62px !important;
+		border-radius: 14px !important;
+		overflow: visible !important;
+		justify-self: center !important;
+		align-self: center !important;
+		margin: 0 !important;
+	}
+
+	.grid.list-mode .list-avatar img {
+		inset: 7px !important;
+		width: calc(100% - 14px) !important;
+		height: calc(100% - 14px) !important;
+		border-radius: 10px !important;
+	}
+
+	.grid.list-mode .list-avatar .avatar-frame-svg {
+		inset: -6px !important;
+		width: calc(100% + 12px) !important;
+		height: calc(100% + 12px) !important;
+		filter: drop-shadow(0 0 5px currentColor) !important;
+	}
+
+	.grid.list-mode .list-info {
+		gap: 5px !important;
+		min-width: 0 !important;
+		max-width: 100% !important;
+	}
+
+	.grid.list-mode .list-name-inline-row {
+		gap: 7px !important;
+		min-width: 0 !important;
+		max-width: 100% !important;
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-displayname {
+		font-size: 15px !important;
+		line-height: 1.1 !important;
+		max-width: 48% !important;
+		overflow: hidden !important;
+		text-overflow: ellipsis !important;
+	}
+
+	.grid.list-mode .list-username-inline {
+		font-size: 11px !important;
+		min-width: 0 !important;
+		max-width: 44% !important;
+		overflow: hidden !important;
+		text-overflow: ellipsis !important;
+		white-space: nowrap !important;
+	}
+
+	.grid.list-mode .verified-emblem {
+		width: 14px !important;
+		height: 14px !important;
+		flex: 0 0 14px !important;
+	}
+
+	/* list-title-box + combat badges: menores para não empurrar/cortar */
+	.grid.list-mode .list-title-box {
+		width: min(380px, 100%) !important;
+		height: 24px !important;
+		min-height: 24px !important;
+		padding: 0 12px !important;
+		border-radius: 10px !important;
+		font-size: 10.5px !important;
+		line-height: 1 !important;
+	}
+
+	.grid.list-mode .list-badges-inline {
+		gap: 8px !important;
+		flex-wrap: nowrap !important;
+		overflow: hidden !important;
+		max-width: 100% !important;
+	}
+
+	.grid.list-mode .list-combat-pill,
+	.grid.list-mode .list-status-pill,
+	.grid.list-mode .list-clan-pill {
+		min-height: 24px !important;
+		height: 24px !important;
+		padding: 0 11px !important;
+		border-radius: 8px !important;
+		font-size: 10.5px !important;
+		line-height: 1 !important;
+		white-space: nowrap !important;
+	}
+
+	/* list-group2: personagem principal central menor e preso dentro do card */
+	.grid.list-mode .list-group2 {
+		grid-area: char !important;
+		height: 122px !important;
+		width: 188px !important;
+		max-width: 188px !important;
+		align-self: center !important;
+		justify-self: center !important;
+		overflow: hidden !important;
+		display: flex !important;
+		align-items: flex-end !important;
+		justify-content: center !important;
+	}
+
+	.grid.list-mode .list-character {
+		width: 188px !important;
+		height: 122px !important;
+		max-width: 188px !important;
+		max-height: 122px !important;
+		overflow: visible !important;
+		align-items: flex-end !important;
+		justify-content: center !important;
+	}
+
+	.grid.list-mode .list-character img {
+		max-width: 178px !important;
+		max-height: 138px !important;
+		transform: translateY(5px) scale(1) !important;
+		object-fit: contain !important;
+		object-position: center bottom !important;
+	}
+
+	.grid.list-mode .card:hover .list-character img,
+	.grid.list-mode .card:focus-visible .list-character img {
+		transform: translateY(2px) scale(1.03) !important;
+	}
+
+	.grid.list-mode .list-character-shadow {
+		right: 76px !important;
+		top: 0 !important;
+		width: 150px !important;
+		height: 122px !important;
+		opacity: .10 !important;
+		overflow: hidden !important;
+	}
+
+	.grid.list-mode .list-character-shadow img {
+		height: 112% !important;
+		transform: translateY(4px) scale(1.02) !important;
+	}
+
+	/* list-group3: emblema/diamante menor, sem sair cortado */
+	.grid.list-mode .list-group3 {
+		grid-area: emblem !important;
+		width: 74px !important;
+		min-width: 74px !important;
+		max-width: 74px !important;
+		height: 100% !important;
+		align-self: center !important;
+		justify-self: center !important;
+		overflow: hidden !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+
+	.grid.list-mode .list-group3::before {
+		font-size: 27px !important;
+		line-height: 1 !important;
+		opacity: .92 !important;
+		filter: none !important;
+	}
+
+	.grid.list-mode .list-group3::after {
+		left: -28px !important;
+		width: 42px !important;
+		height: 24px !important;
+		border-left-width: 2px !important;
+		border-bottom-width: 1px !important;
+		opacity: .45 !important;
+	}
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+	.grid.list-mode .card {
+		grid-template-columns: minmax(0, 1fr) 160px 56px !important;
+		min-height: 112px !important;
+		height: 112px !important;
+		padding: 10px 12px 10px 18px !important;
+	}
+	.grid.list-mode .list-group1 { grid-template-columns: 66px minmax(0, 1fr) !important; gap: 9px !important; }
+	.grid.list-mode .list-avatar { width: 56px !important; height: 56px !important; min-width: 56px !important; min-height: 56px !important; }
+	.grid.list-mode .list-title-box { width: min(360px, 100%) !important; height: 23px !important; font-size: 10px !important; }
+	.grid.list-mode .list-combat-pill,
+	.grid.list-mode .list-status-pill,
+	.grid.list-mode .list-clan-pill { height: 23px !important; min-height: 23px !important; font-size: 10px !important; padding: 0 9px !important; }
+	.grid.list-mode .list-group2,
+	.grid.list-mode .list-character { width: 160px !important; max-width: 160px !important; height: 112px !important; max-height: 112px !important; }
+	.grid.list-mode .list-character img { max-width: 154px !important; max-height: 126px !important; }
+	.grid.list-mode .list-character-shadow { right: 58px !important; width: 120px !important; height: 112px !important; }
+	.grid.list-mode .list-group3 { width: 56px !important; min-width: 56px !important; max-width: 56px !important; }
+	.grid.list-mode .list-group3::before { font-size: 22px !important; }
+	.grid.list-mode .list-group3::after { display: none !important; }
+}
+
+</style>
+
+
+<style id="list-v6-hangar-layer0-final">
+/* =========================================================
+   V6 - LISTA: Camada 0 Hangar Mecha manual + ajustes finos
+   Afeta somente .grid.list-mode / .list-card-v3.
+   O modo Cards permanece separado.
+   ========================================================= */
+:root{
+  --list-hangar-wallpaper: url("https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/ListBannerBottomImage/listbanner0.png");
+}
+
+/* Card deixa de parecer transparente: base sólida + glow lateral */
+.grid.list-mode .card.list-card-v3{
+  position: relative !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--accent) 10%, rgba(5,9,20,.98)) 0%,
+      rgba(8,13,26,.985) 34%,
+      rgba(7,11,23,.975) 66%,
+      color-mix(in srgb, var(--accent) 8%, rgba(4,8,18,.99)) 100%
+    ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.035),
+    inset 0 0 34px rgba(0,0,0,.32),
+    -10px 0 22px color-mix(in srgb, var(--accent) 10%, transparent),
+    10px 0 28px color-mix(in srgb, var(--accent) 9%, transparent),
+    0 12px 26px rgba(0,0,0,.30) !important;
+}
+
+/* Camada 0: wallpaper Hangar Mecha manual por link */
+.grid.list-mode .card.list-card-v3 .list-svg-bg{
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  background: none !important;
+  filter: none !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-svg-bg::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: -8px !important;
+  background-image: var(--list-hangar-wallpaper) !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  opacity: .16 !important;
+  filter: blur(1.7px) brightness(.58) saturate(.72) contrast(1.05) !important;
+  transform: scale(1.035) !important;
+}
+
+/* Overlay escuro para o texto continuar legível */
+.grid.list-mode .card.list-card-v3 .list-svg-bg::after{
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(90deg,
+      rgba(3,7,15,.90) 0%,
+      rgba(5,10,20,.78) 24%,
+      rgba(5,10,20,.62) 55%,
+      rgba(3,7,15,.82) 100%
+    ),
+    radial-gradient(240px circle at 78% 50%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    linear-gradient(45deg, rgba(255,255,255,.032) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.032) 75%),
+    linear-gradient(45deg, rgba(255,255,255,.032) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.032) 75%) !important;
+  background-size: auto, auto, 32px 32px, 32px 32px !important;
+  background-position: center, center, 0 0, 16px 16px !important;
+  opacity: .98 !important;
+}
+
+/* Circuito mais visível sobre o hangar */
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  z-index: 3 !important;
+  right: 20px !important;
+  width: 285px !important;
+  opacity: .30 !important;
+  filter:
+    drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 40%, transparent))
+    drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 16%, transparent)) !important;
+}
+
+/* Moldura/linha externa continua acima das camadas */
+.grid.list-mode .card.list-card-v3 .list-card-frame{
+  z-index: 6 !important;
+  opacity: .88 !important;
+  filter:
+    drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 24%, transparent))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 10%, transparent)) !important;
+}
+
+/* Avatar maior e com frame neon controlado */
+.grid.list-mode .card.list-card-v3 .list-group1{
+  grid-template-columns: 82px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  z-index: 9 !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-avatar{
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  border-radius: 17px !important;
+  background: rgba(7,12,24,.86) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, rgba(255,255,255,.18)) !important;
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.045),
+    0 0 16px color-mix(in srgb, var(--accent) 26%, transparent),
+    0 0 34px color-mix(in srgb, var(--accent) 13%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--accent) 12%, transparent) !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-avatar img{
+  inset: 7px !important;
+  width: calc(100% - 14px) !important;
+  height: calc(100% - 14px) !important;
+  border-radius: 12px !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-avatar .avatar-frame-svg{
+  inset: -7px !important;
+  width: calc(100% + 14px) !important;
+  height: calc(100% + 14px) !important;
+  opacity: .98 !important;
+  filter:
+    drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent))
+    drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 22%, transparent)) !important;
+}
+
+/* Personagem maior, mas baixada para evitar corte seco no topo */
+.grid.list-mode .card.list-card-v3 .list-group2{
+  width: 245px !important;
+  max-width: 245px !important;
+  height: 122px !important;
+  max-height: 122px !important;
+  overflow: visible !important;
+  z-index: 8 !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-character{
+  width: 235px !important;
+  max-width: 235px !important;
+  height: 122px !important;
+  max-height: 122px !important;
+  overflow: visible !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-character::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -18px !important;
+  width: 210px !important;
+  height: 150px !important;
+  transform: translateX(-50%) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle,
+      color-mix(in srgb, var(--accent) 42%, rgba(255,255,255,.14)) 0%,
+      color-mix(in srgb, var(--accent) 20%, transparent) 42%,
+      transparent 72%
+    ) !important;
+  filter: blur(28px) !important;
+  opacity: .52 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-character img,
+.grid.list-mode .card.list-card-v3 .list-character-main{
+  max-width: 220px !important;
+  max-height: 132px !important;
+  transform: translateY(13px) scale(1.02) !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  filter:
+    drop-shadow(0 10px 14px rgba(0,0,0,.45))
+    drop-shadow(0 0 11px color-mix(in srgb, var(--accent) 18%, transparent)) !important;
+}
+
+/* Hover/toque: card inteiro mostra o wallpaper/glow sem exagerar */
+.grid.list-mode .card.list-card-v3:hover,
+.grid.list-mode .card.list-card-v3:focus-visible,
+.grid.list-mode .card.list-card-v3.is-touching{
+  border-color: color-mix(in srgb, var(--accent) 64%, rgba(255,255,255,.38)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.07),
+    inset 0 0 42px color-mix(in srgb, var(--accent) 9%, transparent),
+    -14px 0 28px color-mix(in srgb, var(--accent) 18%, transparent),
+    14px 0 34px color-mix(in srgb, var(--accent) 15%, transparent),
+    0 16px 34px rgba(0,0,0,.34) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg::before{
+  opacity: .22 !important;
+  filter: blur(1.2px) brightness(.66) saturate(.82) contrast(1.08) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-circuit-bg,
+.grid.list-mode .card.list-card-v3:focus-visible .list-circuit-bg,
+.grid.list-mode .card.list-card-v3.is-touching .list-circuit-bg{
+  opacity: .42 !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-character::before,
+.grid.list-mode .card.list-card-v3:focus-visible .list-character::before,
+.grid.list-mode .card.list-card-v3.is-touching .list-character::before{
+  opacity: .68 !important;
+  filter: blur(24px) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover .list-character img,
+.grid.list-mode .card.list-card-v3:focus-visible .list-character img,
+.grid.list-mode .card.list-card-v3.is-touching .list-character img{
+  transform: translateY(10px) scale(1.045) !important;
+}
+
+@media (max-width: 900px){
+  .grid.list-mode .card.list-card-v3 .list-group1{grid-template-columns: 72px minmax(0,1fr) !important;}
+  .grid.list-mode .card.list-card-v3 .list-avatar{width:64px !important;height:64px !important;min-width:64px !important;min-height:64px !important;}
+  .grid.list-mode .card.list-card-v3 .list-group2{width:190px !important;max-width:190px !important;}
+  .grid.list-mode .card.list-card-v3 .list-character{width:184px !important;max-width:184px !important;}
+  .grid.list-mode .card.list-card-v3 .list-character img{max-width:176px !important;max-height:126px !important;}
+}
+</style>
+
+<style id="list-v8-layer0-visible-fix">
+/* =========================================================
+   V8 - LISTA: correção SOMENTE da Camada 0 Hangar Mecha
+   Motivo: o hangar estava atrás de pseudo-camadas escuras/xadrez
+   e com opacidade baixa, então quase sumia no card real.
+   ========================================================= */
+.grid.list-mode .card.list-card-v3 .list-svg-bg{
+  z-index: 0 !important;
+  opacity: 1 !important;
+  background: none !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+}
+
+/* Hangar mais visível, ainda como fundo controlado */
+.grid.list-mode .card.list-card-v3 .list-svg-bg::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: -12px !important;
+  background-image: var(--list-hangar-wallpaper) !important;
+  background-size: cover !important;
+  background-position: center 48% !important;
+  background-repeat: no-repeat !important;
+  opacity: .58 !important;
+  filter: blur(.7px) brightness(.82) saturate(.72) contrast(1.08) !important;
+  transform: scale(1.018) !important;
+  z-index: 0 !important;
+}
+
+/* Overlay escuro menor: protege texto, mas não apaga o hangar */
+.grid.list-mode .card.list-card-v3 .list-svg-bg::after{
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background:
+    linear-gradient(90deg,
+      rgba(2,6,14,.68) 0%,
+      rgba(4,8,18,.58) 30%,
+      rgba(4,8,18,.34) 58%,
+      rgba(2,6,14,.58) 100%
+    ),
+    radial-gradient(300px circle at 78% 50%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 72%) !important;
+  opacity: 1 !important;
+}
+
+/* Xadrez sai dos pseudo-elements principais e fica mais leve para não cobrir o hangar */
+.grid.list-mode .card.list-card-v3::after{
+  z-index: 2 !important;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.018) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.018) 75%),
+    linear-gradient(45deg, rgba(255,255,255,.018) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.018) 75%) !important;
+  background-size: 32px 32px !important;
+  background-position: 0 0, 16px 16px !important;
+  opacity: .42 !important;
+}
+
+/* O brilho colorido do card estava cobrindo o wallpaper; reduz só essa camada. */
+.grid.list-mode .card.list-card-v3::before{
+  z-index: 1 !important;
+  opacity: .25 !important;
+}
+
+/* Conteúdo continua acima da Camada 0 */
+.grid.list-mode .card.list-card-v3 .list-group1,
+.grid.list-mode .card.list-card-v3 .list-character,
+.grid.list-mode .card.list-card-v3 .list-character-shadow,
+.grid.list-mode .card.list-card-v3 .list-card-frame,
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  position: relative !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  z-index: 4 !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-card-frame{
+  z-index: 7 !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-group1{
+  z-index: 9 !important;
+}
+
+.grid.list-mode .card.list-card-v3 .list-character,
+.grid.list-mode .card.list-card-v3 .list-character-shadow{
+  z-index: 8 !important;
+}
+</style>
+
+<style id="list-v9-layer-stack-correct">
+/* =========================================================
+   V9 - LISTA: pilha de camadas separada por z-index.
+   Objetivo: Hangar visível sem matar Xadrez/Circuito/Glow.
+   Só afeta .grid.list-mode .list-card-v3.
+   ========================================================= */
+.grid.list-mode .card.list-card-v3{
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  color: var(--accent) !important;
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--accent) 7%, rgba(4,8,18,.98)) 0%,
+      rgba(7,11,22,.965) 34%,
+      rgba(8,12,24,.945) 60%,
+      color-mix(in srgb, var(--accent) 7%, rgba(3,7,16,.985)) 100%
+    ) !important;
+  border-color: color-mix(in srgb, var(--accent) 42%, rgba(255,255,255,.16)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.04),
+    inset 0 0 34px rgba(0,0,0,.34),
+    -10px 0 24px color-mix(in srgb, var(--accent) 13%, transparent),
+    10px 0 28px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 13px 28px rgba(0,0,0,.30) !important;
+}
+
+/* 5 / último atrás: Hangar Mecha manual */
+.grid.list-mode .card.list-card-v3 .list-svg-bg{
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  background: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+.grid.list-mode .card.list-card-v3 .list-svg-bg::before{
+  content: "" !important;
+  position: absolute !important;
+  inset: -10px !important;
+  z-index: 1 !important;
+  background-image: var(--list-hangar-wallpaper) !important;
+  background-size: cover !important;
+  background-position: center 50% !important;
+  background-repeat: no-repeat !important;
+  opacity: .34 !important;
+  filter: blur(.9px) brightness(.72) saturate(.62) contrast(1.08) !important;
+  transform: scale(1.024) !important;
+}
+.grid.list-mode .card.list-card-v3 .list-svg-bg::after{
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  background:
+    linear-gradient(90deg,
+      rgba(2,6,14,.78) 0%,
+      rgba(3,7,16,.68) 25%,
+      rgba(3,7,16,.42) 56%,
+      rgba(2,6,14,.64) 100%
+    ),
+    radial-gradient(300px circle at 78% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 72%) !important;
+  opacity: .92 !important;
+}
+
+/* 4: Xadrez tecnológico, acima do hangar */
+.grid.list-mode .card.list-card-v3::after{
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.030) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.030) 75%),
+    linear-gradient(45deg, rgba(255,255,255,.030) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.030) 75%) !important;
+  background-size: 32px 32px !important;
+  background-position: 0 0, 16px 16px !important;
+  opacity: .44 !important;
+  transform: none !important;
+  animation: none !important;
+  mix-blend-mode: screen !important;
+}
+
+/* 3: Circuito/SVG, acima do xadrez */
+.grid.list-mode .card.list-card-v3 .list-circuit-bg{
+  position: absolute !important;
+  top: 18px !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  width: 300px !important;
+  z-index: 3 !important;
+  opacity: .44 !important;
+  color: var(--accent) !important;
+  mix-blend-mode: screen !important;
+  filter:
+    drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 48%, transparent))
+    drop-shadow(0 0 17px color-mix(in srgb, var(--accent) 22%, transparent)) !important;
+}
+
+/* 2: Glow geral e aura atrás da personagem */
+.grid.list-mode .card.list-card-v3::before{
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: 4 !important;
+  background:
+    radial-gradient(250px circle at 82% 54%, color-mix(in srgb, var(--accent) 23%, transparent), transparent 70%),
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 38%, color-mix(in srgb, var(--accent) 8%, transparent)) !important;
+  opacity: .48 !important;
+  mix-blend-mode: screen !important;
+  transition: opacity .18s ease, background .18s ease !important;
+}
+.grid.list-mode .card.list-card-v3 .list-group2{
+  position: absolute !important;
+  z-index: 8 !important;
+  overflow: visible !important;
+}
+.grid.list-mode .card.list-card-v3 .list-character{
+  position: relative !important;
+  z-index: 8 !important;
+  overflow: visible !important;
+  isolation: isolate !important;
+}
+.grid.list-mode .card.list-card-v3 .list-character::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -22px !important;
+  width: 230px !important;
+  height: 165px !important;
+  transform: translateX(-50%) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle,
+      color-mix(in srgb, var(--accent) 48%, rgba(255,255,255,.18)) 0%,
+      color-mix(in srgb, var(--accent) 27%, transparent) 42%,
+      transparent 73%
+    ) !important;
+  filter: blur(27px) !important;
+  opacity: .62 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  mix-blend-mode: screen !important;
+}
+.grid.list-mode .card.list-card-v3 .list-character img,
+.grid.list-mode .card.list-card-v3 .list-character-main{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 1 / frente: conteúdo e molduras */
+.grid.list-mode .card.list-card-v3 .list-group1,
+.grid.list-mode .card.list-card-v3 .list-info,
+.grid.list-mode .card.list-card-v3 .list-avatar{
+  position: relative !important;
+  z-index: 10 !important;
+}
+.grid.list-mode .card.list-card-v3 .list-card-frame{
+  position: absolute !important;
+  z-index: 11 !important;
+  opacity: .92 !important;
+  filter:
+    drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 28%, transparent))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 13%, transparent)) !important;
+}
+
+.grid.list-mode .card.list-card-v3:hover,
+.grid.list-mode .card.list-card-v3:focus-visible,
+.grid.list-mode .card.list-card-v3.is-touching{
+  border-color: color-mix(in srgb, var(--accent) 66%, rgba(255,255,255,.36)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.075),
+    inset 0 0 46px color-mix(in srgb, var(--accent) 10%, transparent),
+    -16px 0 32px color-mix(in srgb, var(--accent) 22%, transparent),
+    16px 0 38px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 16px 36px rgba(0,0,0,.34) !important;
+}
+.grid.list-mode .card.list-card-v3:hover .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3:focus-visible .list-svg-bg::before,
+.grid.list-mode .card.list-card-v3.is-touching .list-svg-bg::before{
+  opacity: .42 !important;
+  filter: blur(.65px) brightness(.80) saturate(.68) contrast(1.1) !important;
+}
+.grid.list-mode .card.list-card-v3:hover .list-circuit-bg,
+.grid.list-mode .card.list-card-v3:focus-visible .list-circuit-bg,
+.grid.list-mode .card.list-card-v3.is-touching .list-circuit-bg{
+  opacity: .58 !important;
+}
+.grid.list-mode .card.list-card-v3:hover::before,
+.grid.list-mode .card.list-card-v3:focus-visible::before,
+.grid.list-mode .card.list-card-v3.is-touching::before{
+  opacity: .68 !important;
+}
+.grid.list-mode .card.list-card-v3:hover::after,
+.grid.list-mode .card.list-card-v3:focus-visible::after,
+.grid.list-mode .card.list-card-v3.is-touching::after{
+  opacity: .54 !important;
+}
+
+/* ===== V11: Camadas visuais exclusivas do modo Cards ===== */
+.grid:not(.list-mode) .card {
+	background:
+		radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 34%),
+		linear-gradient(180deg, rgba(13,18,33,.98), rgba(6,9,18,.99));
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.035),
+		0 18px 42px rgba(0,0,0,.46),
+		0 0 24px color-mix(in srgb, var(--accent) 18%, transparent),
+		0 0 54px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.grid:not(.list-mode) .card:hover,
+.grid:not(.list-mode) .card:focus-visible {
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,.055),
+		0 22px 52px rgba(0,0,0,.50),
+		0 0 30px color-mix(in srgb, var(--accent) 24%, transparent),
+		0 0 72px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+/* Xadrez tecnológico por cima do banner, sem apagar a arte original */
+.grid:not(.list-mode) .card-bg::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	pointer-events: none;
+	background:
+		linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.055) 75%),
+		linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.055) 75%),
+		radial-gradient(circle at 72% 22%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 32%);
+	background-size: 24px 24px, 24px 24px, 100% 100%;
+	background-position: 0 0, 12px 12px, center;
+	opacity: .34;
+	mix-blend-mode: screen;
+}
+
+/* Circuito SVG/tech por cima do xadrez, usando a cor da carta */
+.grid:not(.list-mode) .card-bg::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	pointer-events: none;
+	background:
+		linear-gradient(180deg, rgba(3,6,14,.04) 0%, rgba(3,6,14,.20) 28%, rgba(3,6,14,.68) 72%, rgba(3,6,14,.96) 100%),
+		linear-gradient(90deg, rgba(3,6,14,.22) 0%, rgba(3,6,14,0) 36%, rgba(3,6,14,.40) 100%),
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 420'%3E%3Cg fill='none' stroke='white' stroke-opacity='.34' stroke-width='1.8'%3E%3Cpath d='M18 58h72l18-18h52'/%3E%3Cpath d='M34 118h88l20 20h84'/%3E%3Cpath d='M22 202h54l24-24h124'/%3E%3Cpath d='M40 286h80l18-18h76'/%3E%3Cpath d='M20 352h106l18 18h76'/%3E%3Cpath d='M184 40v92M204 148v86M170 250v118'/%3E%3C/g%3E%3Cg fill='white' fill-opacity='.42'%3E%3Ccircle cx='160' cy='40' r='4'/%3E%3Ccircle cx='226' cy='138' r='4'/%3E%3Ccircle cx='224' cy='178' r='3.5'/%3E%3Ccircle cx='214' cy='268' r='4'/%3E%3Ccircle cx='220' cy='370' r='4'/%3E%3C/g%3E%3C/svg%3E");
+	background-size: 100% 100%, 100% 100%, 78% 92%;
+	background-position: center, center, right center;
+	background-repeat: no-repeat;
+	opacity: .82;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 42%, transparent));
+}
+
+/* Glow atrás da personagem no modo Cards */
+.grid:not(.list-mode) .card-visual::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 46%;
+	width: 210px;
+	height: 260px;
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, white 8%) 0%, color-mix(in srgb, var(--accent) 22%, transparent) 36%, transparent 72%);
+	filter: blur(22px);
+	opacity: .52;
+	mix-blend-mode: screen;
+}
+
+.grid:not(.list-mode) .card:hover .card-visual::before,
+.grid:not(.list-mode) .card:focus-visible .card-visual::before {
+	opacity: .72;
+	filter: blur(24px);
+}
+
+/* Pequena moldura colorida para a carta não perder a cor principal */
+.grid:not(.list-mode) .card-outline {
+	border-color: color-mix(in srgb, var(--accent) 34%, rgba(255,255,255,.10));
+	box-shadow:
+		inset 0 0 18px color-mix(in srgb, var(--accent) 10%, transparent),
+		0 0 16px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.grid:not(.list-mode) .card-outline::before {
+	content: "";
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	pointer-events: none;
+	background:
+		linear-gradient(90deg, color-mix(in srgb, var(--accent) 70%, transparent), transparent 28%, transparent 72%, color-mix(in srgb, var(--accent) 45%, transparent)),
+		linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%, transparent 70%, rgba(255,255,255,.05));
+	mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	padding: 1px;
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	opacity: .76;
+}
+
+/* Mantém as camadas do Cards abaixo do conteúdo e sem afetar a Lista */
+.grid:not(.list-mode) .card-top,
+.grid:not(.list-mode) .card-bottom,
+.grid:not(.list-mode) .side-rail {
+	position: absolute;
+	z-index: 8;
+}
+
+.grid:not(.list-mode) .card-visual {
+	z-index: 5;
+}
+
+.grid:not(.list-mode) .card-bg {
+	z-index: 0;
+}
+
+
+</style>
+
+<style>
+/* =========================================================
+   V12 - Cards: painel de informações usando a cor da carta
+   Apenas modo Cards. Não altera .grid.list-mode.
+   ========================================================= */
+.grid:not(.list-mode) .card-bottom,
+.detail-card .detail-bottom {
+	border-color: color-mix(in srgb, var(--accent, #5865F2) 48%, rgba(255,255,255,.16)) !important;
+	background:
+		radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--accent, #5865F2) 34%, transparent) 0%, transparent 42%),
+		radial-gradient(circle at 88% 100%, color-mix(in srgb, var(--accent, #5865F2) 22%, transparent) 0%, transparent 48%),
+		linear-gradient(180deg, rgba(18, 16, 28, .70), rgba(4, 7, 16, .82)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.10),
+		inset 0 0 22px color-mix(in srgb, var(--accent, #5865F2) 12%, transparent),
+		0 14px 34px rgba(0,0,0,.42),
+		0 0 18px color-mix(in srgb, var(--accent, #5865F2) 20%, transparent),
+		0 0 36px color-mix(in srgb, var(--accent, #5865F2) 10%, transparent) !important;
+}
+
+.grid:not(.list-mode) .card-bottom::before,
+.detail-card .detail-bottom::before {
+	background:
+		linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent, #5865F2) 22%, rgba(255,255,255,.08)) 50%, transparent 100%),
+		repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent, #5865F2) 18%, rgba(255,255,255,.035)) 0 1px, transparent 1px 44px) !important;
+	opacity: .55 !important;
+}
+
+.grid:not(.list-mode) .card-bottom::after,
+.detail-card .detail-bottom::after {
+	content: "";
+	position: absolute;
+	left: 14px;
+	right: 14px;
+	top: 0;
+	height: 2px;
+	border-radius: 999px;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent, #5865F2) 88%, white 12%), transparent);
+	box-shadow: 0 0 14px color-mix(in srgb, var(--accent, #5865F2) 44%, transparent);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.grid:not(.list-mode) .player-username,
+.detail-username {
+	color: color-mix(in srgb, var(--accent, #5865F2) 22%, #ffffff 78%) !important;
+	text-shadow:
+		0 2px 8px rgba(0,0,0,.82),
+		0 0 10px color-mix(in srgb, var(--accent, #5865F2) 42%, transparent) !important;
+}
+
+.grid:not(.list-mode) .card-bottom .title,
+.detail-title {
+	text-shadow:
+		0 2px 2px rgba(0,0,0,.94),
+		0 0 10px color-mix(in srgb, var(--accent, #5865F2) 58%, transparent),
+		0 0 22px color-mix(in srgb, var(--accent, #5865F2) 28%, transparent) !important;
+}
+
+.grid:not(.list-mode) .player-title,
+.detail-subtitle {
+	color: color-mix(in srgb, var(--accent, #5865F2) 12%, #ffffff 88%) !important;
+}
+
+.grid:not(.list-mode) .summon-stars-icons {
+	color: color-mix(in srgb, var(--accent, #5865F2) 76%, #ffffff 24%) !important;
+	text-shadow: 0 0 10px color-mix(in srgb, var(--accent, #5865F2) 42%, transparent) !important;
+}
+
+.grid:not(.list-mode) .summon-stars-id {
+	color: color-mix(in srgb, var(--accent, #5865F2) 20%, #ffffff 80%) !important;
+}
+
+.grid:not(.list-mode) .card:hover .card-bottom,
+.grid:not(.list-mode) .card:focus-visible .card-bottom {
+	border-color: color-mix(in srgb, var(--accent, #5865F2) 68%, rgba(255,255,255,.22)) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255,255,255,.12),
+		inset 0 0 24px color-mix(in srgb, var(--accent, #5865F2) 16%, transparent),
+		0 16px 38px rgba(0,0,0,.46),
+		0 0 24px color-mix(in srgb, var(--accent, #5865F2) 28%, transparent),
+		0 0 48px color-mix(in srgb, var(--accent, #5865F2) 14%, transparent) !important;
 }
 </style>
