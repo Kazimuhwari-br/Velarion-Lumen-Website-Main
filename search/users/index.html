@@ -10205,9 +10205,9 @@ body {
 	const EXTENSIONS_DATA_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com/information_panel.json";
 	let extensionsData = null;
 	
-	let DEFAULT_PLAYER_AVATAR = extensionsData?.badges_fallbacks?.avatar?.website?.undefined;
-	let DEFAULT_PLAYER_CHARACTER = extensionsData?.badges_fallbacks?.character?.website?.undefined;
-	let DEFAULT_PLAYER_BANNER = extensionsData?.badges_fallbacks?.banner?.website?.undefined;
+	let DEFAULT_PLAYER_AVATAR = null;
+	let DEFAULT_PLAYER_CHARACTER = null;
+	let DEFAULT_PLAYER_BANNER = null;
 
 	let playersData = [];
 	let filteredPlayers = [];
@@ -10551,9 +10551,9 @@ body {
 	}
 
 	function applyExtensionFallbacks() {
-		DEFAULT_PLAYER_AVATAR = readExtensionFallback("avatar", LOCAL_DEFAULT_PLAYER_AVATAR);
-		DEFAULT_PLAYER_CHARACTER = readExtensionFallback("character", LOCAL_DEFAULT_PLAYER_CHARACTER);
-		DEFAULT_PLAYER_BANNER = readExtensionFallback("banner", LOCAL_DEFAULT_PLAYER_BANNER);
+		DEFAULT_PLAYER_AVATAR = readExtensionFallback("avatar");
+		DEFAULT_PLAYER_CHARACTER = readExtensionFallback("character");
+		DEFAULT_PLAYER_BANNER = readExtensionFallback("banner");
 	}
 
 	function normalizeCardLevelRank(rank, id) {
