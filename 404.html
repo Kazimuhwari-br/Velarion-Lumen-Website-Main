@@ -8524,9 +8524,9 @@ body.profile-route .summon-boot .summon-title::after {
 	let extensionsData = null;
 	let clansData = {};
 	
-	let DEFAULT_PLAYER_AVATAR = extensionsData?.badges_fallbacks?.avatar?.website?.undefined;
-	let DEFAULT_PLAYER_CHARACTER = extensionsData?.badges_fallbacks?.character?.website?.undefined;
-	let DEFAULT_PLAYER_BANNER = extensionsData?.badges_fallbacks?.banner?.website?.undefined;
+	let DEFAULT_PLAYER_AVATAR = null;
+	let DEFAULT_PLAYER_CHARACTER = null;
+	let DEFAULT_PLAYER_BANNER = null;
 
 	let playersData = [];
 	let filteredPlayers = [];
@@ -8872,9 +8872,9 @@ body.profile-route .summon-boot .summon-title::after {
 	}
 
 	function applyExtensionFallbacks() {
-		DEFAULT_PLAYER_AVATAR = readExtensionFallback("avatar", LOCAL_DEFAULT_PLAYER_AVATAR);
-		DEFAULT_PLAYER_CHARACTER = readExtensionFallback("character", LOCAL_DEFAULT_PLAYER_CHARACTER);
-		DEFAULT_PLAYER_BANNER = readExtensionFallback("banner", LOCAL_DEFAULT_PLAYER_BANNER);
+		DEFAULT_PLAYER_AVATAR = readExtensionFallback("avatar");
+		DEFAULT_PLAYER_CHARACTER = readExtensionFallback("character");
+		DEFAULT_PLAYER_BANNER = readExtensionFallback("banner");
 	}
 
 	function normalizeCardLevelRank(rank, id) {
