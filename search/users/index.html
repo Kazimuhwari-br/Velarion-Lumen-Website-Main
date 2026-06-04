@@ -10205,13 +10205,9 @@ body {
 	const EXTENSIONS_DATA_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com/information_panel.json";
 	let extensionsData = null;
 	
-	const LOCAL_DEFAULT_PLAYER_AVATAR = "https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/AvatarBottomImage/avatar1.png";
-	const LOCAL_DEFAULT_PLAYER_CHARACTER = "https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/CharacterImage/character2.png";
-	const LOCAL_DEFAULT_PLAYER_BANNER = "https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server/refs/heads/main/BannerBottomImage/banner_default_v1.png";
-
-	let DEFAULT_PLAYER_AVATAR = LOCAL_DEFAULT_PLAYER_AVATAR;
-	let DEFAULT_PLAYER_CHARACTER = LOCAL_DEFAULT_PLAYER_CHARACTER;
-	let DEFAULT_PLAYER_BANNER = LOCAL_DEFAULT_PLAYER_BANNER;
+	let DEFAULT_PLAYER_AVATAR = extensionsData?.badges_fallbacks?.avatar?.website?.undefined;
+	let DEFAULT_PLAYER_CHARACTER = extensionsData?.badges_fallbacks?.character?.website?.undefined;
+	let DEFAULT_PLAYER_BANNER = extensionsData?.badges_fallbacks?.banner?.website?.undefined;
 
 	let playersData = [];
 	let filteredPlayers = [];
