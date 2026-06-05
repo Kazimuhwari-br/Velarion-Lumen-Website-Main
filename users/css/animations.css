@@ -1,4 +1,0 @@
-@keyframes gradientMove { from { background-position: 0% center; } to { background-position: 220% center; } }
-@keyframes rankChipShine { from { transform: translateX(-140%) skewX(-16deg); } to { transform: translateX(140%) skewX(-16deg); } }
-@keyframes rankChipParticles { 0%,100% { transform: translateY(0); opacity: .65; } 50% { transform: translateY(-2px); opacity: .95; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
