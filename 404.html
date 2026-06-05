@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="default">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perfil do Jogador</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Perfil do Jogador | z𝐕elarion 𝐋umen 龍</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/theme-default.css">
 <link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/base.css">
@@ -13,63 +26,96 @@
 <link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/detail.css">
 <link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/pagination.css">
 <link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/animations.css">
-
 </head>
-<body>
+<body class="profile-route">
+<!-- ===== HTML: Aplicação / lista de jogadores ===== -->
 
-<main class="app">
-<header class="topbar">
-	<div class="brand">
-		<h1 class="brand-title">Velarion Lumen</h1>
-		<p class="brand-sub">Player profiles</p>
+<div class="archive-side-hud" aria-hidden="true">
+	<div class="archive-side-crystal">◆</div>
+	<div class="archive-side-title">Archive</div>
+	<div class="archive-side-item active"><span class="side-icon">▦</span><span class="side-label">Todos</span></div>
+	<div class="archive-side-item"><span class="side-icon">♛</span><span class="side-label">Developer</span></div>
+	<div class="archive-side-item"><span class="side-icon">▣</span><span class="side-label">Admin</span></div>
+	<div class="archive-side-item"><span class="side-icon">▶</span><span class="side-label">YouTuber</span></div>
+	<div class="archive-side-item"><span class="side-icon">♪</span><span class="side-label">TikToker</span></div>
+	<div class="archive-side-item"><span class="side-icon">⚡</span><span class="side-label">Booster</span></div>
+	<div class="archive-side-footer">v3.0<br>SUMMON</div>
+</div>
+
+
+<div id="summonBoot" class="summon-boot">
+	<div class="summon-core">
+		<div class="summon-content">
+			<div class="summon-kicker">Abrindo Perfil</div>
+			<div class="summon-title">Carregando Jogador</div>
+			<div class="summon-status">Localizando perfil cadastrado...</div>
+			<div class="summon-bar"><span></span></div>
+		</div>
 	</div>
+</div>
 
-	<label class="search-wrap">
-		<span class="search-icon">⌕</span>
-		<input
-			id="searchInput"
-			class="search"
-			placeholder="Buscar jogador"
-		>
-	</label>
+<div class="app">
+	<!-- Topbar: título, busca e alternador -->
+	<section id="gridView" class="grid-view">
+		<div class="topbar">
+			<div class="brand">
+				<h1 class="brand-title">CADASTRO DE JOGADORES</h1>
+				<p class="brand-sub">Minecraft Bedrock Server & Discord Community</p>
+				<a class="discord-top-button" href="https://discord.gg/qwRtDUpYJt" target="_blank" > Discord </a>
+			</div>
 
-	<button
-		id="viewToggle"
-		class="view-toggle"
-		type="button"
-	>
-		Lista
-	</button>
-</header>
+			<button id="toggleView" class="view-toggle" type="button">Lista</button>
 
-<section class="grid-view">
-	<div id="grid" class="grid"></div>
+			<div class="search-wrap">
+				<span class="search-icon">⌕</span>
+				<input id="search" class="search" placeholder="Escanear jogador" />
+			</div>
+		</div>
 
-	<nav class="pagination-panel">
-		<span class="pagination-info">Jogadores</span>
+		<div class="summon-status-panel" aria-hidden="true">
+			<div class="summon-status-orb"></div>
+			<div>
+				<div class="summon-status-title">Cadastro ativo</div>
+				<div class="summon-status-sub">Carregando perfis dos jogadores do servidor...</div>
+			</div>
+		</div>
 
-		<div
-			class="pagination-actions"
-			data-pagination
-		></div>
+		<div id="players" class="grid">
+			<div class="empty">Carregando perfis dos jogadores...</div>
+		</div>
 
-		<label class="page-size-wrap">
-			Por página
+		<div id="paginationPanel" class="pagination-panel" hidden>
+			<div id="paginationInfo" class="pagination-info">Página 1 de 1</div>
+			<div id="paginationActions" class="pagination-actions" aria-label="Paginação dos jogadores"></div>
+			<label class="page-size-wrap" for="pageSizeSelect">
+				Exibir
+				<select id="pageSizeSelect" class="page-size-select">
+					<option value="3">3</option>
+					<option value="6" selected>6</option>
+					<option value="9">9</option>
+				</select>
+			</label>
+		</div>
+	</section>
 
-			<select class="page-size-select">
-				<option>6</option>
-				<option>12</option>
-			</select>
-		</label>
-	</nav>
-</section>
+	<section id="detailView" class="detail-view"></section>
+</div>
 
-</main>
+<div id="screenFade" class="screen-fade"></div>
 
-<section
-	id="detailView"
-	class="detail-view"
-></section>
+<div id="summonGate" class="summon-gate is-hidden" aria-hidden="true">
+	<div class="summon-core">
+		<div class="summon-content">
+			<div class="summon-avatar" data-summon-avatar></div>
+			<div class="summon-kicker" data-summon-kicker>Scanning Player</div>
+			<div class="summon-title" data-summon-title>???</div>
+			<div class="summon-status" data-summon-status>Localizando assinatura do perfil...</div>
+			<div class="summon-bar"><span></span></div>
+		</div>
+	</div>
+</div>
+
+
 
 <script src="/Velarion-Lumen-Website-Main/users/js/utilities.js"></script>
 <script src="/Velarion-Lumen-Website-Main/users/js/themes.js"></script>
@@ -78,6 +124,7 @@
 <script src="/Velarion-Lumen-Website-Main/users/js/details.js"></script>
 <script src="/Velarion-Lumen-Website-Main/users/js/search.js"></script>
 <script src="/Velarion-Lumen-Website-Main/users/js/app.js"></script>
-
 </body>
 </html>
+
+
