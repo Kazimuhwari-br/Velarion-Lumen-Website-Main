@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/fonts/Ethnocentric-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'MUSICNET';
+  src: url('https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/fonts/MUSICNET.ttf') format('truetype');
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  min-height: 100%;
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-stack);
+  color: var(--text);
+  background: var(--page-bg);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
