@@ -4,20 +4,80 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perfil do Jogador</title>
-<link rel="stylesheet" href="users/css/theme-default.css">
-<link rel="stylesheet" href="users/css/base.css">
-<link rel="stylesheet" href="users/css/layout.css">
-<link rel="stylesheet" href="users/css/cards.css">
-<link rel="stylesheet" href="users/css/list.css">
-<link rel="stylesheet" href="users/css/detail.css">
-<link rel="stylesheet" href="users/css/pagination.css">
-<link rel="stylesheet" href="users/css/animations.css">
+
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/theme-default.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/base.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/layout.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/cards.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/list.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/detail.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/pagination.css">
+<link rel="stylesheet" href="/Velarion-Lumen-Website-Main/users/css/animations.css">
+
 </head>
 <body>
+
 <main class="app">
-<header class="topbar"><div class="brand"><h1 class="brand-title">Velarion Lumen</h1><p class="brand-sub">Player profiles</p></div><label class="search-wrap"><span class="search-icon">⌕</span><input id="searchInput" class="search" placeholder="Buscar jogador"></label><button id="viewToggle" class="view-toggle" type="button">Lista</button></header>
-<section class="grid-view"><div id="grid" class="grid"></div><nav class="pagination-panel"><span class="pagination-info">Jogadores</span><div class="pagination-actions" data-pagination></div><label class="page-size-wrap">Por página <select class="page-size-select"><option>6</option><option>12</option></select></label></nav></section>
-</main><section id="detailView" class="detail-view"></section>
-<script src="users/js/utilities.js"></script><script src="users/js/themes.js"></script><script src="users/js/pagination.js"></script><script src="users/js/cards.js"></script><script src="users/js/details.js"></script><script src="users/js/search.js"></script><script src="users/js/app.js"></script>
+<header class="topbar">
+	<div class="brand">
+		<h1 class="brand-title">Velarion Lumen</h1>
+		<p class="brand-sub">Player profiles</p>
+	</div>
+
+	<label class="search-wrap">
+		<span class="search-icon">⌕</span>
+		<input
+			id="searchInput"
+			class="search"
+			placeholder="Buscar jogador"
+		>
+	</label>
+
+	<button
+		id="viewToggle"
+		class="view-toggle"
+		type="button"
+	>
+		Lista
+	</button>
+</header>
+
+<section class="grid-view">
+	<div id="grid" class="grid"></div>
+
+	<nav class="pagination-panel">
+		<span class="pagination-info">Jogadores</span>
+
+		<div
+			class="pagination-actions"
+			data-pagination
+		></div>
+
+		<label class="page-size-wrap">
+			Por página
+
+			<select class="page-size-select">
+				<option>6</option>
+				<option>12</option>
+			</select>
+		</label>
+	</nav>
+</section>
+
+</main>
+
+<section
+	id="detailView"
+	class="detail-view"
+></section>
+
+<script src="/Velarion-Lumen-Website-Main/users/js/utilities.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/themes.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/pagination.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/cards.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/details.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/search.js"></script>
+<script src="/Velarion-Lumen-Website-Main/users/js/app.js"></script>
+
 </body>
 </html>
