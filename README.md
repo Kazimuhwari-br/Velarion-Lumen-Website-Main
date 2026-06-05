@@ -1,71 +1,57 @@
-# Velarion Lumen Website
+# README.md
 
-Website front-end da comunidade **Velarion Lumen**, com páginas de apresentação, busca de jogadores e perfil individual.
+# z𝐕elarion 𝐋umen 龍 Assets
 
-## Demo
+⚠️ This repository is NOT open-source.
 
-Quando publicado no GitHub Pages:
+Official visual assets and graphical resources used for the Minecraft Bedrock Server and Discord Community project.
 
-```txt
-https://kazimuhwari-br.github.io/Velarion-Lumen-Website-Main/
-```
+This repository may contain:
 
-## Funcionalidades
+* Wallpapers
+* Icons
+* Renders
+* Textures
+* Interface Assets
+* Character Designs
+* Server Graphics
+* Project Resources
 
-- Página inicial moderna.
-- Busca de jogadores.
-- Perfil individual por `users/?id=ID_DO_PLAYER`.
-- Integração com Firebase Realtime Database.
-- Componentes reutilizáveis em JavaScript puro.
-- CSS separado por base, layout, tokens e componentes.
-- Estrutura pronta para portfólio GitHub.
+## AI-Assisted Workflow
 
-## Estrutura
+Some repository assets may include AI-assisted generation, image transformation or editing as part of the creative workflow.
 
-```txt
-├─ index.html
-├─ 404.html
-├─ search/users/index.html
-├─ users/index.html
-├─ src/
-│  ├─ components/
-│  ├─ config/
-│  ├─ pages/
-│  ├─ services/
-│  ├─ styles/
-│  └─ utils/
-├─ docs/
-├─ assets/
-└─ data/
-```
+All final assets were customized, organized, integrated and directed specifically for the z𝐕elarion 𝐋umen 龍 project and remain protected under project ownership and copyright.
 
-## Como rodar localmente
+## Copyright
 
-Use um servidor local, porque o projeto usa ES Modules:
+All contents in this repository are protected under copyright and intellectual property laws.
 
-```bash
-python -m http.server 5500
-```
+Unauthorized redistribution, modification, republishing, resale or AI usage is strictly prohibited.
 
-Depois abra:
+Public visibility does NOT grant permission to use repository contents.
 
-```txt
-http://localhost:5500
-```
+## Official Project
 
-## Arquitetura
+z𝐕elarion 𝐋umen 龍
 
-- `pages`: entrada JS de cada página.
-- `components`: pedaços visuais reutilizáveis.
-- `services`: comunicação com Firebase/API.
-- `utils`: funções pequenas reutilizáveis.
-- `styles`: organização visual do projeto.
-- `config`: URLs e constantes globais.
+Minecraft Bedrock Server & Discord Community
 
-## Roadmap
+## Official Contacts
 
-- Adicionar filtros avançados de rank/plataforma.
-- Adicionar paginação.
-- Criar tema claro/escuro.
-- Adicionar screenshots no README.
-- Migrar para Vite quando precisar de build profissional.
+[velarionlumenbds@gmail.com](mailto:velarionlumenbds@gmail.com)
+[kazinhuhgmrs@gmail.com](mailto:kazinhuhgmrs@gmail.com)
+
+## Owner
+
+Kazimuhwari
+
+## Official Links
+
+Discord:
+https://discord.gg/qwRtDUpYJt
+
+GitHub:
+https://github.com/Kazimuhwari-br
+
+© 2022–2026 z𝐕elarion 𝐋umen 龍 — All Rights Reserved.
