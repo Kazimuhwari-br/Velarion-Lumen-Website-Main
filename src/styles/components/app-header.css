@@ -1,0 +1,15 @@
+.app-header {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 22px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.app-header__brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; }
+.app-header__mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: var(--color-text); color: white; }
+.app-header__nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.app-header__link { padding: 10px 14px; border-radius: 999px; color: var(--color-muted); font-weight: 700; }
+.app-header__link.is-active, .app-header__link:hover { background: white; color: var(--color-text); box-shadow: 0 8px 22px rgba(18,28,45,.07); }
+@media (max-width: 680px) { .app-header { align-items: flex-start; flex-direction: column; } }

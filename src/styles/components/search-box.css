@@ -1,0 +1,7 @@
+.search-box { margin-bottom: 22px; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: rgba(255,255,255,.75); box-shadow: var(--shadow-soft); }
+.search-box__label { display: block; margin-bottom: 10px; font-weight: 800; }
+.search-box__control { display: flex; gap: 10px; }
+.search-box__input { width: 100%; min-height: 46px; border: 1px solid var(--color-border); border-radius: 999px; padding: 0 16px; background: white; color: var(--color-text); outline: none; }
+.search-box__input:focus { border-color: var(--color-accent); box-shadow: 0 0 0 4px rgba(127,147,184,.18); }
+.search-box__button { min-height: 46px; border: 0; border-radius: 999px; padding: 0 18px; background: var(--color-text); color: white; font-weight: 800; cursor: pointer; }
+@media (max-width: 560px) { .search-box__control { flex-direction: column; } }

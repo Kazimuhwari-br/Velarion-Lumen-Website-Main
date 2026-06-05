@@ -1,0 +1,11 @@
+.profile-view { overflow: hidden; }
+.profile-view__banner { min-height: 220px; background: linear-gradient(135deg, #e8ebf1, #f9fafb); background-size: cover; background-position: center; }
+.profile-view__body { display: flex; gap: 22px; align-items: flex-start; padding: clamp(20px, 4vw, 34px); }
+.profile-view__avatar { width: 120px; height: 120px; border-radius: 28px; object-fit: cover; border: 1px solid var(--color-border); background: var(--color-surface-soft); }
+.profile-view__content { min-width: 0; }
+.profile-view h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.04em; }
+.profile-view__username { margin: 6px 0 0; color: var(--color-muted); font-weight: 700; }
+.profile-view__stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.profile-view__stats span { padding: 8px 10px; border-radius: 999px; background: var(--color-surface-soft); color: var(--color-muted); }
+.profile-view__bio { margin-top: 18px; max-width: 760px; color: var(--color-muted); line-height: 1.7; }
+@media (max-width: 640px) { .profile-view__body { flex-direction: column; } }
