@@ -1,0 +1,2 @@
+function applySearch(){ const input = document.getElementById('searchInput'); const query = normalize(input?.value || ''); filteredPlayers = playersData.filter(player => { const haystack = [getDisplayName(player), getUsername(player), getCardTitle(player), getPlayerClanName(player), getLevelText(player)].map(normalize).join(' '); return haystack.includes(query); }); currentPage = 1; render(); }
+function bindSearch(){ const input = document.getElementById('searchInput'); input?.addEventListener('input', debounce(applySearch, 160)); }
