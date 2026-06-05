@@ -1,0 +1,35 @@
+.grid.list-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grid.list-mode .card {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  max-width: 100%;
+  min-height: 94px;
+  padding: 12px 16px;
+  transform: none !important;
+}
+
+.list-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.list-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-displayname,
+.list-username,
+.list-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
