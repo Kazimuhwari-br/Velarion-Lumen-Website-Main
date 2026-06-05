@@ -1,9 +1,0 @@
-.app { position: relative; z-index: 1; width: min(1320px, calc(100% - 20px)); margin: 0 auto; padding: 16px 0 30px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
-.brand { display: flex; flex-direction: column; gap: 4px; }
-.brand-title { margin: 0; font-size: 24px; line-height: 1; font-weight: 1000; letter-spacing: .05em; color: var(--brand-title); text-shadow: var(--brand-shadow); }
-.brand-sub { margin: 0; font-size: 10px; color: var(--brand-sub); letter-spacing: .18em; text-transform: uppercase; }
-.grid-view { display: block; position: relative; transition: opacity .35s ease, visibility .35s ease; }
-.grid-view.hidden { display: block !important; opacity: 0; visibility: hidden; pointer-events: none; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: start; }
-@media (max-width: 760px) { .app { width: min(100% - 14px, 1320px); padding-top: 10px; } .topbar { gap: 10px; } }
