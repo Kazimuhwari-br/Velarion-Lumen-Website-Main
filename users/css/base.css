@@ -1,0 +1,177 @@
+/* PERFIL SEPARADO: nesta rota o Grid não aparece por trás. */
+body.profile-route #gridView,
+body.profile-route #paginationPanel {
+	display: none !important;
+}
+body.profile-route .app {
+	min-height: 100vh !important;
+}
+body.profile-route .detail-view {
+	display: block;
+}
+body.profile-route .summon-boot .summon-title::after {
+	content: "";
+}
+
+	/* ===== CSS: Tier moderno no painel Informações ===== */
+	.info-item-level {
+		padding: 12px !important;
+		min-height: 158px;
+		overflow: hidden;
+	}
+
+	.level-info-wrap-modern {
+		display: grid;
+		gap: 10px;
+	}
+
+	.level-info-wrap-modern .level-info-tier-card {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) minmax(116px, 190px);
+		align-items: center;
+		gap: 14px;
+		min-height: 88px;
+		padding: 10px 14px 10px 10px;
+		border-radius: 18px;
+		clip-path: polygon(0 0, 100% 0, 100% 78%, 96% 100%, 4% 100%, 0 82%);
+		border: 1px solid color-mix(in srgb, var(--rank-color, #5865F2) 44%, rgba(255,255,255,.18));
+		background:
+			radial-gradient(circle at 82% 50%, color-mix(in srgb, var(--rank-glow, #5865F2) 34%, transparent), transparent 34%),
+			linear-gradient(90deg, rgba(8,12,24,.94) 0%, rgba(14,20,38,.88) 45%, color-mix(in srgb, var(--rank-color, #5865F2) 18%, rgba(8,12,24,.88)) 100%);
+		box-shadow:
+			inset 0 1px 0 rgba(255,255,255,.12),
+			inset 0 0 22px color-mix(in srgb, var(--rank-color, #5865F2) 10%, transparent),
+			0 0 18px color-mix(in srgb, var(--rank-glow, #5865F2) 15%, transparent);
+	}
+
+	.level-info-wrap-modern .level-info-tier-card::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background:
+			repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 12px),
+			repeating-linear-gradient(180deg, rgba(255,255,255,.055) 0 1px, transparent 1px 12px),
+			linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+		opacity: .22;
+		pointer-events: none;
+	}
+
+	.level-info-lv-box {
+		position: relative;
+		z-index: 2;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-width: 104px;
+		height: 58px;
+		padding: 8px 12px;
+		border-radius: 15px;
+		background: rgba(5,8,18,.58);
+		border: 1px solid rgba(255,255,255,.12);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 14px color-mix(in srgb, var(--rank-glow, #5865F2) 12%, transparent);
+	}
+
+	.level-info-wrap-modern .level-info-emblem-icon {
+		width: 24px;
+		height: 24px;
+	}
+
+	.level-info-wrap-modern .level-info-emblem-value {
+		font-size: 14px;
+		letter-spacing: .03em;
+	}
+
+	.level-info-main-text {
+		position: relative;
+		z-index: 2;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.level-info-tier-name {
+		font-family: 'Ethnocentric', var(--font-stack);
+		font-size: 17px;
+		font-weight: 900;
+		line-height: 1.05;
+		letter-spacing: .04em;
+		text-transform: uppercase;
+		color: #fff;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-shadow: 0 0 12px color-mix(in srgb, var(--rank-glow, #5865F2) 32%, transparent), 0 2px 4px rgba(0,0,0,.42);
+	}
+
+	.level-info-tier-name span,
+	.level-info-tier-range {
+		font-family: var(--font-stack);
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: .02em;
+		text-transform: none;
+		color: rgba(235,241,255,.86);
+	}
+
+	.level-info-wrap-modern .level-info-tier-image {
+		position: relative !important;
+		z-index: 2;
+		width: 180px !important;
+		height: 62px !important;
+		margin-left: auto;
+		flex: initial;
+	}
+
+	.level-info-progress-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 46px;
+		padding: 10px 14px;
+		border-radius: 14px;
+		background: rgba(7,11,22,.74);
+		border: 1px solid rgba(255,255,255,.07);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+	}
+
+	.level-info-progress-label,
+	.level-info-progress-value {
+		font-size: 12px;
+		font-weight: 1000;
+		letter-spacing: .12em;
+		text-transform: uppercase;
+		color: #fff;
+	}
+
+	.level-info-progress-value {
+		letter-spacing: 0;
+	}
+
+	.level-info-wrap-modern .level-info-tooltip {
+		display: none !important;
+	}
+
+	@media (max-width: 760px) {
+		.level-info-wrap-modern .level-info-tier-card {
+			grid-template-columns: auto minmax(0, 1fr);
+			gap: 10px;
+		}
+
+		.level-info-wrap-modern .level-info-tier-image {
+			grid-column: 1 / -1;
+			justify-self: end;
+			width: 150px !important;
+			height: 52px !important;
+		}
+
+		.level-info-lv-box {
+			min-width: 88px;
+		}
+
+		.level-info-tier-name {
+			font-size: 14px;
+		}
+	}
