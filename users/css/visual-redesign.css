@@ -1,0 +1,351 @@
+/* ==========================================================
+   VELARION LUMEN — VISUAL REDESIGN ONLY
+   Preserva HTML, JS, Cards, Lista, Perfil, animações e comportamentos.
+   Este arquivo só sobrescreve aparência/layout visual.
+   ========================================================== */
+
+:root {
+  --vl-bg: #080b12;
+  --vl-bg-2: #101622;
+  --vl-panel: rgba(14, 18, 28, .82);
+  --vl-panel-2: rgba(21, 26, 38, .78);
+  --vl-line: rgba(230, 218, 190, .18);
+  --vl-gold: #c7a66a;
+  --vl-gold-2: #efd7a8;
+  --vl-violet: #9b7cff;
+  --vl-ink: #f5f0e6;
+  --vl-muted: #aeb7c8;
+  --vl-shadow: 0 28px 70px rgba(0,0,0,.46);
+}
+
+html, body { background: var(--vl-bg) !important; }
+body {
+  color: var(--vl-ink) !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(155,124,255,.16), transparent 30%),
+    radial-gradient(circle at 86% 10%, rgba(199,166,106,.14), transparent 28%),
+    linear-gradient(180deg, #0a0d14 0%, #101520 46%, #07090e 100%) !important;
+}
+body::before {
+  opacity: .22 !important;
+  background:
+    linear-gradient(90deg, transparent 0 47%, rgba(199,166,106,.08) 50%, transparent 53%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.024) 0 1px, transparent 1px 82px),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 82px) !important;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 18%, transparent 76%, rgba(0,0,0,.22)),
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 38%);
+  mix-blend-mode: screen;
+  opacity: .65;
+}
+
+.app { width: min(1380px, calc(100% - 28px)) !important; padding-top: 28px !important; }
+
+/* ===== Lateral Archive: mesmo conteúdo, visual mais premium ===== */
+.archive-side-hud {
+  border: 1px solid rgba(239,215,168,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(42,38,60,.92), rgba(16,18,28,.94)),
+    radial-gradient(circle at 50% 0%, rgba(155,124,255,.32), transparent 42%) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+.archive-side-crystal {
+  color: #e9c9ff !important;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(239,215,168,.42), transparent 26%),
+    radial-gradient(circle at 50% 45%, rgba(155,124,255,.78), rgba(34,29,51,.92) 68%) !important;
+  box-shadow: inset 0 0 22px rgba(255,255,255,.12), 0 0 28px rgba(155,124,255,.36) !important;
+}
+.archive-side-title,
+.archive-side-footer { color: rgba(239,215,168,.88) !important; }
+.archive-side-item {
+  border: 1px solid rgba(255,255,255,.08) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03)) !important;
+  color: rgba(244,239,229,.82) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08) !important;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+}
+.archive-side-item.active,
+.archive-side-item:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(239,215,168,.42) !important;
+  background: linear-gradient(180deg, rgba(199,166,106,.20), rgba(155,124,255,.13)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 18px rgba(155,124,255,.20) !important;
+}
+
+/* ===== Topbar: cara nova sem remover busca/toggle ===== */
+.topbar {
+  position: relative !important;
+  padding: 18px !important;
+  margin-bottom: 18px !important;
+  border: 1px solid rgba(239,215,168,.18) !important;
+  border-radius: 28px !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.025)),
+    rgba(13,17,26,.74) !important;
+  box-shadow: var(--vl-shadow), inset 0 1px 0 rgba(255,255,255,.09) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  overflow: hidden !important;
+}
+.topbar::before {
+  content: "";
+  position: absolute;
+  left: 18px; right: 18px; top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239,215,168,.65), transparent);
+}
+.brand-title {
+  font-family: 'Ethnocentric', var(--font-stack) !important;
+  color: #fff7e8 !important;
+  font-size: clamp(20px, 2.6vw, 34px) !important;
+  letter-spacing: .08em !important;
+  text-shadow: 0 0 18px rgba(239,215,168,.22), 0 4px 20px rgba(0,0,0,.28) !important;
+}
+.brand-sub { color: rgba(239,215,168,.72) !important; letter-spacing: .2em !important; }
+.discord-top-button,
+.view-toggle,
+.search {
+  border-radius: 18px !important;
+  border: 1px solid rgba(239,215,168,.18) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035)), rgba(10,13,20,.72) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 10px 24px rgba(0,0,0,.18) !important;
+}
+.search { color: #fff7e8 !important; }
+.search::placeholder { color: rgba(222,226,238,.58) !important; }
+.search:focus,
+.view-toggle:hover,
+.view-toggle:focus-visible {
+  border-color: rgba(239,215,168,.48) !important;
+  box-shadow: 0 0 0 4px rgba(199,166,106,.10), 0 14px 34px rgba(0,0,0,.28) !important;
+}
+.view-toggle {
+  color: #fff7e8 !important;
+  min-width: 104px !important;
+}
+.summon-status-panel {
+  border-radius: 22px !important;
+  border: 1px solid rgba(239,215,168,.16) !important;
+  background: linear-gradient(135deg, rgba(199,166,106,.10), rgba(155,124,255,.08)), rgba(12,16,25,.62) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 38px rgba(0,0,0,.22) !important;
+}
+
+/* ===== Cards: preserva card 3D/hover, mas muda moldura e organização visual ===== */
+.grid:not(.list-mode) {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  gap: 24px !important;
+  perspective: 1200px !important;
+}
+.card {
+  max-width: 276px !important;
+  min-height: 410px !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(239,215,168,.24) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.015)),
+    linear-gradient(180deg, rgba(20,24,36,.96), rgba(8,10,16,.98)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.035),
+    0 28px 70px rgba(0,0,0,.48),
+    0 0 30px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+.card:hover,
+.card:focus-visible {
+  border-color: rgba(239,215,168,.46) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06),
+    0 34px 84px rgba(0,0,0,.56),
+    0 0 40px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 0 28px rgba(239,215,168,.12) !important;
+}
+.card-outline {
+  inset: 8px !important;
+  border-radius: 24px !important;
+  border-color: rgba(239,215,168,.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18) !important;
+}
+.card-bg::after {
+  background:
+    linear-gradient(180deg, rgba(4,6,10,.03) 0%, rgba(4,7,14,.18) 32%, rgba(5,7,12,.76) 73%, rgba(4,5,8,.98) 100%),
+    linear-gradient(90deg, rgba(199,166,106,.12), transparent 25%, transparent 70%, rgba(155,124,255,.12)) !important;
+}
+.card-top { top: 14px !important; left: 14px !important; right: 32px !important; }
+.card-chip,
+.card-rank-chip {
+  border-radius: 9px !important;
+  min-height: 26px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.055)), rgba(9,12,19,.70) !important;
+  border-color: rgba(239,215,168,.22) !important;
+}
+.card-chip-text { color: #fff4dc !important; }
+.side-rail {
+  width: 12px !important;
+  border-radius: 0 30px 30px 0 !important;
+  background: linear-gradient(180deg, var(--vl-gold-2), color-mix(in srgb, var(--accent) 55%, #18121f)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 22px color-mix(in srgb, var(--accent) 26%, transparent) !important;
+}
+.character-wrap { top: 44px !important; bottom: -26px !important; }
+.card-bottom {
+  left: 12px !important;
+  right: 24px !important;
+  bottom: 14px !important;
+  padding: 14px 14px 12px !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(239,215,168,.20) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.035)),
+    rgba(21,17,25,.72) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 16px 34px rgba(0,0,0,.32) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+.player-username { color: rgba(239,215,168,.82) !important; }
+.title { color: #fff4dc !important; text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 24%, transparent), 0 2px 8px rgba(0,0,0,.34) !important; }
+.player-title,
+.desc { color: rgba(245,240,230,.88) !important; }
+
+/* ===== Lista: preserva animação/banner/character/rank title, reorganiza em layout mais elegante ===== */
+.grid.list-mode { gap: 16px !important; }
+.grid.list-mode .card {
+  grid-template-columns: 74px minmax(180px, 1fr) minmax(250px, 330px) minmax(110px, auto) !important;
+  min-height: 112px !important;
+  max-width: 100% !important;
+  padding: 14px 22px !important;
+  border-radius: 24px !important;
+  border-color: rgba(239,215,168,.20) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.022)),
+    rgba(11,14,22,.88) !important;
+  box-shadow: 0 22px 52px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible,
+.grid.list-mode .card.is-touching {
+  border-color: rgba(239,215,168,.44) !important;
+  box-shadow: 0 26px 62px rgba(0,0,0,.36), 0 0 30px color-mix(in srgb, var(--accent) 20%, transparent) !important;
+}
+.list-banner::after {
+  background:
+    linear-gradient(90deg, rgba(7,9,14,.90) 0%, rgba(7,9,14,.72) 31%, rgba(7,9,14,.55) 55%, rgba(7,9,14,.88) 100%),
+    linear-gradient(180deg, rgba(239,215,168,.09), rgba(255,255,255,0)) !important;
+}
+.list-avatar {
+  width: 68px !important; height: 68px !important;
+  border-radius: 18px !important;
+  border-color: rgba(239,215,168,.30) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.38), 0 0 0 3px rgba(199,166,106,.06) !important;
+}
+.list-info { gap: 5px !important; }
+.list-displayname { color: #fff4dc !important; font-size: 17px !important; letter-spacing: .02em !important; }
+.list-username { color: rgba(239,215,168,.78) !important; }
+.list-title { color: rgba(239,245,255,.86) !important; }
+.list-character { right: 260px !important; width: 170px !important; height: 128px !important; opacity: .95 !important; }
+.list-rank-title { right: 70px !important; width: 240px !important; height: 100px !important; opacity: .95 !important; }
+.list-meta { padding-right: 18px !important; gap: 8px !important; }
+.list-level,
+.list-clan {
+  border-color: rgba(239,215,168,.18) !important;
+  background: rgba(8,11,18,.62) !important;
+  color: #fff4dc !important;
+}
+.list-rail { width: 8px !important; background: linear-gradient(180deg, var(--vl-gold-2), color-mix(in srgb, var(--accent) 52%, #15121d)) !important; }
+
+/* ===== Perfil: cara nova mantendo card, informações, badges, clan e transições ===== */
+.detail-view {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(155,124,255,.16), transparent 30%),
+    radial-gradient(circle at 90% 8%, rgba(199,166,106,.14), transparent 28%),
+    linear-gradient(180deg, rgba(9,12,18,.98), rgba(13,18,27,.99) 54%, rgba(6,8,13,.99)) !important;
+}
+.detail-frame { width: min(1240px, 100%) !important; }
+.back-btn {
+  border-radius: 16px !important;
+  border-color: rgba(239,215,168,.22) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.035)), rgba(13,17,26,.78) !important;
+  color: #fff4dc !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 30px rgba(0,0,0,.22) !important;
+}
+.detail-shell { gap: 22px !important; grid-template-columns: minmax(320px, 430px) minmax(0, 1fr) !important; }
+.detail-card {
+  height: 560px !important;
+  border-radius: 32px !important;
+  border-color: rgba(239,215,168,.25) !important;
+  background: linear-gradient(180deg, rgba(28,31,43,.98), rgba(8,10,15,.99)) !important;
+  box-shadow: 0 32px 82px rgba(0,0,0,.48), 0 0 34px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+.detail-bg::after {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.22) 32%, rgba(0,0,0,.66) 72%, rgba(0,0,0,.96) 100%),
+    linear-gradient(90deg, rgba(199,166,106,.10), transparent 32%, rgba(155,124,255,.12)) !important;
+}
+.detail-bottom {
+  left: 16px !important; right: 16px !important; bottom: 18px !important;
+  padding: 18px 16px !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(239,215,168,.22) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)), rgba(18,15,23,.72) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 18px 38px rgba(0,0,0,.34) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+.detail-title { color: #fff4dc !important; }
+.detail-username { color: rgba(239,215,168,.82) !important; }
+.detail-outside-description,
+.info-panel {
+  border-radius: 24px !important;
+  border-color: rgba(239,215,168,.18) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.026)),
+    rgba(13,17,26,.76) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+.info-header { padding-bottom: 10px !important; border-bottom: 1px solid rgba(239,215,168,.13) !important; }
+.info-title { color: #fff4dc !important; }
+.info-profile-avatar { border-color: rgba(239,215,168,.34) !important; border-radius: 18px !important; }
+.info-item {
+  border-radius: 18px !important;
+  border-color: rgba(239,215,168,.12) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.025)) !important;
+}
+.info-label { color: rgba(239,215,168,.72) !important; }
+.info-value { color: rgba(245,240,230,.92) !important; }
+.clan-info-card,
+.level-info-wrap-modern .level-info-tier-card,
+.level-info-progress-row,
+.card-verified-chip {
+  border-color: color-mix(in srgb, var(--accent, var(--rank-color, var(--vl-gold))) 26%, rgba(239,215,168,.24)) !important;
+}
+
+/* ===== Paginação e boot: visual integrado ===== */
+.pagination-panel {
+  border-color: rgba(239,215,168,.18) !important;
+  background: linear-gradient(135deg, rgba(199,166,106,.12), rgba(155,124,255,.10)), rgba(12,16,25,.80) !important;
+}
+.pagination-info { color: rgba(239,215,168,.80) !important; }
+.empty { border-color: rgba(239,215,168,.14) !important; background: rgba(13,17,26,.78) !important; color: rgba(245,240,230,.74) !important; }
+
+@media (max-width: 1180px) {
+  .grid.list-mode .card { grid-template-columns: 74px minmax(170px, 1fr) minmax(100px, auto) !important; }
+  .list-character, .list-rank-title { display: none !important; }
+}
+@media (max-width: 860px) {
+  .detail-shell { grid-template-columns: 1fr !important; }
+  .detail-card { height: 540px !important; }
+  .grid:not(.list-mode) { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important; gap: 18px !important; }
+}
+@media (max-width: 640px) {
+  .topbar { border-radius: 22px !important; padding: 14px !important; }
+  .grid.list-mode .card { grid-template-columns: 62px minmax(0, 1fr) !important; padding: 12px !important; min-height: 92px !important; }
+  .list-avatar { width: 58px !important; height: 58px !important; }
+  .list-meta { grid-column: 2; align-items: flex-start !important; flex-direction: row !important; padding-right: 0 !important; flex-wrap: wrap !important; }
+  .card { max-width: 100% !important; }
+}
