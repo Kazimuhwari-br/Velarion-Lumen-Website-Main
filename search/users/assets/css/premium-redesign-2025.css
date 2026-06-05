@@ -1,0 +1,366 @@
+/* ==========================================================
+   Velarion Lumen — Premium Redesign 2025 PERFORMANCE PATCH
+   Preserva Cards, Lista e Perfil. Redesenha apenas o palco.
+   ========================================================== */
+
+:root {
+  --vl-bg-0: #070a12;
+  --vl-bg-1: #0d1320;
+  --vl-bg-2: #121a2b;
+  --vl-surface: rgba(18, 26, 43, .92);
+  --vl-surface-2: rgba(23, 34, 55, .88);
+  --vl-line: rgba(180, 210, 255, .14);
+  --vl-line-strong: rgba(180, 210, 255, .24);
+  --vl-text: #f4f7ff;
+  --vl-soft: #aebbd2;
+  --vl-muted: #7f8ca6;
+  --vl-accent: #8bcfff;
+  --vl-accent-2: #b58cff;
+  --vl-gold: #dec184;
+  --vl-radius-xl: 30px;
+  --vl-radius-lg: 22px;
+  --vl-radius-md: 16px;
+  --vl-sidebar-w: 262px;
+  --vl-shadow: 0 24px 70px rgba(0,0,0,.36);
+}
+
+html { scroll-behavior: auto !important; }
+
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(139,207,255,.18), transparent 30%),
+    radial-gradient(circle at 88% 18%, rgba(181,140,255,.13), transparent 32%),
+    linear-gradient(135deg, var(--vl-bg-0), var(--vl-bg-1) 48%, #0a0e17);
+  color: var(--vl-text);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.75), transparent 78%);
+}
+
+.vl-atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+.vl-orb, .vl-grid-light { display: none !important; }
+
+.vl-app-shell {
+  width: min(1240px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+
+@media (min-width: 1180px) {
+  .vl-app-shell {
+    margin-left: calc(var(--vl-sidebar-w) + 34px);
+    width: calc(100% - var(--vl-sidebar-w) - 68px);
+    max-width: 1320px;
+  }
+}
+
+.vl-page { display: grid; gap: 24px; }
+
+/* Sidebar leve, sem blur pesado */
+.vl-sidebar {
+  position: fixed;
+  left: 18px;
+  top: 18px;
+  bottom: 18px;
+  width: var(--vl-sidebar-w);
+  z-index: 30;
+  padding: 18px;
+  border: 1px solid var(--vl-line);
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(18,26,43,.96), rgba(10,15,26,.94));
+  box-shadow: var(--vl-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vl-sidebar__brand,
+.vl-nav__item,
+.vl-sidebar__discord { text-decoration: none; color: inherit; }
+
+.vl-sidebar__brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+}
+
+.vl-brand-mark {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(139,207,255,.22), rgba(181,140,255,.18));
+  color: var(--vl-accent);
+  font-weight: 900;
+}
+
+.vl-sidebar__brand strong { display: block; font-size: 16px; letter-spacing: .02em; }
+.vl-sidebar__brand small { display: block; color: var(--vl-soft); font-size: 12px; margin-top: 2px; }
+
+.vl-nav { display: grid; gap: 8px; }
+.vl-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 16px;
+  color: var(--vl-soft);
+  border: 1px solid transparent;
+}
+.vl-nav__item:hover,
+.vl-nav__item.is-active {
+  color: var(--vl-text);
+  background: rgba(139,207,255,.10);
+  border-color: rgba(139,207,255,.20);
+}
+.vl-nav__item span { color: var(--vl-accent); }
+
+.vl-sidebar__panel {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+}
+.vl-sidebar__panel strong { display: block; font-size: 13px; }
+.vl-sidebar__panel small { color: var(--vl-soft); font-size: 12px; }
+.vl-live-dot { width: 10px; height: 10px; border-radius: 999px; background: #7fffd7; box-shadow: 0 0 14px rgba(127,255,215,.8); }
+
+.vl-sidebar__discord {
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7ccfff, #a98cff);
+  color: #06101d;
+}
+
+/* Hero */
+.vl-hero,
+.vl-section,
+.vl-player-stage {
+  border: 1px solid var(--vl-line);
+  background: linear-gradient(180deg, rgba(20,30,50,.92), rgba(12,18,31,.90));
+  border-radius: var(--vl-radius-xl);
+  box-shadow: var(--vl-shadow);
+}
+
+.vl-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  padding: clamp(28px, 5vw, 58px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+  gap: 30px;
+  align-items: center;
+}
+
+.vl-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(139,207,255,.18), transparent 32%),
+    linear-gradient(115deg, transparent 0 58%, rgba(255,255,255,.04) 58% 100%);
+  pointer-events: none;
+}
+
+.vl-hero__copy,
+.vl-hero__dashboard { position: relative; z-index: 1; }
+
+.vl-kicker,
+.vl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--vl-accent);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.vl-kicker::before,
+.vl-eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--vl-accent); }
+
+.vl-hero h1 {
+  margin: 12px 0 12px;
+  font-size: clamp(42px, 7vw, 86px);
+  line-height: .92;
+  letter-spacing: -.055em;
+}
+.vl-hero p,
+.vl-section__head p { color: var(--vl-soft); font-size: 16px; line-height: 1.7; max-width: 620px; }
+
+.vl-hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+.vl-primary-action,
+.vl-secondary-action {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: 900;
+}
+.vl-primary-action { background: linear-gradient(135deg, #8bd0ff, #b594ff); color: #06101d; }
+.vl-secondary-action { color: var(--vl-text); border: 1px solid var(--vl-line-strong); background: rgba(255,255,255,.05); }
+
+.vl-hero__dashboard { display: grid; gap: 14px; }
+.vl-dashboard-card,
+.vl-dashboard-grid > div {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 22px;
+  background: rgba(255,255,255,.055);
+  padding: 18px;
+}
+.vl-dashboard-card span,
+.vl-dashboard-grid span { display: block; color: var(--vl-soft); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.vl-dashboard-card strong { display: block; margin: 6px 0; font-size: 24px; }
+.vl-dashboard-card small { color: var(--vl-soft); line-height: 1.5; }
+.vl-dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.vl-dashboard-grid strong { display: block; font-size: 26px; color: var(--vl-text); margin-bottom: 4px; }
+
+.vl-section { padding: clamp(22px, 3vw, 34px); }
+.vl-section__head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 18px; }
+.vl-section h2,
+.vl-player-stage h2 { margin: 6px 0 0; font-size: clamp(24px, 3vw, 36px); letter-spacing: -.03em; }
+
+.vl-feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.vl-feature-grid article {
+  min-height: 150px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.045);
+}
+.vl-feature-grid span { color: var(--vl-gold); font-weight: 900; font-size: 12px; }
+.vl-feature-grid strong { display: block; margin: 10px 0 6px; font-size: 17px; }
+.vl-feature-grid p { margin: 0; color: var(--vl-soft); line-height: 1.55; }
+
+/* Controle ao redor da lista/cards */
+.vl-discovery { padding: clamp(18px, 3vw, 28px); }
+.vl-control-panel.topbar {
+  margin: 0 0 18px !important;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--vl-line) !important;
+  background: rgba(255,255,255,.045) !important;
+  box-shadow: none !important;
+}
+.vl-control-panel .brand-title { margin: 4px 0 2px !important; font-size: clamp(24px, 4vw, 42px) !important; }
+.vl-control-panel .brand-sub { color: var(--vl-soft) !important; }
+
+.view-toggle,
+.search {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  background: rgba(7,11,20,.72) !important;
+  color: var(--vl-text) !important;
+}
+.search-wrap { min-width: min(420px, 100%) !important; }
+
+.summon-status-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(139,207,255,.16);
+  background: rgba(139,207,255,.065);
+}
+.summon-status-orb { width: 12px; height: 12px; border-radius: 99px; background: var(--vl-accent); }
+.summon-status-title { font-weight: 900; }
+.summon-status-sub { color: var(--vl-soft); font-size: 13px; }
+
+.vl-player-stage { padding: clamp(16px, 3vw, 26px); }
+.vl-player-stage__head { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.vl-stage-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--vl-line);
+  color: var(--vl-soft);
+  background: rgba(255,255,255,.045);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* NÃO redesenhar Cards/Lista/Perfil: apenas corrige encaixe no palco */
+#players.grid { margin-top: 0 !important; }
+.pagination-panel { margin-top: 22px !important; }
+.detail-view { position: relative; z-index: 40; }
+
+/* Boot/Gate mais leve */
+.summon-boot,
+.summon-gate,
+.screen-fade { backdrop-filter: none !important; }
+.summon-core { box-shadow: 0 24px 80px rgba(0,0,0,.45) !important; }
+.rare-burst,
+.comet { display: none !important; }
+
+@media (max-width: 1179px) {
+  .vl-sidebar {
+    position: sticky;
+    top: 10px;
+    width: min(100% - 28px, 980px);
+    height: auto;
+    margin: 14px auto 0;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .vl-sidebar__panel { margin-top: 0; margin-left: auto; }
+  .vl-nav { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; max-width: 100%; }
+}
+
+@media (max-width: 860px) {
+  .vl-app-shell { width: min(100% - 24px, 720px); padding-top: 18px; }
+  .vl-hero { grid-template-columns: 1fr; min-height: auto; }
+  .vl-section__head,
+  .vl-player-stage__head { align-items: start; flex-direction: column; }
+  .vl-feature-grid { grid-template-columns: 1fr; }
+  .vl-dashboard-grid { grid-template-columns: 1fr 1fr; }
+  .vl-sidebar__panel,
+  .vl-sidebar__discord { display: none; }
+}
+
+@media (max-width: 520px) {
+  .vl-sidebar { border-radius: 20px; padding: 12px; }
+  .vl-sidebar__brand { width: 100%; }
+  .vl-hero,
+  .vl-section,
+  .vl-player-stage { border-radius: 22px; }
+  .vl-dashboard-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
