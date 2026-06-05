@@ -1,1 +1,384 @@
 /* Tema padrão: variáveis originais preservadas em base.css. */
+
+
+/* ==========================================================
+   VELARION LUMEN — VISUAL REWORK V3
+   Escopo: somente aparência. Não altera HTML, JS, rotas,
+   modo Cards, modo Lista, perfil, animações ou comportamento.
+   ========================================================== */
+
+:root {
+  --vl-bg-deep: #080a10;
+  --vl-bg-soft: #111621;
+  --vl-panel: rgba(14, 18, 27, .78);
+  --vl-panel-strong: rgba(20, 25, 36, .92);
+  --vl-line: rgba(229, 217, 188, .18);
+  --vl-line-soft: rgba(255, 255, 255, .08);
+  --vl-gold: #d9b978;
+  --vl-gold-soft: rgba(217, 185, 120, .22);
+  --vl-violet: #b894ff;
+  --vl-text: #f7f1e7;
+  --vl-muted: #b8c1d7;
+  --vl-ink: #171c28;
+  --shadow: 0 24px 70px rgba(0,0,0,.48);
+}
+
+html, body { background: var(--vl-bg-deep) !important; }
+
+body {
+  color: var(--vl-text) !important;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(216,185,120,.16), transparent 28%),
+    radial-gradient(circle at 84% 16%, rgba(157,124,255,.14), transparent 26%),
+    linear-gradient(135deg, #07080d 0%, #101521 42%, #090b12 100%) !important;
+}
+
+body::before {
+  opacity: .22 !important;
+  background:
+    linear-gradient(120deg, rgba(217,185,120,.08), transparent 26%, rgba(184,148,255,.06) 64%, transparent),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 1px, transparent 1px 76px),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0 1px, transparent 1px 76px) !important;
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.76) 58%, transparent 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,255,255,.16), transparent 25%),
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.22) 100%);
+}
+
+.app {
+  width: min(1380px, calc(100% - 28px)) !important;
+  padding-top: 18px !important;
+}
+
+.topbar {
+  position: relative;
+  padding: 18px !important;
+  border: 1px solid var(--vl-line) !important;
+  border-radius: 28px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+    radial-gradient(circle at 0% 0%, rgba(217,185,120,.18), transparent 40%),
+    rgba(12, 16, 25, .72) !important;
+  box-shadow: 0 26px 70px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(18px) saturate(1.16);
+  -webkit-backdrop-filter: blur(18px) saturate(1.16);
+  overflow: hidden;
+}
+
+.topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, transparent, rgba(217,185,120,.14), transparent),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 16px);
+  opacity: .35;
+}
+
+.brand-title {
+  font-family: Ethnocentric, var(--font-stack) !important;
+  letter-spacing: .12em !important;
+  color: var(--vl-text) !important;
+  text-shadow: 0 0 18px rgba(217,185,120,.28) !important;
+}
+
+.brand-sub { color: var(--vl-muted) !important; letter-spacing: .12em !important; }
+
+.discord-top-button,
+.view-toggle,
+.back-btn,
+.page-btn,
+.page-size-select {
+  border: 1px solid rgba(217,185,120,.26) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)),
+    rgba(18, 23, 34, .72) !important;
+  color: var(--vl-text) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.discord-top-button:hover,
+.view-toggle:hover,
+.back-btn:hover,
+.page-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(217,185,120,.48) !important;
+  box-shadow: 0 18px 38px rgba(0,0,0,.34), 0 0 24px rgba(217,185,120,.14) !important;
+}
+
+.search-wrap {
+  border-radius: 999px !important;
+  border: 1px solid rgba(217,185,120,.22) !important;
+  background: rgba(7, 10, 17, .62) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 34px rgba(0,0,0,.24) !important;
+}
+
+.search { color: var(--vl-text) !important; }
+.search::placeholder { color: rgba(184,193,215,.72) !important; }
+.search-icon { color: var(--vl-gold) !important; }
+
+.summon-status-panel,
+.pagination-panel,
+.empty {
+  border: 1px solid var(--vl-line) !important;
+  border-radius: 22px !important;
+  background: rgba(12, 16, 25, .60) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.archive-side-hud {
+  border-color: rgba(217,185,120,.22) !important;
+  background:
+    linear-gradient(180deg, rgba(22,26,40,.88), rgba(12,15,24,.90)),
+    radial-gradient(circle at 50% 0%, rgba(184,148,255,.22), transparent 48%) !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.09) !important;
+}
+
+.archive-side-crystal {
+  color: var(--vl-violet) !important;
+  text-shadow: 0 0 20px rgba(184,148,255,.85) !important;
+}
+
+.archive-side-item {
+  border-color: rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.045) !important;
+}
+.archive-side-item.active,
+.archive-side-item:hover {
+  border-color: rgba(217,185,120,.35) !important;
+  background: linear-gradient(180deg, rgba(217,185,120,.16), rgba(184,148,255,.10)) !important;
+}
+
+/* CARDS: mantém estrutura, personagem, banner, hover/3D e cliques */
+.grid:not(.list-mode) {
+  gap: 24px !important;
+}
+
+.grid:not(.list-mode) .card {
+  border-radius: 28px !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 36%, rgba(217,185,120,.26)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+    rgba(9, 12, 20, .86) !important;
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.52),
+    0 0 0 1px rgba(255,255,255,.04) inset,
+    0 0 38px color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  overflow: hidden !important;
+}
+
+.grid:not(.list-mode) .card::before {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.16), transparent 18%, transparent 76%, rgba(217,185,120,.22)),
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 40%) !important;
+  opacity: .8 !important;
+}
+
+.grid:not(.list-mode) .card-bg img { filter: saturate(1.04) contrast(1.08) brightness(.78) !important; }
+.grid:not(.list-mode) .card-bg::after {
+  background:
+    linear-gradient(180deg, rgba(3,5,10,.10) 0%, rgba(3,5,10,.24) 36%, rgba(3,5,10,.74) 76%, rgba(3,5,10,.95) 100%),
+    radial-gradient(circle at 50% 16%, transparent, rgba(0,0,0,.28) 72%) !important;
+}
+
+.card-outline {
+  inset: 8px !important;
+  border-radius: 22px !important;
+  border-color: rgba(217,185,120,.24) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 0 22px rgba(217,185,120,.08) !important;
+}
+
+.side-rail {
+  width: 12px !important;
+  background:
+    linear-gradient(180deg, var(--vl-gold), color-mix(in srgb, var(--accent) 58%, #111827 42%)) !important;
+  opacity: .92 !important;
+}
+
+.card-chip,
+.card-rank-chip,
+.card-verified-chip,
+.list-level,
+.list-clan {
+  border-radius: 12px !important;
+  border-color: rgba(217,185,120,.24) !important;
+  background: rgba(9, 12, 20, .72) !important;
+  backdrop-filter: blur(12px) saturate(1.16);
+  -webkit-backdrop-filter: blur(12px) saturate(1.16);
+}
+
+.card-bottom,
+.detail-bottom {
+  border: 1px solid rgba(217,185,120,.20) !important;
+  border-radius: 20px !important;
+  background:
+    linear-gradient(180deg, rgba(48,38,28,.78), rgba(18,18,28,.88)),
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 42%) !important;
+  box-shadow: 0 18px 34px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.title,
+.detail-title {
+  color: #fff7e9 !important;
+  text-shadow: 0 2px 12px rgba(0,0,0,.55), 0 0 16px color-mix(in srgb, var(--accent) 28%, transparent) !important;
+}
+
+.player-title,
+.detail-subtitle,
+.list-title { color: #d8d0c3 !important; }
+.summon-stars-icons { color: var(--vl-gold) !important; }
+.summon-stars-id { color: #fff !important; }
+
+/* LISTA: mantém hover glow, personagem à direita, avatar e metadados */
+.grid.list-mode {
+  gap: 14px !important;
+}
+
+.grid.list-mode .card {
+  min-height: 118px !important;
+  border-radius: 24px !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, rgba(217,185,120,.22)) !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
+    radial-gradient(circle at 0% 50%, var(--list-accent-soft), transparent 38%),
+    rgba(10, 14, 23, .82) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.09) !important;
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible,
+.grid.list-mode .card.is-touching {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--vl-gold)) !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.095), rgba(255,255,255,.035)),
+    radial-gradient(circle at 10% 50%, var(--list-accent-glow-hover), transparent 44%),
+    rgba(13, 18, 29, .92) !important;
+  box-shadow: 0 26px 64px rgba(0,0,0,.44), 0 0 34px color-mix(in srgb, var(--accent) 16%, transparent) !important;
+}
+
+.list-banner {
+  border-radius: 22px 0 0 22px !important;
+  opacity: .34 !important;
+  filter: saturate(.95) contrast(1.08) brightness(.78) !important;
+}
+
+.list-banner::after {
+  background:
+    linear-gradient(90deg, rgba(7,10,17,.50), rgba(7,10,17,.82) 55%, rgba(7,10,17,.95)),
+    repeating-linear-gradient(90deg, rgba(217,185,120,.10) 0 1px, transparent 1px 26px) !important;
+}
+
+.list-avatar {
+  border-radius: 18px !important;
+  border: 1px solid rgba(217,185,120,.42) !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,.38), 0 0 22px color-mix(in srgb, var(--accent) 22%, transparent) !important;
+}
+
+.list-displayname { color: #fff5e5 !important; letter-spacing: .03em !important; }
+.list-username { color: var(--vl-muted) !important; }
+.list-character { opacity: .92 !important; filter: drop-shadow(0 18px 24px rgba(0,0,0,.42)); }
+.list-rank-title { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 25%, transparent)); }
+
+/* PERFIL: mantém card grande, informações, badges e comportamento */
+.detail-frame {
+  border-radius: 30px !important;
+  border: 1px solid var(--vl-line) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+    rgba(9, 12, 20, .66) !important;
+  box-shadow: 0 32px 88px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+.detail-shell { gap: 22px !important; }
+
+.detail-card {
+  border-radius: 30px !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, rgba(217,185,120,.30)) !important;
+  background: rgba(7, 10, 17, .88) !important;
+  box-shadow: 0 30px 75px rgba(0,0,0,.54), 0 0 45px color-mix(in srgb, var(--accent) 12%, transparent) !important;
+}
+
+.detail-bg img { filter: saturate(1.03) contrast(1.10) brightness(.75) !important; }
+.detail-bg::after {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.24) 42%, rgba(0,0,0,.86) 100%),
+    radial-gradient(circle at 50% 18%, transparent, rgba(0,0,0,.32) 70%) !important;
+}
+
+.detail-outside-description,
+.info-panel,
+.info-item,
+.badges-item {
+  border: 1px solid rgba(217,185,120,.18) !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+    rgba(12, 16, 25, .78) !important;
+  box-shadow: 0 20px 52px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.info-header {
+  border-bottom: 1px solid rgba(217,185,120,.16) !important;
+  background: linear-gradient(90deg, rgba(217,185,120,.10), transparent 55%, rgba(184,148,255,.10)) !important;
+}
+
+.info-title {
+  font-family: Ethnocentric, var(--font-stack) !important;
+  color: #fff7e9 !important;
+  letter-spacing: .18em !important;
+  text-shadow: 0 0 14px rgba(217,185,120,.20) !important;
+}
+
+.info-label {
+  color: var(--vl-gold) !important;
+  letter-spacing: .12em !important;
+}
+
+.info-value { color: #dce3f4 !important; }
+.info-profile-avatar {
+  border-color: rgba(217,185,120,.38) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.34), 0 0 22px rgba(184,148,255,.18) !important;
+}
+
+.level-info-wrap,
+.clan-info-card,
+.achievement-gallery,
+.card-verified-chip {
+  border-color: rgba(217,185,120,.22) !important;
+  box-shadow: 0 16px 36px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.clan-info-card-premium,
+.clan-info-card-tech {
+  background:
+    linear-gradient(135deg, rgba(40,19,20,.88), rgba(14,17,27,.92)),
+    radial-gradient(circle at 0% 50%, color-mix(in srgb, var(--clan-color, #ff5656) 18%, transparent), transparent 55%) !important;
+}
+
+@media (max-width: 760px) {
+  .app { width: min(100% - 18px, 1380px) !important; }
+  .topbar { border-radius: 22px !important; padding: 14px !important; }
+  .grid:not(.list-mode) { gap: 18px !important; }
+  .grid.list-mode .card { border-radius: 20px !important; }
+  .detail-frame { border-radius: 24px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar, .card, .detail-card, .grid.list-mode .card { transition: none !important; }
+}
