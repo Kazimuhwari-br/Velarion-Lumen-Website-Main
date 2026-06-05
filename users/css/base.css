@@ -1,1 +1,10 @@
-
+@font-face { font-family: 'Ethnocentric'; src: url('../assets/fonts/Ethnocentric-Regular.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'MUSICNET'; src: url('../assets/fonts/MUSICNET.ttf') format('truetype'); font-display: swap; }
+* { box-sizing: border-box; }
+html, body { min-height: 100%; scroll-behavior: auto; }
+body { margin: 0; font-family: var(--font-stack); color: var(--text); background: var(--page-bg); background-attachment: fixed; overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+button, input, select { font: inherit; }
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; background: var(--page-grid-bg); opacity: var(--page-grid-opacity); z-index: 0; }
+.hidden { display: none !important; }
+.empty { padding: 22px 18px; border-radius: 18px; background: var(--surface-strong); border: 1px solid var(--line); color: var(--muted); }
