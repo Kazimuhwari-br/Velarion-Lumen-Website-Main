@@ -1,0 +1,8 @@
+.pagination-panel { --pager-glow: rgba(140,108,255,.34); position: relative; width: min(760px, calc(100% - 32px)); margin: 22px auto 0; transform: translateX(8px); display: grid; grid-template-columns: minmax(150px,1fr) auto minmax(120px,1fr); align-items: center; gap: 12px; padding: 11px 13px; border-radius: 22px; border: 1px solid var(--pager-border); background: var(--pager-bg); box-shadow: var(--pager-shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); overflow: hidden; }
+.pagination-info { position: relative; z-index: 1; font-size: 10px; font-weight: 1000; letter-spacing: .14em; text-transform: uppercase; color: var(--pager-text); white-space: nowrap; }
+.pagination-actions { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 4px; border-radius: 18px; background: rgba(0,0,0,.18); border: 1px solid var(--line); }
+.page-btn, .page-size-select { height: 36px; border-radius: 14px; border: 1px solid var(--button-border); background: var(--button-bg); color: #fff; font-weight: 1000; }
+.page-btn { min-width: 36px; padding: 0 12px; cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease; }
+.page-btn.is-active { border-color: rgba(255,255,255,.26); background: var(--button-active-bg); box-shadow: var(--button-active-shadow); }
+.page-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+.page-size-wrap { position: relative; z-index: 1; justify-self: end; display: inline-flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; color: var(--pager-text); }
