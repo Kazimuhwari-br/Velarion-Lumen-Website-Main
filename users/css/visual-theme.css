@@ -1,0 +1,286 @@
+/* ==========================================================
+   Velarion Lumen — Visual Theme Patch
+   Somente visual: Cards, Lista e Perfil. Não altera JS/dados.
+   ========================================================== */
+
+:root {
+  --vl-bg: #f6f7fb;
+  --vl-surface: rgba(255,255,255,.88);
+  --vl-surface-strong: rgba(255,255,255,.96);
+  --vl-border: rgba(96,112,148,.18);
+  --vl-text: #20283a;
+  --vl-muted: #66728b;
+  --vl-soft: #eef2f8;
+  --vl-accent: #6d7fa8;
+  --vl-accent-2: #9aa8c8;
+  --vl-shadow: 0 18px 48px rgba(26,35,56,.10);
+  --vl-shadow-soft: 0 10px 28px rgba(26,35,56,.08);
+}
+
+html,
+body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(190,200,222,.30), transparent 34%),
+    radial-gradient(circle at 82% 8%, rgba(220,210,198,.26), transparent 36%),
+    linear-gradient(180deg, #fbfaf8 0%, var(--vl-bg) 48%, #eef1f6 100%) !important;
+  color: var(--vl-text) !important;
+}
+
+.app { max-width: 1240px; }
+
+.topbar,
+.summon-status-panel,
+.pagination-panel {
+  background: rgba(255,255,255,.72) !important;
+  border: 1px solid var(--vl-border) !important;
+  box-shadow: var(--vl-shadow-soft) !important;
+  backdrop-filter: blur(18px);
+}
+
+.brand-title {
+  color: #172033 !important;
+  letter-spacing: .08em !important;
+}
+
+.brand-sub,
+.summon-status-sub,
+.pagination-info {
+  color: var(--vl-muted) !important;
+}
+
+.search,
+.page-size-select {
+  background: rgba(255,255,255,.88) !important;
+  border: 1px solid rgba(96,112,148,.22) !important;
+  color: var(--vl-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.75) !important;
+}
+
+.search:focus,
+.page-size-select:focus {
+  border-color: rgba(109,127,168,.52) !important;
+  box-shadow: 0 0 0 4px rgba(109,127,168,.12) !important;
+}
+
+.view-toggle,
+.discord-top-button,
+.page-btn {
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(96,112,148,.22) !important;
+  color: #35415c !important;
+  box-shadow: 0 10px 22px rgba(26,35,56,.08) !important;
+}
+
+.view-toggle:hover,
+.discord-top-button:hover,
+.page-btn:hover,
+.page-btn.active {
+  background: linear-gradient(180deg, #ffffff, #eef2f8) !important;
+  border-color: rgba(109,127,168,.42) !important;
+  color: #1f2a42 !important;
+}
+
+/* ===== CARDS ===== */
+.grid:not(.list-mode) {
+  gap: 26px !important;
+}
+
+.card:not(.list-card-v3) {
+  background: var(--vl-surface-strong) !important;
+  border: 1px solid var(--vl-border) !important;
+  border-radius: 28px !important;
+  box-shadow: var(--vl-shadow) !important;
+  overflow: hidden !important;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease !important;
+}
+
+.card:not(.list-card-v3):hover,
+.card:not(.list-card-v3):focus-visible {
+  transform: translateY(-5px) !important;
+  border-color: rgba(109,127,168,.36) !important;
+  box-shadow: 0 24px 64px rgba(26,35,56,.14) !important;
+}
+
+.card:not(.list-card-v3)::before,
+.card:not(.list-card-v3)::after,
+.card-outline,
+.card-frame-svg,
+.side-rail {
+  pointer-events: none !important;
+}
+
+.card-bg {
+  border-radius: 26px 26px 0 0 !important;
+  overflow: hidden !important;
+}
+
+.card-bg::after {
+  background: linear-gradient(180deg, rgba(15,20,32,.04), rgba(246,247,251,.90)) !important;
+}
+
+.card-bottom {
+  background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,249,252,.96)) !important;
+  border-top: 1px solid rgba(96,112,148,.12) !important;
+}
+
+.title,
+.player-title,
+.list-displayname-text {
+  color: #273149 !important;
+  font-weight: 800 !important;
+}
+
+.username,
+[class*="username"],
+.list-username {
+  color: #68738c !important;
+}
+
+.card-chip,
+.card-rank-chip,
+.level-info-wrap,
+.level-info-emblem,
+.list-combat-pill,
+.list-extra-pill {
+  background: rgba(238,242,248,.86) !important;
+  border: 1px solid rgba(96,112,148,.14) !important;
+  color: #4f5b75 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.75) !important;
+}
+
+.card-chip-text,
+.info-label,
+.list-tier-name,
+.list-tier-next {
+  color: #56627c !important;
+}
+
+.card-visual img,
+.list-avatar img,
+.info-profile-avatar img {
+  border-radius: 22px !important;
+  box-shadow: 0 14px 34px rgba(21,29,48,.16) !important;
+}
+
+/* ===== LISTA ===== */
+.grid.list-mode {
+  gap: 14px !important;
+}
+
+.grid.list-mode .card {
+  min-height: 96px !important;
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(96,112,148,.17) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 12px 34px rgba(26,35,56,.08) !important;
+  backdrop-filter: blur(14px);
+}
+
+.grid.list-mode .card:hover,
+.grid.list-mode .card:focus-visible,
+.grid.list-mode .card.is-touching {
+  transform: translateY(-2px) !important;
+  border-color: rgba(109,127,168,.36) !important;
+  box-shadow: 0 18px 46px rgba(26,35,56,.12) !important;
+}
+
+.grid.list-mode .card::before,
+.grid.list-mode .card::after,
+.list-svg-bg,
+.list-circuit-bg {
+  opacity: .18 !important;
+}
+
+.list-avatar {
+  border-radius: 20px !important;
+  background: rgba(238,242,248,.9) !important;
+  border: 1px solid rgba(96,112,148,.16) !important;
+}
+
+.list-info,
+.list-group1,
+.list-group2,
+.list-extra-row {
+  color: var(--vl-muted) !important;
+}
+
+.list-tier-progress {
+  background: rgba(96,112,148,.14) !important;
+}
+
+.list-tier-bar {
+  background: linear-gradient(90deg, #8796ba, #c3cadb) !important;
+}
+
+/* ===== PERFIL / DETALHE ===== */
+.detail-view {
+  color: var(--vl-text) !important;
+}
+
+.detail-shell,
+.detail-card,
+.info-panel,
+.info-item,
+.detail-outside-description,
+.clan-info-card {
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(96,112,148,.16) !important;
+  box-shadow: var(--vl-shadow) !important;
+  backdrop-filter: blur(16px);
+}
+
+.detail-shell,
+.detail-card {
+  border-radius: 32px !important;
+}
+
+.detail-bg,
+.detail-frame {
+  border-radius: 32px !important;
+  overflow: hidden !important;
+}
+
+.detail-bg::after,
+.back-art::after {
+  background: linear-gradient(180deg, rgba(13,17,28,.10), rgba(246,247,251,.92)) !important;
+}
+
+.detail-title,
+.info-title {
+  color: #1f293d !important;
+  font-weight: 850 !important;
+}
+
+.detail-subtitle,
+.info-value,
+.detail-outside-description .info-value {
+  color: #65718b !important;
+}
+
+.back-btn {
+  color: #536387 !important;
+  background: rgba(255,255,255,.74) !important;
+  border: 1px solid rgba(96,112,148,.18) !important;
+  box-shadow: 0 10px 24px rgba(26,35,56,.08) !important;
+}
+
+.back-btn:hover {
+  background: #fff !important;
+  color: #24304a !important;
+}
+
+/* mantém imagens/personagens visíveis, mas deixa o visual mais limpo */
+.character-wrap,
+.detail-character-wrap,
+.list-character {
+  filter: drop-shadow(0 18px 28px rgba(21,29,48,.18));
+}
+
+@media (max-width: 760px) {
+  .card:not(.list-card-v3),
+  .grid.list-mode .card,
+  .detail-shell,
+  .detail-card {
+    border-radius: 22px !important;
+  }
+}
