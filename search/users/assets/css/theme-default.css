@@ -1,0 +1,15 @@
+:root {
+  --bg-1: #050914;
+  --bg-2: #0b1120;
+  --panel: rgba(11, 16, 30, 0.76);
+  --line: rgba(255,255,255,0.08);
+  --text: #f5f7ff;
+  --muted: #cfd7eb;
+  --muted-2: #94a0be;
+  --shadow: 0 20px 44px rgba(0,0,0,.42);
+  --font-stack: Inter, "Segoe UI", sans-serif;
+
+  --card-radius: 22px;
+  --panel-radius: 18px;
+  --accent-default: #5865F2;
+}
