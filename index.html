@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="O centro de entrada do Velarion Lumen, com dados reais, atalhos e destaques da comunidade." />
+  <title>Hub | Velarion Lumen</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body data-page="hub" data-vl-data-page="hub">
+  <div class="site-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Voltar ao Hub Velarion Lumen">
+      <span class="brand-mark">龍</span>
+      <span class="brand-copy"><strong>Velarion Lumen</strong><small>Modern Fantasy Anime Hub</small></span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="site-nav" aria-label="Navegação principal" data-site-nav>
+        <a class="nav-link" data-nav="hub" href="index.html"><span>✦</span>Hub</a>
+        <a class="nav-link" data-nav="aventureiros" href="pages/aventureiros.html"><span>◇</span>Aventureiros</a>
+        <a class="nav-link" data-nav="habitantes" href="pages/habitantes.html"><span>◆</span>Habitantes</a>
+        <a class="nav-link" data-nav="guildas" href="pages/guildas.html"><span>♜</span>Guildas</a>
+        <a class="nav-link" data-nav="reinos" href="pages/reinos.html"><span>▣</span>Reinos</a>
+        <a class="nav-link" data-nav="missoes" href="pages/missoes.html"><span>✧</span>Missões</a>
+        <a class="nav-link" data-nav="rankings" href="pages/rankings.html"><span>♛</span>Rankings</a>
+        <a class="nav-link" data-nav="eventos" href="pages/eventos.html"><span>◎</span>Eventos</a>
+        <a class="nav-link" data-nav="reliquias" href="pages/reliquias.html"><span>✺</span>Relíquias</a>
+        <a class="nav-link" data-nav="academia" href="pages/academia.html"><span>◈</span>Academia</a>
+        <a class="nav-link" data-nav="comunidade" href="pages/comunidade.html"><span>✦</span>Comunidade</a>
+        <a class="nav-link" data-nav="suporte" href="pages/suporte.html"><span>?</span>Suporte</a>
+    </nav>
+  </header>
+
+  <main id="gridView" class="page-shell" data-vl-hub-stats>
+    <section class="page-hero reveal">
+      <span class="hero-kicker">Portal Principal</span>
+      <h1>Hub</h1>
+      <p>Entrada principal do Velarion Lumen, preservando a nova identidade visual e consumindo dados reais da comunidade.</p>
+    </section>
+
+    <section class="hero-grid reveal">
+      <article class="hero-panel hero-panel--main">
+        <span class="section-kicker">Velarion Lumen</span>
+        <h2>Uma comunidade com identidade própria.</h2>
+        <p>Fantasia moderna, energia anime e interface limpa para organizar aventureiros, habitantes, rankings e portais sem copiar o site antigo.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="pages/aventureiros.html">Explorar Aventureiros</a>
+          <a class="btn btn-ghost" href="pages/rankings.html">Ver Rankings</a>
+        </div>
+      </article>
+      <article class="hero-panel status-panel">
+        <span class="section-kicker">Status do Hub</span>
+        <div class="status-orb" aria-hidden="true"></div>
+        <strong data-vl-firebase-status>Conectando ao Codex...</strong>
+        <p data-vl-firebase-message>Carregando jogadores, emblemas, rankings e dados reais do Firebase.</p>
+      </article>
+    </section>
+
+    <section class="content-block reveal">
+      <div class="block-head">
+        <span class="section-kicker">Dados reais</span>
+        <h2>Painel sincronizado</h2>
+        <p>Resumo carregado da mesma base funcional usada pela antiga página de jogadores.</p>
+      </div>
+      <div class="portal-grid data-metric-grid">
+        <article class="portal-card data-metric"><span>👥</span><strong data-vl-total-players>--</strong><small>Aventureiros registrados</small></article>
+        <article class="portal-card data-metric"><span>🟢</span><strong data-vl-online-players>--</strong><small>Status online detectado</small></article>
+        <article class="portal-card data-metric"><span>♛</span><strong data-vl-top-score>--</strong><small>Maior pontuação global</small></article>
+        <article class="portal-card data-metric"><span>✦</span><strong data-vl-top-level>--</strong><small>Maior nível encontrado</small></article>
+      </div>
+    </section>
+
+    <section class="content-block reveal">
+      <div class="block-head">
+        <span class="section-kicker">Portais</span>
+        <h2>Seções principais</h2>
+        <p>Cada portal aponta para uma página HTML própria dentro de <code>/pages</code>.</p>
+      </div>
+      <div class="portal-grid">
+        <a class="portal-card" href="pages/aventureiros.html"><span>◇</span><strong>Aventureiros</strong><small>Jogadores, perfis, progresso e conquistas.</small></a>
+        <a class="portal-card" href="pages/habitantes.html"><span>◆</span><strong>Habitantes</strong><small>NPCs, guias, comerciantes e lore.</small></a>
+        <a class="portal-card" href="pages/guildas.html"><span>♜</span><strong>Guildas</strong><small>Clãs, facções e equipes.</small></a>
+        <a class="portal-card" href="pages/reinos.html"><span>▣</span><strong>Reinos</strong><small>Regiões, cidades e territórios.</small></a>
+        <a class="portal-card" href="pages/missoes.html"><span>✧</span><strong>Missões</strong><small>Quests, desafios e jornadas.</small></a>
+        <a class="portal-card" href="pages/rankings.html"><span>♛</span><strong>Rankings</strong><small>Classificações reais da comunidade.</small></a>
+        <a class="portal-card" href="pages/eventos.html"><span>◎</span><strong>Eventos</strong><small>Conteúdo temporário e competitivo.</small></a>
+        <a class="portal-card" href="pages/reliquias.html"><span>✺</span><strong>Relíquias</strong><small>Itens raros, artefatos e recompensas.</small></a>
+        <a class="portal-card" href="pages/academia.html"><span>◈</span><strong>Academia</strong><small>Guias, regras e tutoriais.</small></a>
+        <a class="portal-card" href="pages/comunidade.html"><span>✦</span><strong>Comunidade</strong><small>Posts, mídia, Discord e avisos.</small></a>
+        <a class="portal-card" href="pages/suporte.html"><span>?</span><strong>Suporte</strong><small>Ajuda, denúncias e tickets.</small></a>
+      </div>
+    </section>
+
+    <section class="split-layout reveal">
+      <article class="content-card large-card">
+        <span class="section-kicker">Top Aventureiros</span>
+        <h2>Destaques carregados</h2>
+        <div class="timeline-list" data-vl-top-players>
+          <div><b>--</b><strong>Carregando...</strong><small>Buscando dados reais do Firebase.</small></div>
+        </div>
+      </article>
+      <aside class="content-card accent-card">
+        <span class="section-kicker">Integração</span>
+        <h3>Visual novo + lógica antiga limpa</h3>
+        <p>O Hub usa apenas atalhos e resumos; os cards, busca, lista, perfil e paginação ficam nas páginas certas.</p>
+        <a class="btn btn-primary" href="pages/aventureiros.html">Abrir Codex</a>
+      </aside>
+    </section>
+  </main>
+
+  <section id="detailView" class="detail-view" aria-label="Perfil rápido"></section>
+  <div id="screenFade" class="screen-fade"></div>
+  <footer class="site-footer">
+    <div>
+      <strong>Velarion Lumen 龍</strong>
+      <small>Fantasia moderna, anime e comunidade organizada.</small>
+    </div>
+    <a href="index.html">Voltar ao Hub</a>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>
