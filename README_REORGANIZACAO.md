@@ -54,3 +54,43 @@ Esta versão usa `index.html` e `/pages` como estrutura nova. A lógica funciona
 - sem CSS/JS antigos soltos como arquivos separados.
 
 Para trocar a fonte dos Habitantes, edite o atributo `data-firebase-url` em `/pages/habitantes.html`.
+
+## Ajuste de tela 1024x768 com zoom 67%
+
+Foi criada uma localização central para este perfil de tela:
+
+- JavaScript: `assets/js/main.js`, bloco `LOCALIZAÇÃO DE TELA: 1024x768 com zoom de página em 67%`.
+- CSS: `assets/css/style.css`, bloco `LOCALIZAÇÃO DE TELA — 1024x768 + zoom 67%`.
+
+A ativação é automática quando a tela física é 1024x768 e o zoom aparente está próximo de 67%.
+
+Também é possível forçar manualmente adicionando ao endereço:
+
+```txt
+?vlLayout=1024x768-67
+```
+
+Para limpar a configuração salva:
+
+```txt
+?vlLayout=auto
+```
+
+Pelo console do navegador:
+
+```js
+VelarionLayout.setPreset('1024x768-67')
+VelarionLayout.clearPreset()
+```
+
+
+## Loader inicial apenas na primeira abertura
+
+O loader cinematográfico de entrada usa `sessionStorage` com a chave `vlBootShownOnce`.
+Assim, ele aparece somente no primeiro acesso da aba/sessão e não reaparece ao clicar nos botões de navegação entre páginas.
+
+Arquivos envolvidos:
+
+- `assets/js/main.js` — bloco `LOADER INICIAL — uma única vez por aba/sessão`;
+- `assets/css/style.css` — regra `html.vl-skip-boot .vl-boot`;
+- HTML das páginas — script pequeno no `<head>` que evita flash visual quando o loader já foi exibido.

@@ -3,11 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="O centro de entrada do Velarion Lumen, com dados reais, atalhos e destaques da comunidade." />
+  <meta name="description" content="O centro de entrada do Velarion Lumen, com registros do Codex, atalhos e destaques da comunidade." />
   <title>Hub | Velarion Lumen</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/velarion.config.js?v=loader-performance-v7"></script>
+  <script>
+    (function(){
+      var config = window.VELARION_CONFIG || {};
+      var maintenance = config.maintenance || {};
+      var loading = config.loading || {};
+      var path = location.pathname || "";
+      var inPages = path.indexOf("/pages/") !== -1;
+      var rootBase = inPages ? "../" : "";
+      var isMaintenance = /(?:^|\/)maintenance\.html(?:$|[?#])/i.test(path + location.search);
+      var previewParam = maintenance.previewParam || "vlMaintenancePreview";
+      var preview = false;
+      try { preview = new URLSearchParams(location.search).get(previewParam) === "1"; } catch(e) {}
+      if (maintenance.enabled === true && !isMaintenance && !preview) {
+        var page = maintenance.page || "maintenance.html";
+        var url = /^(?:https?:)?\/\//i.test(page) || page.charAt(0) === "/" ? page : rootBase + page.replace(/^\.\//, "").replace(/^\.\.\//, "");
+        location.replace(url);
+        return;
+      }
+      try {
+        if (loading.enabled === false || (loading.showOncePerSession !== false && sessionStorage.getItem("vlBootShownOnce:" + String(loading.version || "default")) === "1")) {
+          document.documentElement.classList.add("vl-skip-boot");
+        } else {
+          document.documentElement.classList.add("vl-boot-lock");
+        }
+      } catch (e) {
+        document.documentElement.classList.add("vl-boot-lock");
+      }
+    })();
+  </script>
+  <link rel="preload" as="image" href="assets/img/loading/background1.png" fetchpriority="high" />
+  <link rel="stylesheet" href="assets/css/style.css?v=loader-performance-v7" />
 </head>
 <body data-page="hub" data-vl-data-page="hub">
+
+
+  <div id="summonBoot" class="vl-boot" role="status" aria-live="polite" aria-label="Carregando Velarion Lumen">
+    <div class="vl-boot-bg-stack" aria-hidden="true">
+      <img class="vl-boot-bg is-active" data-vl-boot-bg-a src="assets/img/loading/background1.png" alt="" loading="eager" decoding="async" fetchpriority="high" onload="this.classList.add('is-ready');document.documentElement.classList.add('vl-boot-bg-ready');window.__vlBootBgReadyAt=Date.now();" onerror="this.onerror=null;this.onload=function(){this.classList.add('is-ready');document.documentElement.classList.add('vl-boot-bg-ready');window.__vlBootBgReadyAt=Date.now();};this.src='assets/img/loading/fallback.png';">
+      <img class="vl-boot-bg" data-vl-boot-bg-b src="assets/img/loading/fallback.png" alt="" loading="eager" decoding="async" onload="this.classList.add('is-ready');" onerror="this.onerror=null;this.style.display='none';">
+    </div>
+    <div class="vl-boot-field" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="vl-boot-haze" aria-hidden="true"></div>
+    <div class="vl-boot-visual" aria-hidden="true">
+      <div class="vl-boot-sigil">
+        <i></i><i></i><i></i>
+        <b></b>
+      </div>
+      <div class="vl-boot-orbit vl-boot-orbit--one"><span></span><span></span></div>
+      <div class="vl-boot-orbit vl-boot-orbit--two"><span></span><span></span></div>
+      <div class="vl-boot-fragments"><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="vl-boot-panel">
+      <strong class="vl-boot-logo">VELARION LUMEN</strong>
+      <span class="vl-boot-kanji">光界方舟</span>
+      <div class="vl-boot-line" aria-hidden="true"><i></i></div>
+      <small data-vl-loader-text>— ABRINDO OS PORTÕES DE LUMEN —</small>
+    </div>
+    <div class="vl-boot-copy">© VELARION LUMEN</div>
+  </div>
   <div class="site-bg" aria-hidden="true"><span></span><span></span><span></span></div>
 
   <header class="site-header">
@@ -40,7 +100,7 @@
     <section class="page-hero reveal">
       <span class="hero-kicker">Portal Principal</span>
       <h1>Hub</h1>
-      <p>Entrada principal do Velarion Lumen, preservando a nova identidade visual e consumindo dados reais da comunidade.</p>
+      <p>Entrada principal do Velarion Lumen, preservando a nova identidade visual e revelando registros do Codex da comunidade.</p>
     </section>
 
     <section class="hero-grid reveal">
@@ -57,13 +117,13 @@
         <span class="section-kicker">Status do Hub</span>
         <div class="status-orb" aria-hidden="true"></div>
         <strong data-vl-firebase-status>Conectando ao Codex...</strong>
-        <p data-vl-firebase-message>Carregando jogadores, emblemas, rankings e dados reais do Firebase.</p>
+        <p data-vl-firebase-message>Abrindo jogadores, emblemas, rankings e ecos registrados no Codex.</p>
       </article>
     </section>
 
     <section class="content-block reveal">
       <div class="block-head">
-        <span class="section-kicker">Dados reais</span>
+        <span class="section-kicker">Registros do Codex</span>
         <h2>Painel sincronizado</h2>
         <p>Resumo carregado da mesma base funcional usada pela antiga página de jogadores.</p>
       </div>
@@ -101,7 +161,7 @@
         <span class="section-kicker">Top Aventureiros</span>
         <h2>Destaques carregados</h2>
         <div class="timeline-list" data-vl-top-players>
-          <div><b>--</b><strong>Carregando...</strong><small>Buscando dados reais do Firebase.</small></div>
+          <div><b>--</b><strong>Carregando...</strong><small>Buscando registros do Codex.</small></div>
         </div>
       </article>
       <aside class="content-card accent-card">
@@ -123,6 +183,6 @@
     <a href="index.html">Voltar ao Hub</a>
   </footer>
 
-  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/main.js?v=loader-performance-v7" defer></script>
 </body>
 </html>

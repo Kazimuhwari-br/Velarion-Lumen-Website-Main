@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste do Background do Loader</title>
+  <style>
+    html,body{margin:0;min-height:100%;background:#05070d;color:white;font-family:Arial,sans-serif;}
+    body{display:grid;place-items:center;padding:24px;}
+    .frame{width:min(1100px,100%);border:1px solid rgba(255,255,255,.18);border-radius:24px;overflow:hidden;background:#101722;box-shadow:0 30px 90px rgba(0,0,0,.55);}
+    img{display:block;width:100%;height:auto;}
+    p{margin:0;padding:14px 16px;color:rgba(255,255,255,.78);font-size:14px;}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <img src="assets/img/loading/background1.png" alt="Teste do background1" onerror="this.onerror=null;this.src='assets/img/loading/fallback.png';">
+    <p>Se esta imagem aparecer aqui, o caminho assets/img/loading/background1.png está correto.</p>
+  </div>
+</body>
+</html>

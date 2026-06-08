@@ -1,0 +1,20 @@
+TESTE RÁPIDO DO BACKGROUND DO LOADER
+
+1) Abra index.html.
+2) A imagem deve aparecer atrás do logotipo imediatamente.
+3) O arquivo usado agora é um <img> real:
+   assets/img/loading/background1.png
+
+Se trocar/adicionar imagens:
+- coloque os arquivos na pasta assets/img/loading/
+- use os nomes background1.png, background2.png, background3.png...
+- altere backgroundCount em assets/js/velarion.config.js
+
+Nesta versão, backgroundCount está em 1 porque só existe background1.png no ZIP.
+
+
+PATCH V5:
+- A imagem do loader é pré-carregada no <head>.
+- O fundo entra com fade quando terminar de carregar.
+- O loader espera a imagem ficar visível por alguns instantes antes de fechar.
+- Configure em assets/js/velarion.config.js: waitForBackground, backgroundVisibleMinMs e backgroundWaitMaxMs.

@@ -1,0 +1,10 @@
+Correção V6 do loader
+
+- A barra de carregamento agora inicia via JavaScript e avança visualmente.
+- Ao fechar, o loader aplica fade e depois é removido do DOM.
+- requestAnimationFrame, intervalos, animações e imagens pendentes são interrompidos.
+- Configuração em assets/js/velarion.config.js:
+  progressEnabled: true
+  destroyAfterClose: true
+
+Observação: durante os segundos em que o loader está visível, ainda existe consumo normal de animação e da imagem. Depois do fade, ele deve parar completamente.
