@@ -96,7 +96,7 @@ window.VELARION_CONFIG = {
 
   maintenance: {
     // Troque para true para mandar o site para a página maintenance.html.
-    enabled: false,
+    enabled: true,
 
     // Página separada de manutenção.
     page: "maintenance.html",
