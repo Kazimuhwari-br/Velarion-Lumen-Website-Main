@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velarion Lumen - Preview de Card por ID</title>
+  <link rel="stylesheet" href="assets/css/velarion-card.css?v=nickname-colors-server-panel-v19-preview" />
+  <link rel="stylesheet" href="assets/css/velarion-profile.css?v=nickname-colors-server-panel-v18" />
+
+  <style>
+    /* ==========================================================
+       PREVIEW RÁPIDO DO CARD
+       ----------------------------------------------------------
+       Troque apenas estes valores para escolher o objeto carregado.
+
+       Exemplo:
+       --vl-preview-player-id: "ID_0";
+       --vl-preview-card-scale: .92;
+
+       Também pode testar pelo navegador:
+       card-preview-dados.html?id=ID_0
+       card-preview-dados.html?id=ID_0&scale=1
+       ========================================================== */
+    :root {
+      --vl-preview-player-id: "ID_0";
+      --vl-preview-card-scale: .92;
+
+      /* Opcional: deixe vazio para usar profilePlayers oficial. */
+      --vl-preview-data-url: "";
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f6f7ff;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(122, 92, 255, .22), transparent 32%),
+        radial-gradient(circle at 78% 18%, rgba(61, 238, 203, .15), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(255, 95, 205, .12), transparent 38%),
+        linear-gradient(135deg, #070a18, #11142a 48%, #07101e);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.84), rgba(0,0,0,.25));
+    }
+
+    .preview-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+      padding: 28px;
+    }
+
+    .preview-panel {
+      position: sticky;
+      top: 20px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(126, 108, 255, .18), transparent 38%),
+        linear-gradient(145deg, rgba(15,18,38,.92), rgba(7,9,22,.86));
+      box-shadow: 0 22px 54px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .preview-panel h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.08;
+      letter-spacing: -.03em;
+    }
+
+    .preview-panel p {
+      margin: 0 0 16px;
+      color: rgba(238,242,255,.72);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .preview-meta {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .preview-chip {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.09);
+      color: rgba(240,244,255,.78);
+      font-size: 12px;
+    }
+
+    .preview-chip strong {
+      color: #fff;
+      font-weight: 900;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .preview-download-btn {
+      width: 100%;
+      margin: 0 0 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px;
+      padding: 12px 14px;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      cursor: pointer;
+      background:
+        linear-gradient(135deg, rgba(122, 92, 255, .95), rgba(61, 238, 203, .72));
+      box-shadow: 0 14px 34px rgba(0,0,0,.28);
+      transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+    }
+
+    .preview-download-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .preview-download-btn:active {
+      transform: translateY(0);
+    }
+
+    .preview-download-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      filter: grayscale(.35);
+      transform: none;
+    }
+
+    .preview-code {
+      display: block;
+      margin: 14px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      overflow: auto;
+      color: #dfe7ff;
+      background: rgba(0,0,0,.30);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .preview-stage {
+      min-height: calc(100vh - 56px);
+      display: grid;
+      place-items: center;
+      padding: 34px 20px 70px;
+      overflow: visible;
+    }
+
+    #cardMount {
+      width: min(100%, 760px);
+      min-height: 650px;
+      display: grid;
+      place-items: center;
+      overflow: visible;
+    }
+
+    #cardMount .vl-card-slot {
+      --vl-card-grid-scale: var(--vl-preview-card-scale);
+      width: calc(360px * var(--vl-card-grid-scale) + 34px);
+      height: calc(520px * var(--vl-card-grid-scale) + 92px);
+      padding-top: 42px;
+      place-items: start center;
+    }
+
+    #cardMount .vl-card-scale > .vl-card {
+      margin: 0 !important;
+      transform: none !important;
+      cursor: default;
+    }
+
+    #cardMount .vl-card-scale:hover,
+    #cardMount .vl-card-scale:focus-within {
+      transform: scale(var(--vl-card-grid-scale));
+    }
+
+    .preview-state {
+      max-width: 560px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      color: rgba(247,249,255,.82);
+      background: rgba(10,12,26,.70);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 46px rgba(0,0,0,.30);
+      line-height: 1.45;
+    }
+
+    .preview-state strong {
+      color: #fff;
+    }
+
+    .preview-id-list {
+      margin-top: 10px;
+      color: rgba(236,240,255,.66);
+      font-size: 12px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    @media (max-width: 880px) {
+      .preview-page {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .preview-panel {
+        position: relative;
+        top: auto;
+      }
+
+      .preview-stage {
+        min-height: 620px;
+        padding-inline: 0;
+      }
+    }
+
+    @media (max-width: 430px) {
+      :root {
+        --vl-preview-card-scale: .84;
+      }
+
+      .preview-page {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-page">
+    <aside class="preview-panel" aria-label="Configuração do preview">
+      <h1>Preview do Card por ID</h1>
+      <p>Este HTML carrega o card oficial usando os dados reais do Firebase. Para trocar o jogador/NPC, edite o ID dentro do CSS no topo deste arquivo.</p>
+
+      <div class="preview-meta">
+        <div class="preview-chip"><span>ID escolhido</span><strong id="previewIdLabel">...</strong></div>
+        <div class="preview-chip"><span>Escala visual</span><strong id="previewScaleLabel">...</strong></div>
+        <div class="preview-chip"><span>Status</span><strong id="previewStatusLabel">Carregando</strong></div>
+      </div>
+
+      <button id="downloadCardPngBtn" class="preview-download-btn" type="button" disabled>
+        Baixar carta em PNG
+      </button>
+
+      <code class="preview-code">:root {
+  --vl-preview-player-id: "ID_0";
+  --vl-preview-card-scale: .92;
+}</code>
+
+      <p style="margin-top:14px;margin-bottom:0">Dica: você também pode usar <b>?id=ID_0</b> no link sem editar o arquivo.</p>
+    </aside>
+
+    <section class="preview-stage" aria-label="Card renderizado">
+      <div id="cardMount">
+        <div class="preview-state">Carregando objetos de dados do Velarion Lumen...</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/velarion-card.js?v=nickname-colors-server-panel-v19-preview"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+
+  <script>
+    (function() {
+      "use strict";
+
+      const DEFAULT_PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
+      const DEFAULT_EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
+      const DEFAULT_EXTENSIONS_DATA_URL = DEFAULT_EXTENSIONS_BASE_URL + "/information_panel.json";
+      const DEFAULT_CLANS_DATA_URL = "https://kazimuhwaribedrock-clans-default-rtdb.firebaseio.com/clanPlayers.json";
+      const SERVER_PANEL_NICKNAME_COLORS_DATA_URLS = [
+        DEFAULT_EXTENSIONS_BASE_URL + "/server_panel/nickname_colors.json",
+        DEFAULT_EXTENSIONS_BASE_URL + "/server_panel/nickname_colors/items.json"
+      ];
+
+      const mount = document.getElementById("cardMount");
+      const idLabel = document.getElementById("previewIdLabel");
+      const scaleLabel = document.getElementById("previewScaleLabel");
+      const statusLabel = document.getElementById("previewStatusLabel");
+      const downloadBtn = document.getElementById("downloadCardPngBtn");
+
+      let currentDownloadId = "card";
+
+      function readCssVar(name, fallback) {
+        const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        if (!value) return fallback;
+        return value.replace(/^[\'"]|[\'"]$/g, "").trim() || fallback;
+      }
+
+      function getParam(name) {
+        try { return new URLSearchParams(location.search).get(name) || ""; }
+        catch (error) { return ""; }
+      }
+
+      function setState(title, message, extraHtml) {
+        statusLabel.textContent = title;
+
+        if (downloadBtn) {
+          downloadBtn.disabled = true;
+        }
+
+        mount.innerHTML = `
+          <div class="preview-state">
+            <strong>${escapeHtml(title)}</strong><br>
+            ${escapeHtml(message || "")}
+            ${extraHtml || ""}
+          </div>
+        `;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function fetchJson(url) {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status} em ${url}`);
+        return await response.json();
+      }
+
+      async function fetchJsonOptional(url) {
+        try { return await fetchJson(url); }
+        catch (error) {
+          console.warn("[Velarion Card Preview] Caminho opcional não carregou:", url, error);
+          return null;
+        }
+      }
+
+      function asObject(value) {
+        return value && typeof value === "object" ? value : {};
+      }
+
+      function normalizeServerPanelNicknameColorsData(data) {
+        if (!data || typeof data !== "object") return {};
+        if (data.server_panel && data.server_panel.nickname_colors && typeof data.server_panel.nickname_colors === "object") return data.server_panel.nickname_colors;
+        if (data.nickname_colors && typeof data.nickname_colors === "object") return data.nickname_colors;
+        if (data.items && typeof data.items === "object") return data;
+        return { items: data };
+      }
+
+      function attachServerPanelData(extensions, nicknameColorSources) {
+        const base = asObject(extensions);
+        const currentPanel = asObject(base.server_panel);
+        const currentNicknameColors = asObject(currentPanel.nickname_colors || currentPanel.nicknameColors);
+        const mergedNicknameColors = Object.assign({}, currentNicknameColors, {
+          items: Object.assign({}, asObject(currentNicknameColors.items))
+        });
+
+        (nicknameColorSources || []).forEach(function(source) {
+          const normalized = normalizeServerPanelNicknameColorsData(source);
+          if (!Object.keys(normalized).length) return;
+          const normalizedItems = asObject(normalized.items);
+          Object.assign(mergedNicknameColors, normalized);
+          mergedNicknameColors.items = Object.assign({}, asObject(mergedNicknameColors.items), normalizedItems);
+        });
+
+        base.server_panel = Object.assign({}, currentPanel, {
+          nickname_colors: mergedNicknameColors
+        });
+        base.nickname_colors = mergedNicknameColors;
+        return base;
+      }
+
+      function countNicknameColors(extensionsData) {
+        return Object.keys(asObject(extensionsData?.server_panel?.nickname_colors?.items || extensionsData?.nickname_colors?.items)).length;
+      }
+
+      function cloneRecord(record) {
+        if (window.structuredClone) {
+          try { return structuredClone(record); } catch (error) {}
+        }
+        return JSON.parse(JSON.stringify(record || {}));
+      }
+
+      function naturalIdIndex(id) {
+        const match = String(id || "").match(/^(?:ID[_-]?)(\d+)$/i);
+        return match ? Number(match[1]) : NaN;
+      }
+
+      function sortIds(a, b) {
+        const na = naturalIdIndex(a);
+        const nb = naturalIdIndex(b);
+        if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+        if (Number.isFinite(na)) return -1;
+        if (Number.isFinite(nb)) return 1;
+        return String(a).localeCompare(String(b), "pt-BR", { numeric: true, sensitivity: "base" });
+      }
+
+      function getDataKeys(dataSource) {
+        if (Array.isArray(dataSource)) {
+          return dataSource.map((record, index) => String(record?._id || record?.id || record?.profile_id || `ID_${index}`));
+        }
+        return Object.keys(asObject(dataSource)).sort(sortIds);
+      }
+
+      function findRecord(dataSource, selectedId) {
+        const wanted = String(selectedId || "").trim();
+
+        if (Array.isArray(dataSource)) {
+          const indexMatch = wanted.match(/^ID[_-]?(\d+)$/i);
+          const directIndex = indexMatch ? Number(indexMatch[1]) : NaN;
+          let index = Number.isFinite(directIndex) ? directIndex : -1;
+          let record = dataSource[index];
+
+          if (!record) {
+            index = dataSource.findIndex((item) => {
+              const itemId = String(item?._id || item?.id || item?.profile_id || "");
+              return itemId.toLowerCase() === wanted.toLowerCase();
+            });
+            record = index >= 0 ? dataSource[index] : null;
+          }
+
+          if (!record) return null;
+          const id = String(record._id || record.id || record.profile_id || `ID_${index}`);
+          return { id, index, record };
+        }
+
+        const objectSource = asObject(dataSource);
+        const keys = Object.keys(objectSource).sort(sortIds);
+        const resolvedKey = keys.find((key) => key.toLowerCase() === wanted.toLowerCase()) || wanted;
+        const record = objectSource[resolvedKey];
+        if (!record) return null;
+        return { id: resolvedKey, index: Math.max(0, keys.indexOf(resolvedKey)), record };
+      }
+
+      function makePreviewRecord(id, record) {
+        const copy = cloneRecord(record);
+        copy._id = id;
+        copy.id = copy.id || id;
+        copy.public_profile = true;
+        return copy;
+      }
+
+      function getCardDownloadNode() {
+        return (
+          mount.querySelector(".vl-card-scale") ||
+          mount.querySelector(".vl-card") ||
+          mount.querySelector(".vl-card-slot")
+        );
+      }
+
+      function safeFileName(value) {
+        return String(value || "card")
+          .trim()
+          .replace(/[\\/:*?"<>|]/g, "-")
+          .replace(/\s+/g, "-")
+          .slice(0, 80);
+      }
+
+      function waitForImages(root) {
+        const images = Array.from(root.querySelectorAll("img"));
+
+        if (!images.length) {
+          return Promise.resolve();
+        }
+
+        return Promise.all(images.map(function(img) {
+          if (img.complete) {
+            return Promise.resolve();
+          }
+
+          return new Promise(function(resolve) {
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+          });
+        }));
+      }
+
+      async function downloadCardAsPng() {
+        const node = getCardDownloadNode();
+
+        if (!node) {
+          alert("A carta ainda não foi renderizada.");
+          return;
+        }
+
+        if (!window.htmlToImage) {
+          alert("A biblioteca de exportação PNG não carregou.");
+          return;
+        }
+
+        const oldText = downloadBtn.textContent;
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = "Gerando PNG...";
+
+        try {
+          if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+          }
+
+          await waitForImages(node);
+
+          const dataUrl = await htmlToImage.toPng(node, {
+            cacheBust: true,
+            pixelRatio: 3,
+            backgroundColor: null,
+            style: {
+              transform: "none",
+              transformOrigin: "top left"
+            }
+          });
+
+          const link = document.createElement("a");
+          link.download = `velarion-card-${safeFileName(currentDownloadId)}.png`;
+          link.href = dataUrl;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } catch (error) {
+          console.error("[Velarion Card PNG]", error);
+          alert("Não foi possível gerar o PNG. Alguma imagem externa pode estar bloqueando a captura.");
+        } finally {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = oldText;
+        }
+      }
+
+      if (downloadBtn) {
+        downloadBtn.addEventListener("click", downloadCardAsPng);
+      }
+
+      async function boot() {
+        const cssId = readCssVar("--vl-preview-player-id", "ID_0");
+        const selectedId = getParam("id") || cssId || "ID_0";
+        const cssScale = readCssVar("--vl-preview-card-scale", ".92");
+        const selectedScale = getParam("scale") || cssScale || ".92";
+        const customDataUrl = readCssVar("--vl-preview-data-url", "");
+        const dataUrl = customDataUrl || DEFAULT_PLAYER_DATA_URL;
+
+        document.documentElement.style.setProperty("--vl-preview-card-scale", selectedScale);
+        idLabel.textContent = selectedId;
+        scaleLabel.textContent = selectedScale;
+
+        try {
+          setState("Carregando", "Buscando profilePlayers, information_panel, server_panel.nickname_colors e clanPlayers...");
+
+          const [profilePlayers, baseExtensionsData, clanPlayers, nicknameColorsFull, nicknameColorItems] = await Promise.all([
+            fetchJson(dataUrl),
+            fetchJson(DEFAULT_EXTENSIONS_DATA_URL),
+            fetchJson(DEFAULT_CLANS_DATA_URL),
+            fetchJsonOptional(SERVER_PANEL_NICKNAME_COLORS_DATA_URLS[0]),
+            fetchJsonOptional(SERVER_PANEL_NICKNAME_COLORS_DATA_URLS[1])
+          ]);
+
+          const extensionsData = attachServerPanelData(baseExtensionsData, [nicknameColorsFull, nicknameColorItems]);
+
+          if (!window.VelarionLumenCard || typeof window.VelarionLumenCard.renderPlayerCard !== "function") {
+            throw new Error("Renderer VelarionLumenCard não foi carregado.");
+          }
+
+          const found = findRecord(profilePlayers, selectedId);
+          if (!found) {
+            const ids = getDataKeys(profilePlayers).slice(0, 32);
+            const listHtml = ids.length
+              ? `<div class="preview-id-list">IDs encontrados: ${ids.map(escapeHtml).join(", ")}${getDataKeys(profilePlayers).length > ids.length ? "..." : ""}</div>`
+              : "";
+            setState("ID não encontrado", `Não encontrei o objeto ${selectedId} no caminho carregado.`, listHtml);
+            return;
+          }
+
+          const player = makePreviewRecord(found.id, found.record);
+          const context = {
+            extensionsData,
+            server_panel: extensionsData?.server_panel || {},
+            nickname_colors: extensionsData?.server_panel?.nickname_colors || extensionsData?.nickname_colors || {},
+            badges_verified: extensionsData?.badges_verified || {},
+            badges_levelranks: extensionsData?.badges_levelranks || {},
+            badges_avatarlocks: extensionsData?.badges_avatarlocks || {},
+            badges_raritys: extensionsData?.badges_raritys || extensionsData?.badges_rarities || {},
+            badges_fallbacks: extensionsData?.badges_fallbacks || {},
+            clanPlayers: clanPlayers || {},
+            profilePlayers: profilePlayers || {}
+          };
+
+          const html = window.VelarionLumenCard.renderPlayerCard(player, found.index, context);
+          if (!html) {
+            setState("Card vazio", "O renderer não retornou HTML para este objeto. Verifique se o objeto tem profile/display_nickname ou profile/display_username.");
+            return;
+          }
+
+          mount.innerHTML = html;
+          window.VelarionLumenCard.hydrate(mount);
+
+          currentDownloadId = found.id;
+
+          if (downloadBtn) {
+            downloadBtn.disabled = false;
+          }
+
+          const colorCount = countNicknameColors(extensionsData);
+          statusLabel.textContent = colorCount ? `Renderizado • ${colorCount} cores` : "Renderizado • fallback branco";
+        } catch (error) {
+          console.error("[Velarion Card Preview]", error);
+          setState(
+            "Erro ao carregar",
+            "Não foi possível carregar os dados. Se você abriu por file:// e o navegador bloquear, rode por um servidor local ou publique junto com os assets."
+          );
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>

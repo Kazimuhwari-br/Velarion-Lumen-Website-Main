@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velarion Lumen - Preview de Perfil por ID</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=nickname-colors-server-panel-v18" />
+  <link rel="stylesheet" href="assets/css/velarion-profile.css?v=nickname-colors-server-panel-v18" />
+
+  <style>
+    /* ==========================================================
+       PREVIEW RÁPIDO DO PERFIL COMPLETO
+       ----------------------------------------------------------
+       Troque apenas estes valores para escolher o objeto carregado.
+
+       Exemplo:
+       --vl-preview-profile-id: "ID_0";
+       --vl-preview-profile-scale: 1;
+
+       Também pode testar pelo navegador:
+       profile-preview-dados.html?id=ID_0
+       profile-preview-dados.html?id=ID_4&scale=.92
+       ========================================================== */
+    :root {
+      --vl-preview-profile-id: "ID_0";
+      --vl-preview-profile-scale: 1;
+      --vl-preview-data-url: "";
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f6f7ff;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(122, 92, 255, .22), transparent 32%),
+        radial-gradient(circle at 78% 18%, rgba(61, 238, 203, .15), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(255, 95, 205, .12), transparent 38%),
+        linear-gradient(135deg, #070a18, #11142a 48%, #07101e);
+    }
+
+    .preview-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+      padding: 28px;
+    }
+
+    .preview-panel {
+      position: sticky;
+      top: 20px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(126, 108, 255, .18), transparent 38%),
+        linear-gradient(145deg, rgba(15,18,38,.92), rgba(7,9,22,.86));
+      box-shadow: 0 22px 54px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(18px);
+      z-index: 10;
+    }
+
+    .preview-panel h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.08;
+      letter-spacing: -.03em;
+    }
+
+    .preview-panel p {
+      margin: 0 0 16px;
+      color: rgba(238,242,255,.72);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .preview-meta {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .preview-chip {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.09);
+      color: rgba(240,244,255,.78);
+      font-size: 12px;
+    }
+
+    .preview-chip strong {
+      color: #fff;
+      font-weight: 900;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .preview-code {
+      display: block;
+      margin: 14px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      overflow: auto;
+      color: #dfe7ff;
+      background: rgba(0,0,0,.30);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .preview-stage {
+      min-height: calc(100vh - 56px);
+      overflow: visible;
+    }
+
+    #profileMount {
+      width: 100%;
+      min-height: calc(100vh - 56px);
+      transform: scale(var(--vl-preview-profile-scale));
+      transform-origin: top center;
+    }
+
+    #profileMount .vl-profile-stage {
+      padding-top: 24px;
+    }
+
+    .preview-state {
+      max-width: 620px;
+      margin: 12vh auto;
+      padding: 18px 20px;
+      border-radius: 18px;
+      color: rgba(247,249,255,.82);
+      background: rgba(10,12,26,.70);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 46px rgba(0,0,0,.30);
+      line-height: 1.45;
+    }
+
+    .preview-state strong { color: #fff; }
+
+    .preview-id-list {
+      margin-top: 10px;
+      color: rgba(236,240,255,.66);
+      font-size: 12px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    @media (max-width: 980px) {
+      .preview-page {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .preview-panel {
+        position: relative;
+        top: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-page">
+    <aside class="preview-panel" aria-label="Configuração do preview">
+      <h1>Preview do Perfil por ID</h1>
+      <p>Este HTML carrega a tela completa de <b>#profile-{id}</b> usando os dados reais do Firebase. Para trocar o jogador/NPC, edite o ID dentro do CSS no topo deste arquivo.</p>
+
+      <div class="preview-meta">
+        <div class="preview-chip"><span>ID escolhido</span><strong id="previewIdLabel">...</strong></div>
+        <div class="preview-chip"><span>Escala visual</span><strong id="previewScaleLabel">...</strong></div>
+        <div class="preview-chip"><span>Status</span><strong id="previewStatusLabel">Carregando</strong></div>
+      </div>
+
+      <code class="preview-code">:root {
+  --vl-preview-profile-id: "ID_0";
+  --vl-preview-profile-scale: 1;
+}</code>
+
+      <p style="margin-top:14px;margin-bottom:0">Dica: você também pode usar <b>?id=ID_0</b> no link sem editar o arquivo.</p>
+    </aside>
+
+    <section class="preview-stage" aria-label="Perfil renderizado">
+      <div id="profileMount">
+        <div class="preview-state">Carregando objetos de dados do Velarion Lumen...</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/velarion-profile.js?v=nickname-colors-server-panel-v19-preview"></script>
+  <script>
+    (function() {
+      "use strict";
+
+      const DEFAULT_PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
+      const DEFAULT_EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
+      const DEFAULT_EXTENSIONS_DATA_URL = DEFAULT_EXTENSIONS_BASE_URL + "/information_panel.json";
+      const DEFAULT_CLANS_DATA_URL = "https://kazimuhwaribedrock-clans-default-rtdb.firebaseio.com/clanPlayers.json";
+      const SERVER_PANEL_NICKNAME_COLORS_DATA_URLS = [
+        DEFAULT_EXTENSIONS_BASE_URL + "/server_panel/nickname_colors.json",
+        DEFAULT_EXTENSIONS_BASE_URL + "/server_panel/nickname_colors/items.json"
+      ];
+
+      const mount = document.getElementById("profileMount");
+      const idLabel = document.getElementById("previewIdLabel");
+      const scaleLabel = document.getElementById("previewScaleLabel");
+      const statusLabel = document.getElementById("previewStatusLabel");
+      let activeExtensionsData = {};
+
+      const mcColors = {
+        "0": "#000000", "1": "#0000AA", "2": "#00AA00", "3": "#00AAAA",
+        "4": "#AA0000", "5": "#AA00AA", "6": "#FFAA00", "7": "#AAAAAA",
+        "8": "#555555", "9": "#5555FF", a: "#55FF55", b: "#55FFFF",
+        c: "#FF5555", d: "#FF55FF", e: "#FFFF55", f: "#FFFFFF",
+        g: "#DDD605", h: "#E3D4D1", i: "#CECACA", j: "#443A3B",
+        m: "#971607", n: "#B4684D", p: "#DEB12D", q: "#47A036",
+        s: "#2CBAA8", t: "#21497B", u: "#9A5CC6"
+      };
+
+      function readCssVar(name, fallback) {
+        const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        if (!value) return fallback;
+        return value.replace(/^[\'"]|[\'"]$/g, "").trim() || fallback;
+      }
+
+      function getParam(name) {
+        try { return new URLSearchParams(location.search).get(name) || ""; }
+        catch (error) { return ""; }
+      }
+
+      function cleanValue(value) {
+        if (value === null || value === undefined) return "";
+        return String(value).trim();
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function escapeStyle(value) {
+        return cleanValue(value).replace(/[<>"']/g, "");
+      }
+
+      function stripMinecraftCodes(value) {
+        return cleanValue(value).replace(/§[0-9a-fk-or]/gi, "");
+      }
+
+      function minecraftToHtml(value) {
+        return escapeHtml(stripMinecraftCodes(value)).replace(/\n/g, "<br>");
+      }
+
+      function setState(title, message, extraHtml) {
+        statusLabel.textContent = title;
+        mount.innerHTML = `<div class="preview-state"><strong>${escapeHtml(title)}</strong><br>${escapeHtml(message || "")}${extraHtml || ""}</div>`;
+      }
+
+      async function fetchJson(url) {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status} em ${url}`);
+        return await response.json();
+      }
+
+      async function fetchJsonOptional(url) {
+        try { return await fetchJson(url); }
+        catch (error) {
+          console.warn("[Velarion Profile Preview] Caminho opcional não carregou:", url, error);
+          return null;
+        }
+      }
+
+      function asObject(value) {
+        return value && typeof value === "object" ? value : {};
+      }
+
+      function normalizeServerPanelNicknameColorsData(data) {
+        if (!data || typeof data !== "object") return {};
+        if (data.server_panel && data.server_panel.nickname_colors && typeof data.server_panel.nickname_colors === "object") return data.server_panel.nickname_colors;
+        if (data.nickname_colors && typeof data.nickname_colors === "object") return data.nickname_colors;
+        if (data.items && typeof data.items === "object") return data;
+        return { items: data };
+      }
+
+      function attachServerPanelData(extensions, nicknameColorSources) {
+        const base = asObject(extensions);
+        const currentPanel = asObject(base.server_panel);
+        const currentNicknameColors = asObject(currentPanel.nickname_colors || currentPanel.nicknameColors);
+        const mergedNicknameColors = Object.assign({}, currentNicknameColors, {
+          items: Object.assign({}, asObject(currentNicknameColors.items))
+        });
+
+        (nicknameColorSources || []).forEach(function(source) {
+          const normalized = normalizeServerPanelNicknameColorsData(source);
+          if (!Object.keys(normalized).length) return;
+          const normalizedItems = asObject(normalized.items);
+          Object.assign(mergedNicknameColors, normalized);
+          mergedNicknameColors.items = Object.assign({}, asObject(mergedNicknameColors.items), normalizedItems);
+        });
+
+        base.server_panel = Object.assign({}, currentPanel, {
+          nickname_colors: mergedNicknameColors
+        });
+        base.nickname_colors = mergedNicknameColors;
+        return base;
+      }
+
+      function getBadgesFallbacks() {
+        const primary = activeExtensionsData?.badges_fallbacks;
+        const nested = activeExtensionsData?.information_panel?.badges_fallbacks;
+        if (primary && typeof primary === "object") return primary;
+        if (nested && typeof nested === "object") return nested;
+        return {};
+      }
+
+      function getNicknameFallbackColor() {
+        const fallbacks = getBadgesFallbacks();
+        const defaults = fallbacks?.defaults && typeof fallbacks.defaults === "object" ? fallbacks.defaults : {};
+        const candidates = [
+          defaults.nickname_color,
+          defaults.nicknameColor,
+          defaults.display_name_color,
+          defaults.displayNameColor,
+          defaults.name_color,
+          fallbacks.nickname_color,
+          fallbacks.nicknameColor
+        ];
+        for (const value of candidates) {
+          const clean = cleanValue(value);
+          if (clean) return clean;
+        }
+        return "#FFFFFF";
+      }
+
+      function normalizeNicknameColorItems(source) {
+        if (!source || typeof source !== "object") return {};
+        const direct = source.items && typeof source.items === "object" ? source.items : source;
+        return direct && typeof direct === "object" ? direct : {};
+      }
+
+      function buildNicknameColorLookupKeys(colorName) {
+        const raw = cleanValue(colorName).toLowerCase();
+        if (!raw) return [];
+        const keys = [];
+        function add(value) {
+          const key = cleanValue(value).toLowerCase().replace(/[\s-]+/g, "_");
+          if (key && keys.indexOf(key) === -1) keys.push(key);
+        }
+        add(raw);
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          if (/_reverse_color1$/.test(key) && key.indexOf("_gradient_reverse_color1") === -1) add(key.replace(/_reverse_color1$/, "_gradient_reverse_color1"));
+          if (/_gradient_reverse_color1$/.test(key)) add(key.replace(/_gradient_reverse_color1$/, "_reverse_color1"));
+          if (/_color1$/.test(key) && key.indexOf("_gradient_color1") === -1 && key.indexOf("_reverse_color1") === -1) add(key.replace(/_color1$/, "_gradient_color1"));
+          if (/_gradient_color1$/.test(key)) add(key.replace(/_gradient_color1$/, "_color1"));
+          if (key === "rainbow_soft_color1") add("soft_rainbow_color1");
+          if (key === "soft_rainbow_color1") add("rainbow_soft_color1");
+          if (key === "ametista") add("amethyst");
+          if (key === "amethyst") add("ametista");
+        }
+        return keys;
+      }
+
+      function colorArrayToGradient(colors) {
+        if (!Array.isArray(colors)) return "";
+        const resolved = colors.map(function(item) {
+          const raw = cleanValue(item);
+          if (!raw) return "";
+          if (raw.charAt(0) === "§") {
+            const key = raw.replace("§", "").toLowerCase();
+            return mcColors[key] || "";
+          }
+          return raw;
+        }).filter(Boolean);
+        return resolved.length ? "linear-gradient(90deg, " + resolved.join(", ") + ")" : "";
+      }
+
+      function getServerPanelNicknameColorRecord(colorName) {
+        const keys = buildNicknameColorLookupKeys(colorName);
+        if (!keys.length) return null;
+        const serverPanel = activeExtensionsData?.server_panel && typeof activeExtensionsData.server_panel === "object" ? activeExtensionsData.server_panel : {};
+        const nicknameColors = serverPanel.nickname_colors || serverPanel.nicknameColors || activeExtensionsData?.nickname_colors || activeExtensionsData?.nicknameColors || serverPanel.items || serverPanel;
+        const items = normalizeNicknameColorItems(nicknameColors);
+        if (!Object.keys(items).length) return null;
+        for (const key of keys) {
+          if (items[key]) return items[key];
+        }
+        return null;
+      }
+
+      function getServerPanelNicknameColorConfig(colorName) {
+        const record = getServerPanelNicknameColorRecord(colorName);
+        if (!record || typeof record !== "object") return null;
+        if (record.enabled === false || record.visible === false) return null;
+
+        const type = cleanValue(record.type).toLowerCase();
+        const cssValue = cleanValue(record.css_value || record.css || record.value || record.gradient || record.color);
+
+        if (type === "gradient" || /^linear-gradient/i.test(cssValue)) {
+          const gradientValue = cssValue || colorArrayToGradient(record.colors || record.gradient_colors || record.minecraft_codes);
+          return gradientValue ? { type: "gradient", gradient: gradientValue } : null;
+        }
+
+        if (type === "solid" || cssValue) {
+          const solidValue = cssValue || mcColors[cleanValue(record.minecraft_key).toLowerCase()] || "";
+          return solidValue ? { type: "solid", color: solidValue } : null;
+        }
+
+        if (Array.isArray(record.colors) || Array.isArray(record.minecraft_codes)) {
+          const gradientValue = colorArrayToGradient(record.colors || record.minecraft_codes);
+          return gradientValue ? { type: "gradient", gradient: gradientValue } : null;
+        }
+
+        const minecraftKey = cleanValue(record.minecraft_key).toLowerCase();
+        if (minecraftKey && mcColors[minecraftKey]) return { type: "solid", color: mcColors[minecraftKey] };
+        return null;
+      }
+
+      function getColorNameConfig(colorName) {
+        const name = cleanValue(colorName).toLowerCase();
+        const serverPanelColor = name ? getServerPanelNicknameColorConfig(name) : null;
+        if (serverPanelColor) return serverPanelColor;
+        return { type: "solid", color: getNicknameFallbackColor(), isFallback: true };
+      }
+
+      function getDisplayName(player) {
+        return cleanValue(player?.profile?.display_nickname) || cleanValue(player?.profile?.display_username) || cleanValue(player?.account?.login) || cleanValue(player?.username) || "Jogador";
+      }
+
+      function getUsername(player) {
+        return cleanValue(player?.profile?.display_username) || stripMinecraftCodes(getDisplayName(player)) || "?";
+      }
+
+      function buildTitleHtml(player) {
+        const rawName = getDisplayName(player);
+        const plainName = stripMinecraftCodes(rawName) || "Jogador";
+        const colorConfig = getColorNameConfig(player?.theme?.color_name_id);
+
+        if (colorConfig && colorConfig.type === "gradient" && colorConfig.gradient) {
+          const gradient = escapeStyle(colorConfig.gradient);
+          return `<span class="title-text title-gradient" style="--display-gradient:${gradient};background-image:${gradient};">${escapeHtml(plainName)}</span>`;
+        }
+
+        if (colorConfig && colorConfig.type === "solid" && colorConfig.color) {
+          const color = escapeStyle(colorConfig.color);
+          return `<span class="title-text title-solid" style="--display-color:${color};color:${color};-webkit-text-fill-color:${color};">${escapeHtml(plainName)}</span>`;
+        }
+
+        return `<span class="title-text">${minecraftToHtml(rawName)}</span>`;
+      }
+
+      function countNicknameColors(extensionsData) {
+        return Object.keys(asObject(extensionsData?.server_panel?.nickname_colors?.items || extensionsData?.nickname_colors?.items)).length;
+      }
+
+      function cloneRecord(record) {
+        if (window.structuredClone) {
+          try { return structuredClone(record); } catch (error) {}
+        }
+        return JSON.parse(JSON.stringify(record || {}));
+      }
+
+      function naturalIdIndex(id) {
+        const match = String(id || "").match(/^(?:ID[_-]?)(\d+)$/i);
+        return match ? Number(match[1]) : NaN;
+      }
+
+      function sortIds(a, b) {
+        const na = naturalIdIndex(a);
+        const nb = naturalIdIndex(b);
+        if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+        if (Number.isFinite(na)) return -1;
+        if (Number.isFinite(nb)) return 1;
+        return String(a).localeCompare(String(b), "pt-BR", { numeric: true, sensitivity: "base" });
+      }
+
+      function getDataKeys(dataSource) {
+        if (Array.isArray(dataSource)) {
+          return dataSource.map((record, index) => String(record?._id || record?.id || record?.profile_id || `ID_${index}`));
+        }
+        return Object.keys(asObject(dataSource)).sort(sortIds);
+      }
+
+      function findRecord(dataSource, selectedId) {
+        const wanted = String(selectedId || "").trim();
+        if (Array.isArray(dataSource)) {
+          const indexMatch = wanted.match(/^ID[_-]?(\d+)$/i);
+          const directIndex = indexMatch ? Number(indexMatch[1]) : NaN;
+          let index = Number.isFinite(directIndex) ? directIndex : -1;
+          let record = dataSource[index];
+
+          if (!record) {
+            index = dataSource.findIndex((item) => {
+              const itemId = String(item?._id || item?.id || item?.profile_id || "");
+              return itemId.toLowerCase() === wanted.toLowerCase();
+            });
+            record = index >= 0 ? dataSource[index] : null;
+          }
+
+          if (!record) return null;
+          const id = String(record._id || record.id || record.profile_id || `ID_${index}`);
+          return { id, index, record };
+        }
+
+        const objectSource = asObject(dataSource);
+        const keys = Object.keys(objectSource).sort(sortIds);
+        const resolvedKey = keys.find((key) => key.toLowerCase() === wanted.toLowerCase()) || wanted;
+        const record = objectSource[resolvedKey];
+        if (!record) return null;
+        return { id: resolvedKey, index: Math.max(0, keys.indexOf(resolvedKey)), record };
+      }
+
+      function makePreviewRecord(id, record) {
+        const copy = cloneRecord(record);
+        copy._id = id;
+        copy.id = copy.id || id;
+        copy.public_profile = true;
+        return copy;
+      }
+
+      async function boot() {
+        const cssId = readCssVar("--vl-preview-profile-id", "ID_0");
+        const selectedId = getParam("id") || cssId || "ID_0";
+        const cssScale = readCssVar("--vl-preview-profile-scale", "1");
+        const selectedScale = getParam("scale") || cssScale || "1";
+        const customDataUrl = readCssVar("--vl-preview-data-url", "");
+        const dataUrl = customDataUrl || DEFAULT_PLAYER_DATA_URL;
+
+        document.documentElement.style.setProperty("--vl-preview-profile-scale", selectedScale);
+        idLabel.textContent = selectedId;
+        scaleLabel.textContent = selectedScale;
+
+        try {
+          setState("Carregando", "Buscando profilePlayers, information_panel, server_panel.nickname_colors e clanPlayers...");
+          const [profilePlayers, baseExtensionsData, clanPlayers, nicknameColorsFull, nicknameColorItems] = await Promise.all([
+            fetchJson(dataUrl),
+            fetchJson(DEFAULT_EXTENSIONS_DATA_URL),
+            fetchJson(DEFAULT_CLANS_DATA_URL),
+            fetchJsonOptional(SERVER_PANEL_NICKNAME_COLORS_DATA_URLS[0]),
+            fetchJsonOptional(SERVER_PANEL_NICKNAME_COLORS_DATA_URLS[1])
+          ]);
+
+          const extensionsData = attachServerPanelData(baseExtensionsData, [nicknameColorsFull, nicknameColorItems]);
+          activeExtensionsData = extensionsData;
+
+          if (!window.VelarionProfile || typeof window.VelarionProfile.render !== "function") {
+            throw new Error("Renderer VelarionProfile não foi carregado.");
+          }
+
+          const found = findRecord(profilePlayers, selectedId);
+          if (!found) {
+            const ids = getDataKeys(profilePlayers).slice(0, 32);
+            const listHtml = ids.length ? `<div class="preview-id-list">IDs encontrados: ${ids.map(escapeHtml).join(", ")}${getDataKeys(profilePlayers).length > ids.length ? "..." : ""}</div>` : "";
+            setState("ID não encontrado", `Não encontrei o objeto ${selectedId} no caminho carregado.`, listHtml);
+            return;
+          }
+
+          const player = makePreviewRecord(found.id, found.record);
+          mount.innerHTML = window.VelarionProfile.render(player, {
+            extensionsData,
+            server_panel: extensionsData?.server_panel || {},
+            nickname_colors: extensionsData?.server_panel?.nickname_colors || extensionsData?.nickname_colors || {},
+            clanPlayers: clanPlayers || {},
+            profilePlayers: profilePlayers || {},
+            cleanValue,
+            escapeHtml,
+            stripMinecraftCodes,
+            minecraftToHtml,
+            getDisplayName,
+            getUsername,
+            buildTitleHtml
+          });
+          const colorCount = countNicknameColors(extensionsData);
+          statusLabel.textContent = colorCount ? `Renderizado • ${colorCount} cores` : "Renderizado • fallback branco";
+        } catch (error) {
+          console.error("[Velarion Profile Preview]", error);
+          setState("Erro ao carregar", "Não foi possível carregar os dados. Se você abriu por file:// e o navegador bloquear, rode por um servidor local ou publique junto com os assets.");
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>
