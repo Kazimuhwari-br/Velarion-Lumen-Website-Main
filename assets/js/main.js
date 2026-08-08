@@ -3197,7 +3197,7 @@
 								<div class="info-header">
 									<div class="info-profile-avatar">
 										<img
-											src="https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/craftpix-net-737072-free-cyberpunk-artifact-game-512x512-icons/27.png"
+											src="assests/img/craftpix-net-737072-free-cyberpunk-artifact-game-512x512-icons/27.png"
 											alt="Distintivos da Imagem"
 											loading="eager"
 											referrerpolicy="no-referrer"
