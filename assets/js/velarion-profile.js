@@ -1932,7 +1932,7 @@
     const color2 = normalizeHexColor(data?.color2 || "#FFF0C4");
     const glow = normalizeHexColor(data?.glow || "#FFD27A");
 
-    const esc = (value) => escapeHTML(String(value ?? ""));
+    const esc = (value) => escapeHtml(String(value ?? ""));
 
     return `
       <section class="vl-profile-panel vl-profile-panel--systems-v2 vl-profile-panel--summon-v8" style="order:${Number(orderSystems) || 40}">
