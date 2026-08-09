@@ -1,0 +1,391 @@
+/**
+ * Responsividade Móvel Aprimorada - Velarion Lumen
+ * Otimizado para telas pequenas (320px - 768px)
+ */
+
+/* ===== MOBILE FIRST APPROACH ===== */
+
+@media (max-width: 768px) {
+  /* Typography */
+  html { font-size: 14px; }
+  
+  body {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  /* Header */
+  .site-header {
+    width: calc(100% - 16px) !important;
+    margin: 8px auto 0 !important;
+    padding: 10px 12px !important;
+    border-radius: 20px !important;
+    gap: 12px !important;
+  }
+  
+  .brand-mark {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1.2rem !important;
+  }
+  
+  .brand-copy strong {
+    font-size: 0.95rem !important;
+  }
+  
+  .brand-copy small {
+    font-size: 0.65rem !important;
+  }
+  
+  /* Menu */
+  .menu-toggle {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 8px !important;
+  }
+  
+  .site-nav {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    top: calc(100% + 8px) !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    z-index: 1000 !important;
+  }
+  
+  body.menu-open .site-nav {
+    display: grid !important;
+  }
+  
+  .nav-link {
+    padding: 10px 8px !important;
+    font-size: 0.85rem !important;
+    gap: 6px !important;
+  }
+  
+  .nav-link span {
+    font-size: 1rem !important;
+  }
+  
+  /* Page Shell */
+  .page-shell {
+    width: calc(100% - 16px) !important;
+    margin: 12px auto 0 !important;
+    padding-bottom: 40px !important;
+  }
+  
+  /* Hero Section */
+  .page-hero {
+    padding: 24px 16px !important;
+    min-height: auto !important;
+    border-radius: 20px !important;
+  }
+  
+  .page-hero::before {
+    display: none !important;
+  }
+  
+  .page-hero h1 {
+    font-size: 1.8rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  .page-hero p {
+    font-size: 0.9rem !important;
+    margin-top: 12px !important;
+  }
+  
+  /* Grid Layouts */
+  .hero-grid,
+  .split-layout,
+  .map-layout,
+  .ranking-board {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .portal-grid,
+  .profile-grid,
+  .codex-grid,
+  .event-grid,
+  .academy-grid,
+  .relic-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  /* Content Blocks */
+  .content-block,
+  .hero-panel,
+  .large-card,
+  .accent-card,
+  .map-panel {
+    padding: 16px !important;
+    margin-top: 12px !important;
+  }
+  
+  .block-head {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  .block-head--with-search {
+    flex-direction: column !important;
+  }
+  
+  .local-search {
+    width: 100% !important;
+  }
+  
+  /* Cards */
+  .card-base {
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+  
+  .profile-card,
+  .codex-card,
+  .content-card {
+    padding: 16px !important;
+    min-height: auto !important;
+  }
+  
+  .profile-avatar,
+  .codex-icon {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 1.4rem !important;
+  }
+  
+  /* Buttons */
+  .btn {
+    min-height: 40px !important;
+    padding: 0 14px !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .btn-sm {
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .hero-actions {
+    gap: 8px !important;
+    margin-top: 16px !important;
+  }
+  
+  /* Inputs */
+  .input-base {
+    padding: 10px 12px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  .support-form input,
+  .support-form textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Lists */
+  .timeline-list div,
+  .ranking-list div,
+  .realm-list article,
+  .quest-list article,
+  .support-grid div {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+  
+  .quest-list article {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Footer */
+  .site-footer {
+    width: calc(100% - 16px) !important;
+    padding: 16px 8px !important;
+    gap: 12px !important;
+    flex-direction: column !important;
+  }
+  
+  .site-footer div {
+    gap: 2px !important;
+  }
+  
+  /* Utilities */
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* Touch Targets */
+  button, a[role="button"], .btn {
+    min-height: 44px !important; /* iOS recommended */
+    min-width: 44px !important;
+  }
+}
+
+/* ===== TABLET ADJUSTMENTS (769px - 1100px) ===== */
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .portal-grid,
+  .profile-grid,
+  .codex-grid,
+  .event-grid,
+  .academy-grid,
+  .relic-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .site-header {
+    width: calc(100% - 24px) !important;
+  }
+  
+  .page-shell {
+    width: calc(100% - 24px) !important;
+  }
+  
+  .site-footer {
+    width: calc(100% - 24px) !important;
+  }
+}
+
+/* ===== SMALL PHONES (320px - 480px) ===== */
+
+@media (max-width: 480px) {
+  html { font-size: 13px; }
+  
+  .page-hero h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .portal-grid,
+  .profile-grid,
+  .codex-grid,
+  .event-grid,
+  .academy-grid,
+  .relic-grid,
+  .media-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .site-header {
+    width: calc(100% - 8px) !important;
+    margin: 4px auto 0 !important;
+    padding: 8px 10px !important;
+  }
+  
+  .site-nav {
+    left: 4px !important;
+    right: 4px !important;
+    grid-template-columns: 1fr !important;
+  }
+  
+  .nav-link {
+    padding: 10px 6px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .page-shell {
+    width: calc(100% - 8px) !important;
+    margin: 8px auto 0 !important;
+  }
+  
+  .content-block,
+  .hero-panel {
+    padding: 12px !important;
+  }
+  
+  .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .hero-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+  
+  .site-footer {
+    width: calc(100% - 8px) !important;
+    padding: 12px 4px !important;
+  }
+}
+
+/* ===== LANDSCAPE MODE ===== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .page-hero {
+    min-height: auto !important;
+    padding: 16px !important;
+  }
+  
+  .site-header {
+    margin-top: 4px !important;
+  }
+  
+  .portal-grid,
+  .profile-grid,
+  .codex-grid,
+  .event-grid,
+  .academy-grid,
+  .relic-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* ===== ACCESSIBILITY: HIGH CONTRAST MODE ===== */
+
+@media (prefers-contrast: more) {
+  .card-base,
+  .content-block {
+    border-width: 2px !important;
+  }
+  
+  .btn {
+    border-width: 2px !important;
+  }
+  
+  .nav-link {
+    border-width: 2px !important;
+  }
+}
+
+/* ===== ACCESSIBILITY: REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+
+@media print {
+  .site-header,
+  .site-footer,
+  .menu-toggle,
+  button,
+  .btn {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+}
