@@ -1893,7 +1893,116 @@
     });
   }
 
-  function buildStatusVisualCard(player, ctx) {
+  
+  function buildRarityV8Section(player, ctx, orderSystems) {
+    const extensions = ctx?.extensionsData || {};
+    const source = extensions.badges_raritys || extensions.badges_rarities || {};
+    const rarityId = getRarityId(player);
+    let data = null;
+
+    if (rarityId) {
+      const aliases = [
+        rarityId,
+        rarityId.replace(/^rarity_id_/i, "raritys_id_"),
+        rarityId.replace(/^raritys_id_/i, "rarity_id_")
+      ];
+      const key = aliases.find((item) => source && source[item]);
+      data = mergeBadge(key ? source[key] : null);
+      if (data && !badgeVisible(data, "profile")) data = null;
+    }
+
+    const rarity = cleanValue(
+      data?.label ||
+      data?.name ||
+      data?.website?.short_label ||
+      data?.website?.badge_text ||
+      rarityId?.replace(/^raritys?_id_/i, "") ||
+      "SSR"
+    ).toUpperCase();
+
+    const category = cleanValue(data?.category || data?.tier || "Card rarity");
+    const description = cleanValue(
+      data?.description ||
+      (rarityId ? "Raridade extremamente rara concedida por invocações de alto nível." : "Nenhuma raridade pública definida.")
+    );
+    const starsRaw = cleanValue(data?.website?.stars || data?.stars || "★★★★★");
+    const stars = starsRaw || "★★★★★";
+    const starCount = Math.max(0, (stars.match(/★/g) || []).length) || 5;
+    const color = normalizeHexColor(data?.color || "#F7D58A");
+    const color2 = normalizeHexColor(data?.color2 || "#FFF0C4");
+    const glow = normalizeHexColor(data?.glow || "#FFD27A");
+
+    const esc = (value) => escapeHTML(String(value ?? ""));
+
+    return `
+      <section class="vl-profile-panel vl-profile-panel--systems-v2 vl-profile-panel--summon-v8" style="order:${Number(orderSystems) || 40}">
+        <div class="vl-profile-section-head"><span>Sistemas públicos</span><i></i></div>
+
+        <section class="vl-rarity-v8" data-rarity="${esc(rarity)}" style="--rv8-accent:${esc(color)};--rv8-accent2:${esc(color2)};--rv8-glow:${esc(glow)};">
+          <header class="vl-rarity-v8__head">
+            <div class="vl-rarity-v8__label">
+              <span>Raridade de invocação</span>
+              <strong>${esc(rarity)}</strong>
+            </div>
+            <div class="vl-rarity-v8__summary">
+              <span>${esc(stars)}</span>
+              <em>Summon rarity tier</em>
+            </div>
+          </header>
+
+          <div class="vl-rarity-v8__scene">
+            <div class="vl-rarity-v8__sky"></div>
+            <div class="vl-rarity-v8__streaks"></div>
+            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--a"></div>
+            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--b"></div>
+            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--c"></div>
+
+            <div class="vl-rarity-v8__sidecopy">
+              <small>${esc(category)}</small>
+              <strong>${esc(rarity)}</strong>
+              <p>${esc(description)}</p>
+            </div>
+
+            <div class="vl-rarity-v8__core" aria-label="Invocação ${esc(rarity)}">
+              <div class="vl-rarity-v8__seal"><i></i><i></i><i></i></div>
+              <div class="vl-rarity-v8__crystal">
+                <span class="vl-rarity-v8__crystal-top"></span>
+                <b>✦</b>
+                <strong>${esc(rarity)}</strong>
+                <em>SUMMON</em>
+              </div>
+              <div class="vl-rarity-v8__flare"></div>
+            </div>
+
+            <div class="vl-rarity-v8__stats">
+              <div><small>Classe</small><strong>${esc(rarity)}</strong></div>
+              <div><small>Estrelas</small><strong>${starCount}</strong></div>
+              <div><small>Sistema</small><strong>Gacha</strong></div>
+            </div>
+
+            <div class="vl-rarity-v8__sparks" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+
+          <div class="vl-rarity-v8__tiers" aria-label="Escala de raridade">
+            <div data-tier="N" class="${rarity === "N" ? "is-active" : ""}"><span>N</span><small>Normal</small></div>
+            <div data-tier="R" class="${rarity === "R" ? "is-active" : ""}"><span>R</span><small>Rare</small></div>
+            <div data-tier="SR" class="${rarity === "SR" ? "is-active" : ""}"><span>SR</span><small>Super Rare</small></div>
+            <div data-tier="SSR" class="${rarity === "SSR" ? "is-active" : ""}"><span>SSR</span><small>Super Super Rare</small></div>
+            <div data-tier="UR" class="${rarity === "UR" ? "is-active" : ""}"><span>UR</span><small>Ultra Rare</small></div>
+          </div>
+
+          <footer class="vl-rarity-v8__foot">
+            <span>✦ Sistema de invocação Gacha</span>
+            <span>Raridade atual: <b>${esc(rarity)}</b></span>
+          </footer>
+        </section>
+      </section>
+    `;
+  }
+
+function buildStatusVisualCard(player, ctx) {
     const extensions = ctx?.extensionsData || {};
     const source = extensions.badges_avatarlocks || extensions.badges_warns || extensions.badges_moderation_status || {};
     const statusId = getStatusId(player);
@@ -2161,8 +2270,6 @@
     const orderSystems = getSectionOrder(ctx, "systems", 40);
     const orderClanTitle = getSectionOrder(ctx, "clan_title", 50);
     const orderBadges = getSectionOrder(ctx, "badges", 60);
-    const rarityInfoHtml = buildRarityVisualCard(player, ctx || {});
-    const moderationStatusHtml = buildStatusVisualCard(player, ctx || {});
 
     return `
       <div class="detail-stage vl-profile-stage" style="--vp-accent:${color};">
@@ -2226,19 +2333,7 @@
               ${h.buildRankTitleMarkHtml(player, "vl-profile-rank-mark")}
             </section>
 
-            <section class="vl-profile-panel vl-profile-panel--systems-v2" style="order:${orderSystems}">
-              <div class="vl-profile-section-head"><span>Sistemas públicos</span><i></i></div>
-              <div class="vl-profile-system-grid">
-                <div class="vl-profile-system-block vl-profile-system-block--rarity">
-                  <small>Raridade</small>
-                  ${rarityInfoHtml || `<div class="vl-profile-empty-state">Nenhuma raridade pública.</div>`}
-                </div>
-                <div class="vl-profile-system-block vl-profile-system-block--status">
-                  <small>Status público</small>
-                  ${moderationStatusHtml || `<div class="vl-profile-empty-state">Nenhum registro público.</div>`}
-                </div>
-              </div>
-            </section>
+            ${buildRarityV8Section(player, ctx || {}, orderSystems)}
 
             <section class="vl-profile-duo vl-profile-duo--records vl-profile-duo--records-single" style="order:${orderClanTitle}">
               <div class="vl-profile-panel vl-profile-panel--clan">
@@ -2247,21 +2342,14 @@
               </div>
             </section>
 
-            <section class="vl-profile-panel vl-profile-panel--badges vl-profile-panel--badges-v2" style="order:${orderBadges}">
+            <section class="vl-profile-panel vl-profile-panel--badges vl-profile-panel--badges-v3" style="order:${orderBadges}">
               <div class="vl-profile-section-head"><span>Distintivos & conquistas</span><i></i></div>
-              <div class="vl-profile-badges-grid">
-                <div class="vl-profile-badge-block">
-                  <small>Cargo</small>
-                  ${h.buildRoleInfoEmblemHtml(player)}
-                </div>
-                <div class="vl-profile-badge-block">
-                  <small>Rank</small>
-                  ${h.buildRankInfoEmblemHtml(player)}
-                </div>
-                <div class="vl-profile-badge-block vl-profile-badge-block--wide">
-                  <small>Conquistas</small>
-                  ${h.buildAchievementsGalleryHtml(player)}
-                </div>
+              <div class="vl-distinctives-grid">
+                ${h.buildRoleInfoEmblemHtml(player)}
+                ${h.buildRankInfoEmblemHtml(player)}
+              </div>
+              <div class="vl-achievements-zone">
+                ${h.buildAchievementsGalleryHtml(player)}
               </div>
             </section>
           </section>

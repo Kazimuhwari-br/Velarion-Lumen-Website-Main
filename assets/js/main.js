@@ -2055,102 +2055,56 @@
 
 		function safeDate(value) {
 			if (!value) return "-";
-
 			const date = new Date(value);
 			if (Number.isNaN(date.getTime())) return "-";
-
 			return date.toLocaleString("pt-BR");
 		}
 
 		function stripRoleId(value) {
-			return fallbackText(
-				String(value || "").replace(/^role_id_/i, ""),
-				value,
-				"-"
-			);
+			return fallbackText(String(value || "").replace(/^role_id_/i, ""), value, "-");
 		}
 
 		const roleEntries = getPlayerRoleBadgeEntries(player);
 		const roleEntry = roleEntries[0] || null;
 		const roleData = roleEntry ? getRoleBadgeDefinition(roleEntry.id) : null;
-
-		const labelRole = fallbackText(
-			roleData?.label,
-			stripRoleId(roleEntry?.id),
-			roleEntry?.id,
-			"-"
-		);
-
-		const emblemImageRole = normalizePossibleUrl(roleData?.icon || "");
-		const unlockedAtRole = safeDate(roleEntry?.unlocked_at);
-
-		const roleColor = fallbackText(roleData?.color, "#4f7cff");
-		const roleColor2 = fallbackText(roleData?.color2, roleData?.color, "#4f7cff");
-		const roleGlow = fallbackText(roleData?.glow, roleData?.color, "#4f7cff");
-		const roleDescription = fallbackText(roleData?.description, roleData?.category, "Cargo do perfil.");
-		const roleGroup = fallbackText(roleData?.hierarchy?.group, roleData?.category, "role");
+		const label = fallbackText(roleData?.label, stripRoleId(roleEntry?.id), roleEntry?.id, "-");
+		const icon = normalizePossibleUrl(roleData?.icon || "");
+		const color = fallbackText(roleData?.color, "#d6a900");
+		const color2 = fallbackText(roleData?.color2, roleData?.color, "#ffe27a");
+		const glow = fallbackText(roleData?.glow, roleData?.color, "#ffd34d");
+		const description = fallbackText(roleData?.description, roleData?.category, "Cargo do perfil.");
+		const group = fallbackText(roleData?.hierarchy?.group, roleData?.category, "role");
+		const date = safeDate(roleEntry?.unlocked_at);
+		const id = fallbackText(roleEntry?.id, "-");
 
 		return `
-			<div
-				class="level-info-wrap"
-				style="
-					--rank-color: ${escapeHtml(roleColor)};
-					--rank-color-2: ${escapeHtml(roleColor2)};
-					--rank-glow: ${escapeHtml(roleGlow)};
-				"
-			>
-				<div
-					class="level-info-emblem"
-					tabindex="0"
-					aria-label="Role ${escapeHtml(labelRole)}"
-				>
-					${emblemImageRole ? `<img class="level-info-emblem-icon" src="${escapeHtml(emblemImageRole)}" alt="${escapeHtml(labelRole)}" loading="lazy" onerror="this.remove()">` : ""}
-
-					<span class="level-info-emblem-value">
-						${escapeHtml(labelRole)}
-					</span>
-				</div>
-
-				<div class="level-info-tooltip" role="tooltip">
-					<div class="level-info-tooltip-head">
-						${emblemImageRole ? `
-							<div class="level-info-tooltip-badge">
-								<img src="${escapeHtml(emblemImageRole)}" alt="${escapeHtml(labelRole)}" loading="lazy" onerror="this.remove()">
-							</div>
-						` : ""}
-
-						<div class="level-info-tooltip-texts">
-							<div class="level-info-tooltip-title">
-								<span class="level-info-tooltip-subtitle">Role:</span>
-								${escapeHtml(labelRole)}
-							</div>
-							<div class="level-info-tooltip-subtitle">
-								${roleData ? "Cargo principal" : "Role não encontrado no WebBaseExtensions"}
-							</div>
+			<article class="vl-distinctive-card vl-distinctive-card--role" style="--badge-accent:${escapeHtml(color)};--badge-accent-2:${escapeHtml(color2)};--badge-glow:${escapeHtml(glow)};">
+				<header class="vl-distinctive-card__header">
+					<span class="vl-distinctive-card__header-icon" aria-hidden="true">◆</span>
+					<strong>Cargo</strong>
+				</header>
+				<div class="vl-distinctive-card__body">
+					<div class="vl-distinctive-emblem" aria-label="Cargo ${escapeHtml(label)}">
+						<div class="vl-distinctive-emblem__media">
+							${icon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy" onerror="this.remove()">` : `<span class="vl-distinctive-emblem__fallback" aria-hidden="true">◆</span>`}
+						</div>
+						<strong>${escapeHtml(label)}</strong>
+					</div>
+					<div class="vl-distinctive-details">
+						<div class="vl-distinctive-identity">
+							<small>Role</small>
+							<strong>${escapeHtml(label)}</strong>
+							<span>Cargo principal</span>
+						</div>
+						<div class="vl-distinctive-fields">
+							<div><small>Grupo</small><strong>${escapeHtml(group)}</strong></div>
+							<div><small>Descrição</small><strong>${escapeHtml(description)}</strong></div>
+							<div><small>ID</small><strong>${escapeHtml(id)}</strong></div>
+							<div><small>Data</small><strong>${escapeHtml(date)}</strong></div>
 						</div>
 					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Grupo</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(roleGroup)}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Descrição</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(roleDescription)}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">ID</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(fallbackText(roleEntry?.id, "-"))}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Data:</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(unlockedAtRole)}</span>
-					</div>
 				</div>
-			</div>
+			</article>
 		`;
 	}
 
@@ -2166,105 +2120,56 @@
 
 		function safeDate(value) {
 			if (!value) return "-";
-
 			const date = new Date(value);
 			if (Number.isNaN(date.getTime())) return "-";
-
 			return date.toLocaleString("pt-BR");
 		}
 
 		function stripRankId(value) {
-			return fallbackText(
-				String(value || "").replace(/^rank_id_/i, ""),
-				value,
-				"-"
-			);
+			return fallbackText(String(value || "").replace(/^rank_id_/i, ""), value, "-");
 		}
 
 		const rankEntries = getPlayerRankBadgeEntries(player);
 		const rankEntry = rankEntries[0] || null;
 		const rankData = rankEntry ? getRankBadgeDefinition(rankEntry.id) : null;
-
-		const labelRank = fallbackText(
-			rankData?.label,
-			stripRankId(rankEntry?.id),
-			rankEntry?.id,
-			"-"
-		);
-
-		const emblemImageRank = normalizePossibleUrl(rankData?.icon || "");
-		const unlockedAtRank = safeDate(rankEntry?.unlocked_at);
-
-		const rankColor = fallbackText(rankData?.color, "#5865F2");
-		const rankColor2 = fallbackText(rankData?.color2, rankData?.color, "#5865F2");
-		const rankGlow = fallbackText(rankData?.glow, rankData?.color, "#5865F2");
-		const rankDescription = fallbackText(rankData?.description, rankData?.category, "Rank do perfil.");
-		const rankGroup = fallbackText(rankData?.hierarchy?.group, rankData?.category, "rank");
+		const label = fallbackText(rankData?.label, stripRankId(rankEntry?.id), rankEntry?.id, "-");
+		const icon = normalizePossibleUrl(rankData?.icon || "");
+		const color = fallbackText(rankData?.color, "#e83b78");
+		const color2 = fallbackText(rankData?.color2, rankData?.color, "#ff82ad");
+		const glow = fallbackText(rankData?.glow, rankData?.color, "#ff4f91");
+		const description = fallbackText(rankData?.description, rankData?.category, "Rank do perfil.");
+		const group = fallbackText(rankData?.hierarchy?.group, rankData?.category, "rank");
+		const date = safeDate(rankEntry?.unlocked_at);
+		const id = fallbackText(rankEntry?.id, "-");
 
 		return `
-			<div
-				class="level-info-wrap"
-				style="
-					--rank-color: ${escapeHtml(rankColor)};
-					--rank-color-2: ${escapeHtml(rankColor2)};
-					--rank-glow: ${escapeHtml(rankGlow)};
-				"
-			>
-				<div
-					class="level-info-emblem"
-					tabindex="0"
-					aria-label="Rank ${escapeHtml(labelRank)}"
-				>
-					${emblemImageRank ? `<img class="level-info-emblem-icon" src="${escapeHtml(emblemImageRank)}" alt="${escapeHtml(labelRank)}" loading="lazy" onerror="this.remove()">` : ""}
-
-					<span class="level-info-emblem-value">
-						${escapeHtml(labelRank)}
-					</span>
-
-					${rankData?.shimmer ? `<span class="level-info-emblem-shine"></span>` : ""}
-					${rankData?.particles ? `<span class="level-info-emblem-particles"></span>` : ""}
-				</div>
-
-				<div class="level-info-tooltip" role="tooltip">
-					<div class="level-info-tooltip-head">
-						${emblemImageRank ? `
-							<div class="level-info-tooltip-badge">
-								<img src="${escapeHtml(emblemImageRank)}" alt="${escapeHtml(labelRank)}" loading="lazy" onerror="this.remove()">
-							</div>
-						` : ""}
-
-						<div class="level-info-tooltip-texts">
-							<div class="level-info-tooltip-title">
-								<span class="level-info-tooltip-subtitle">Rank:</span>
-								${escapeHtml(labelRank)}
-							</div>
-							<div class="level-info-tooltip-subtitle">
-								${rankData ? "Cargo secundário" : "Rank não encontrado no WebBaseExtensions"}
-							</div>
+			<article class="vl-distinctive-card vl-distinctive-card--rank" style="--badge-accent:${escapeHtml(color)};--badge-accent-2:${escapeHtml(color2)};--badge-glow:${escapeHtml(glow)};">
+				<header class="vl-distinctive-card__header">
+					<span class="vl-distinctive-card__header-icon" aria-hidden="true">♛</span>
+					<strong>Rank</strong>
+				</header>
+				<div class="vl-distinctive-card__body">
+					<div class="vl-distinctive-emblem" aria-label="Rank ${escapeHtml(label)}">
+						<div class="vl-distinctive-emblem__media">
+							${icon ? `<img src="${escapeHtml(icon)}" alt="" loading="lazy" onerror="this.remove()">` : `<span class="vl-distinctive-emblem__fallback" aria-hidden="true">♛</span>`}
+						</div>
+						<strong>${escapeHtml(label)}</strong>
+					</div>
+					<div class="vl-distinctive-details">
+						<div class="vl-distinctive-identity">
+							<small>Rank</small>
+							<strong>${escapeHtml(label)}</strong>
+							<span>Cargo secundário</span>
+						</div>
+						<div class="vl-distinctive-fields">
+							<div><small>Grupo</small><strong>${escapeHtml(group)}</strong></div>
+							<div><small>Descrição</small><strong>${escapeHtml(description)}</strong></div>
+							<div><small>ID</small><strong>${escapeHtml(id)}</strong></div>
+							<div><small>Data</small><strong>${escapeHtml(date)}</strong></div>
 						</div>
 					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Grupo</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(rankGroup)}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Descrição</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(rankDescription)}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">ID</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(fallbackText(rankEntry?.id, "-"))}</span>
-					</div>
-
-					<div class="level-info-tooltip-row">
-						<span class="level-info-tooltip-row-label">Data:</span>
-						<span class="level-info-tooltip-row-value">${escapeHtml(unlockedAtRank)}</span>
-					</div>
 				</div>
-			</div>
+			</article>
 		`;
 	}
 
@@ -2286,153 +2191,75 @@
 		}
 
 		function stripAchievementId(value) {
-			return fallbackText(
-				String(value || "").replace(/^achievements?_id_/i, ""),
-				value,
-				"-"
-			);
+			return fallbackText(String(value || "").replace(/^achievements?_id_/i, ""), value, "-");
 		}
 
 		const achievementEntries = getPlayerAchievementBadgeEntries(player);
-
 		if (!achievementEntries.length) {
-			return `<div class="info-value">-</div>`;
+			return `<div class="vl-achievements-empty">Nenhuma conquista pública.</div>`;
 		}
 
-		const achievementItems = achievementEntries.map(function(entry, index) {
+		const items = achievementEntries.map(function(entry, index) {
 			const data = getAchievementBadgeDefinition(entry.id) || {};
-
-			const label = fallbackText(
-				data.label,
-				stripAchievementId(entry.id),
-				entry.id,
-				"Sem achievement"
-			);
-
-			const image = normalizePossibleUrl(
-				data.preview_image ||
-				data.image ||
-				data.icon ||
-				""
-			);
-
-			const banner = normalizePossibleUrl(
-				data.banner ||
-				data.background ||
-				""
-			);
-
-			const title = normalizePossibleUrl(data.title || "");
-
-			const color = fallbackText(data.color, "#7c5cff");
-			const color2 = fallbackText(data.color2, data.color, "#7c5cff");
-			const glow = fallbackText(data.glow, data.color, "#7c5cff");
-			const category = fallbackText(data.category, "achievement");
-			const points = Number.isFinite(Number(data.points)) ? Number(data.points) : 0;
-			const description = fallbackText(data.description, data.unlock?.condition, "Conquista do perfil.");
-
 			return {
 				id: fallbackText(entry.id, "-"),
-				label,
-				image,
-				banner,
-				title,
-				color,
-				color2,
-				glow,
-				category,
-				points,
-				description,
+				label: fallbackText(data.label, stripAchievementId(entry.id), entry.id, "Sem conquista"),
+				image: normalizePossibleUrl(data.preview_image || data.image || data.icon || ""),
+				banner: normalizePossibleUrl(data.banner || data.background || ""),
+				title: normalizePossibleUrl(data.title || ""),
+				color: fallbackText(data.color, "#8f63ff"),
+				color2: fallbackText(data.color2, data.color, "#bd95ff"),
+				glow: fallbackText(data.glow, data.color, "#9c6cff"),
+				category: fallbackText(data.category, "achievement"),
+				points: Number.isFinite(Number(data.points)) ? Number(data.points) : 0,
+				description: fallbackText(data.description, data.unlock?.condition, "Conquista do perfil."),
 				date: safeDate(entry.unlocked_at),
 				index
 			};
 		});
 
-		const firstItem = achievementItems[0];
-
-		const thumbsHtml = achievementItems.map(function(item, index) {
+		const first = items[0];
+		const thumbs = items.map(function(item, index) {
 			return `
-				<button
-					type="button"
-					class="achievement-gallery-thumb ${index === 0 ? "is-active" : ""}"
-					data-achievement-thumb
-					data-id="${escapeHtml(item.id)}"
-					data-label="${escapeHtml(item.label)}"
-					data-banner="${escapeHtml(item.banner)}"
-					data-background="${escapeHtml(item.banner)}"
-					data-image="${escapeHtml(item.image)}"
-					data-title="${escapeHtml(item.title)}"
-					data-color="${escapeHtml(item.color)}"
-					data-color2="${escapeHtml(item.color2)}"
-					data-glow="${escapeHtml(item.glow)}"
-					data-category="${escapeHtml(item.category)}"
-					data-points="${escapeHtml(item.points)}"
-					data-description="${escapeHtml(item.description)}"
-					data-date="${escapeHtml(item.date)}"
-				>
-					${item.image
-						? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.label)}" loading="lazy" onerror="this.remove()">`
-						: `<span></span>`
-					}
-				</button>
-			`;
+				<button type="button" class="achievement-gallery-thumb ${index === 0 ? "is-active" : ""}" data-achievement-thumb
+					data-id="${escapeHtml(item.id)}" data-label="${escapeHtml(item.label)}" data-banner="${escapeHtml(item.banner)}"
+					data-background="${escapeHtml(item.banner)}" data-image="${escapeHtml(item.image)}" data-title="${escapeHtml(item.title)}"
+					data-color="${escapeHtml(item.color)}" data-color2="${escapeHtml(item.color2)}" data-glow="${escapeHtml(item.glow)}"
+					data-category="${escapeHtml(item.category)}" data-points="${escapeHtml(item.points)}"
+					data-description="${escapeHtml(item.description)}" data-date="${escapeHtml(item.date)}" aria-label="${escapeHtml(item.label)}">
+					${item.image ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy" onerror="this.remove()">` : `<span aria-hidden="true">✦</span>`}
+				</button>`;
 		}).join("");
 
 		return `
-			<div
-				class="achievements-info-wrap"
-				data-achievement-gallery
-				style="
-					--achievement-color: ${escapeHtml(firstItem.color)};
-					--achievement-color-2: ${escapeHtml(firstItem.color2)};
-					--achievement-glow: ${escapeHtml(firstItem.glow)};
-				"
-			>
-				<div class="achievement-gallery">
-					<div
-						class="achievement-gallery-main ${firstItem.banner ? "" : "is-empty"}"
-						data-achievement-main
-					>
-						${firstItem.banner
-							? `<img data-achievement-banner data-achievement-banner src="${escapeHtml(firstItem.banner)}" alt="${escapeHtml(firstItem.label)}">`
-							: `<div class="achievement-gallery-main-fallback">Sem imagem</div>`
-						}
-
-						${firstItem.title
-							? `
-								<div class="achievement-main-title">
-									<img
-										data-achievement-title
-										src="${escapeHtml(firstItem.title)}"
-										alt="${escapeHtml(firstItem.label)}"
-									>
-								</div>
-							`
-							: ""
-						}
-					</div>
-
-					<div class="achievement-gallery-bottom">
-						<div class="achievement-gallery-name">
-							<span data-achievement-name>${escapeHtml(firstItem.label)}</span>
-							<span class="achievement-date" data-achievement-date>${escapeHtml(firstItem.date)}</span>
-							<span class="achievement-meta" data-achievement-meta>${escapeHtml(firstItem.category)} • ${escapeHtml(firstItem.points)} pts</span>
-							<span class="achievement-desc" data-achievement-description>${escapeHtml(firstItem.description)}</span>
-							<span class="achievement-id" data-achievement-id hidden>${escapeHtml(firstItem.id)}</span>
+			<section class="vl-achievements-card" data-achievement-gallery style="--achievement-color:${escapeHtml(first.color)};--achievement-color-2:${escapeHtml(first.color2)};--achievement-glow:${escapeHtml(first.glow)};">
+				<header class="vl-achievements-card__header">
+					<div><span aria-hidden="true">◆</span><strong>Conquistas</strong></div>
+					<span class="vl-achievements-card__total">${items.length} ${items.length === 1 ? "total" : "totais"}</span>
+				</header>
+				<div class="achievement-gallery-main ${first.banner ? "" : "is-empty"}" data-achievement-main>
+					${first.banner ? `<img data-achievement-banner data-achievement-background src="${escapeHtml(first.banner)}" alt="${escapeHtml(first.label)}">` : `<div class="achievement-gallery-main-fallback">Sem imagem</div>`}
+					${first.title ? `<div class="achievement-main-title"><img data-achievement-title src="${escapeHtml(first.title)}" alt="${escapeHtml(first.label)}"></div>` : ""}
+				</div>
+				<div class="vl-achievement-summary">
+					<div class="vl-achievement-summary__icon">${first.image ? `<img src="${escapeHtml(first.image)}" alt="" loading="lazy" onerror="this.remove()">` : `<span aria-hidden="true">✦</span>`}</div>
+					<div class="vl-achievement-summary__content">
+						<div class="vl-achievement-summary__title-row">
+							<strong data-achievement-name>${escapeHtml(first.label)}</strong>
+							<span class="vl-achievement-summary__count">${items.length} total</span>
 						</div>
-						<div class="achievement-gallery-count">
-							${achievementItems.length} total
+						<div class="vl-achievement-summary__meta-row">
+							<span data-achievement-date>${escapeHtml(first.date)}</span>
+							<span data-achievement-meta>${escapeHtml(first.category)} · ${escapeHtml(first.points)} pts</span>
 						</div>
-					</div>
-
-					<div class="achievement-gallery-list">
-						${thumbsHtml}
+						<p data-achievement-description>${escapeHtml(first.description)}</p>
+						<span data-achievement-id hidden>${escapeHtml(first.id)}</span>
 					</div>
 				</div>
-			</div>
+				<div class="achievement-gallery-list" aria-label="Lista de conquistas">${thumbs}</div>
+			</section>
 		`;
 	}
-
 
 	function getRarityBadgeDefinition(rarityId) {
 		const id = cleanValue(rarityId) || getFallbackDefaultId("rarity", "raritys_id_n");
@@ -3197,7 +3024,7 @@
 								<div class="info-header">
 									<div class="info-profile-avatar">
 										<img
-											src="assests/img/craftpix-net-737072-free-cyberpunk-artifact-game-512x512-icons/27.png"
+											src="https://cdn.jsdelivr.net/gh/Kazimuhwari-br/Velarion-Lumen-Bedrock-Server@main/assests/craftpix-net-737072-free-cyberpunk-artifact-game-512x512-icons/27.png"
 											alt="Distintivos da Imagem"
 											loading="eager"
 											referrerpolicy="no-referrer"
@@ -3278,10 +3105,12 @@
 			try {
 				return window.VelarionProfile.render(player, getVelarionProfileRenderContext());
 			} catch (e) {
-				console.error("[VelarionProfile] Falha ao renderizar perfil separado; usando fallback.", e);
+				console.error("[VelarionProfile] Falha ao renderizar o perfil atual.", e);
+				return '<section class="vl-profile-panel"><div class="empty">Não foi possível carregar o perfil atual.</div></section>';
 			}
 		}
-		return createLegacyDetailView(player);
+		console.error("[VelarionProfile] Renderer atual indisponível. O perfil legado foi desativado.");
+		return '<section class="vl-profile-panel"><div class="empty">Perfil atual indisponível.</div></section>';
 	}
 
 
@@ -4114,6 +3943,8 @@
 				name.textContent = label;
 				if (id) id.textContent = achievementId;
 				date.textContent = achievementDate;
+				if (meta) meta.textContent = `${button.dataset.category || "achievement"} · ${button.dataset.points || "0"} pts`;
+				if (description) description.textContent = button.dataset.description || "-";
 
 				renderMainAchievement(banner, title, icon, label);
 			}
