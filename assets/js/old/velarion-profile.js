@@ -26,29 +26,6 @@
     return String(value).trim();
   }
 
-  function getMediaSource(value) {
-    if (typeof value === "string") return cleanValue(value);
-    if (!value || typeof value !== "object" || Array.isArray(value)) return "";
-    return cleanValue(value.url || value.src || value.image || value.path || "");
-  }
-
-  function isWebMMedia(value) {
-    const source = getMediaSource(value);
-    if (!source) return false;
-    return /^data:video\/webm(?:;|,)/i.test(source) || /\.webm(?:$|[?#])/i.test(source);
-  }
-
-  function renderProfileFrameMedia(source) {
-    const media = getMediaSource(source);
-    if (!media) return "";
-
-    if (isWebMMedia(media)) {
-      return `<video src="${escapeHtml(media)}" autoplay loop muted playsinline preload="auto" aria-hidden="true" tabindex="-1" referrerpolicy="no-referrer" style="display:block;width:100%;height:100%;object-fit:fill;background:transparent;pointer-events:none;" onerror="this.parentElement.remove();"></video>`;
-    }
-
-    return `<img src="${escapeHtml(media)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.remove();">`;
-  }
-
   function stripMinecraftCodes(value) {
     return cleanValue(value).replace(/§[0-9a-fk-or]/gi, "");
   }
@@ -931,7 +908,11 @@ function buildStatusVisualCard(player, ctx) {
     const color = h.normalizeHexColor(primaryCardColor);
     const avatar = h.getAvatar(player) || getFallbackMedia(ctx, "avatar", DEFAULT_AVATAR);
     const profileFrameRaw = player?.theme?.card_embed?.profile_frame_image;
-    const profileFrameImage = getMediaSource(profileFrameRaw);
+    const profileFrameImage = cleanValue(
+      typeof profileFrameRaw === "string"
+        ? profileFrameRaw
+        : (profileFrameRaw?.url || profileFrameRaw?.src || profileFrameRaw?.image || profileFrameRaw?.path || "")
+    );
     const displayNamePlain = h.stripMinecraftCodes(h.getDisplayName(player)) || "Jogador";
     const displayNameHtml = h.buildTitleHtml(player) || h.escapeHtml(displayNamePlain);
     const username = h.getUsername(player) || displayNamePlain;
@@ -980,8 +961,8 @@ function buildStatusVisualCard(player, ctx) {
                 >
                   <div class="vl-profile-public-id-card__shine" aria-hidden="true"></div>
                   ${profileFrameImage ? `
-                  <div class="vl-profile-public-id-card__frame-image" aria-hidden="true" data-media-type="${isWebMMedia(profileFrameImage) ? "video" : "image"}">
-                    ${renderProfileFrameMedia(profileFrameImage)}
+                  <div class="vl-profile-public-id-card__frame-image" aria-hidden="true">
+                    <img src="${h.escapeHtml(profileFrameImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.remove();">
                   </div>` : ""}
                   <div class="vl-profile-public-id-card__top">
                     <span>Documento do aventureiro</span>

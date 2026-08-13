@@ -85,36 +85,6 @@
       return String(value ?? "").trim();
     }
 
-    function getMediaSource(value) {
-      if (typeof value === "string") return getCleanText(value);
-      if (!value || typeof value !== "object" || Array.isArray(value)) return "";
-      return getCleanText(value.url || value.src || value.image || value.path || "");
-    }
-
-    function isWebMMedia(value) {
-      const source = getMediaSource(value);
-      if (!source) return false;
-      return /^data:video\/webm(?:;|,)/i.test(source) || /\.webm(?:$|[?#])/i.test(source);
-    }
-
-    function renderCharacterMedia(source, locked = false) {
-      const media = getMediaSource(source);
-      if (!media) return "";
-
-      const className = locked
-        ? "vl-card__character vl-card__character--locked"
-        : "vl-card__character";
-
-      if (isWebMMedia(media)) {
-        /* WebM costuma ter uma área transparente maior que a arte equivalente
-           em PNG/GIF. Aplica um zoom leve somente ao vídeo, mantendo a base
-           do personagem ancorada e sem alterar as versões de imagem. */
-        return `<video class="${className} vl-card__character--webm" src="${escapeHTML(media)}" autoplay loop muted playsinline preload="auto" aria-hidden="true" tabindex="-1" style="background:transparent;object-position:center bottom;left:50%;right:auto;transform:translate(-50%, 7.5%) scale(1.18);transform-origin:50% 100%;max-width:none;" onerror="this.remove();"></video>`;
-      }
-
-      return `<img class="${className}" src="${escapeHTML(media)}" alt="" loading="eager">`;
-    }
-
 
     /* ================================================================
        CARD COLOR PALETTE
@@ -1332,7 +1302,7 @@
         online: Boolean(status.online),
 
         cardEnabled,
-        characterImage: cardEnabled ? (getMediaSource(cardEmbed.character_image) || getFallbackMedia("character", data?.profile?.gender || "default") || "") : "",
+        characterImage: cardEnabled ? (cardEmbed.character_image || getFallbackMedia("character", data?.profile?.gender || "default") || "") : "",
         bannerBottomImage: cardEnabled && showBanner ? (cardEmbed.banner_bottom_image || getFallbackMedia("banner") || "") : "",
         bannerFrameImage: cardEnabled && showBanner ? (cardEmbed.banner_frame_image || "") : "",
         avatarLock,
@@ -1387,10 +1357,14 @@
         : renderSecretBanner(profile);
 
       const characterHTML = profile.showAvatar
-        ? renderCharacterMedia(profile.characterImage, false)
+        ? (
+          profile.characterImage
+            ? `<img class="vl-card__character" src="${escapeHTML(profile.characterImage)}" alt="" loading="eager">`
+            : ""
+        )
         : `
           ${profile.characterImage
-            ? renderCharacterMedia(profile.characterImage, true)
+            ? `<img class="vl-card__character vl-card__character--locked" src="${escapeHTML(profile.characterImage)}" alt="" loading="eager">`
             : renderSecretAvatar(profile)
           }
           ${renderLockedAvatarOverlay(profile)}

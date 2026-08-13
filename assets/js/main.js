@@ -2770,10 +2770,13 @@
 	}
 
 
+	// ===== Renderers separados =====
+	// VelarionCodexCard = roster/lista horizontal
+	// VelarionLumenCard = card vertical oficial do perfil
 	// ===== JavaScript: Renderização dos cards e da view detalhada =====
 	function createCard(player, index) {
-		if (window.VelarionLumenCard && typeof window.VelarionLumenCard.renderPlayerCard === "function") {
-			return window.VelarionLumenCard.renderPlayerCard(player, index, {
+		if (window.VelarionCodexCard && typeof window.VelarionCodexCard.renderPlayerCard === "function") {
+			return window.VelarionCodexCard.renderPlayerCard(player, index, {
 				extensionsData: extensionsData || {},
 				badges_verified: extensionsData?.badges_verified || {},
 				badges_levelranks: extensionsData?.badges_levelranks || {},
@@ -2788,16 +2791,11 @@
 
 		const displayName = escapeHtml(stripMinecraftCodes(getDisplayName(player)) || "Perfil");
 		return `
-			<article class="vl-card vl-card--missing-renderer" data-player-id="${escapeHtml(player?._id || "")}" tabindex="0" aria-label="${displayName}">
-				<section class="vl-card__shell">
-					<section class="vl-card__info">
-						<div class="vl-card__info-content">
-							<div class="vl-card__user"><span class="vl-card__username-text">Velarion Lumen</span></div>
-							<h1 class="vl-card__name">${displayName}</h1>
-							<div class="vl-card__title">Renderer do card não carregado.</div>
-						</div>
-					</section>
-				</section>
+			<article class="vlc-roster-entry vlc-roster-entry--missing-renderer" data-player-id="${escapeHtml(player?._id || "")}" tabindex="0" aria-label="${displayName}">
+				<div class="vlc-roster-core">
+					<strong class="vlc-roster-name">${displayName}</strong>
+					<div class="vlc-roster-title">Renderer do Codex não carregado.</div>
+				</div>
 			</article>
 		`;
 	}
@@ -3148,8 +3146,8 @@
 			return isListMode ? createListCard(player) : createCard(player, startIndex + index);
 		}).join("");
 
-		if (!isListMode && window.VelarionLumenCard && typeof window.VelarionLumenCard.hydrate === "function") {
-			window.VelarionLumenCard.hydrate(players);
+		if (!isListMode && window.VelarionCodexCard && typeof window.VelarionCodexCard.hydrate === "function") {
+			window.VelarionCodexCard.hydrate(players);
 		}
 
 		if (paginationPanel) paginationPanel.hidden = totalItems <= itemsPerPage && totalPages <= 1;
@@ -3163,7 +3161,7 @@
 		if (isListMode) {
 			attachListGlow(players.querySelectorAll(".card"));
 		} else {
-			attach3DEffect(players.querySelectorAll(".vl-card[data-player-id]"));
+			attach3DEffect(players.querySelectorAll(".vlc-roster-entry[data-player-id]"));
 		}
 	}
 
@@ -3432,6 +3430,204 @@
 		});
 	}
 
+
+
+	let officialCardLoadPromise = null;
+
+	function getMainScriptUrlForCardDependency() {
+		const scripts = Array.from(document.scripts || []);
+		const mainScript = scripts.find(function(script) {
+			const src = String(script.src || script.getAttribute("src") || "");
+			return /(?:^|\/)main(?:[-.][^\/?#]+)?\.js(?:[?#].*)?$/i.test(src) ||
+				/assets\/js\/main\.js(?:[?#].*)?$/i.test(src);
+		});
+		return mainScript?.src || "";
+	}
+
+	function getOfficialCardAssetUrls() {
+		const mainUrl = getMainScriptUrlForCardDependency();
+		let jsUrl = "";
+		let cssUrl = "";
+
+		try {
+			if (mainUrl) {
+				const parsed = new URL(mainUrl, window.location.href);
+
+				/* main.js e velarion-card.js normalmente ficam juntos em assets/js/. */
+				jsUrl = new URL("./velarion-card.js", parsed).href;
+
+				/* CSS normalmente fica em assets/css/. */
+				if (/\/assets\/js\//i.test(parsed.pathname)) {
+					const cssPath = parsed.pathname
+						.replace(/\/assets\/js\/[^/]+$/i, "/assets/css/velarion-card.css");
+					cssUrl = new URL(cssPath, parsed.origin === "null" ? window.location.href : parsed.origin).href;
+				}
+			}
+		} catch (error) {}
+
+		/* Fallbacks funcionam inclusive ao abrir pages/aventureiros.html diretamente. */
+		if (!jsUrl) {
+			try { jsUrl = new URL("../assets/js/velarion-card.js", window.location.href).href; }
+			catch (error) { jsUrl = "../assets/js/velarion-card.js"; }
+		}
+		if (!cssUrl) {
+			try { cssUrl = new URL("../assets/css/velarion-card.css", window.location.href).href; }
+			catch (error) { cssUrl = "../assets/css/velarion-card.css"; }
+		}
+
+		return { jsUrl, cssUrl };
+	}
+
+	function ensureOfficialCardCss(cssUrl) {
+		const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+		const alreadyLoaded = links.some(function(link) {
+			const href = String(link.href || link.getAttribute("href") || "");
+			return /(?:^|\/)velarion-card\.css(?:[?#].*)?$/i.test(href);
+		});
+		if (alreadyLoaded || !cssUrl) return;
+
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.href = cssUrl;
+		link.dataset.vlOfficialCardDependency = "true";
+		document.head.appendChild(link);
+	}
+
+	function ensureOfficialCardAssets() {
+		if (window.VelarionLumenCard && typeof window.VelarionLumenCard.renderPlayerCard === "function") {
+			return Promise.resolve(true);
+		}
+
+		if (officialCardLoadPromise) return officialCardLoadPromise;
+
+		officialCardLoadPromise = new Promise(function(resolve) {
+			const urls = getOfficialCardAssetUrls();
+			ensureOfficialCardCss(urls.cssUrl);
+
+			/* Se o HTML já possui a tag, apenas aguarda seu carregamento. */
+			const existing = Array.from(document.scripts || []).find(function(script) {
+				const src = String(script.src || script.getAttribute("src") || "");
+				return /(?:^|\/)velarion-card\.js(?:[?#].*)?$/i.test(src) &&
+					!/velarion-codex-card/i.test(src);
+			});
+
+			function finish() {
+				const ok = Boolean(
+					window.VelarionLumenCard &&
+					typeof window.VelarionLumenCard.renderPlayerCard === "function"
+				);
+				if (!ok) officialCardLoadPromise = null;
+				resolve(ok);
+			}
+
+			if (existing) {
+				if (window.VelarionLumenCard) return finish();
+				existing.addEventListener("load", finish, { once: true });
+				existing.addEventListener("error", function() {
+					officialCardLoadPromise = null;
+					resolve(false);
+				}, { once: true });
+				setTimeout(finish, 3500);
+				return;
+			}
+
+			const script = document.createElement("script");
+			script.src = urls.jsUrl;
+			script.defer = true;
+			script.dataset.vlOfficialCardDependency = "true";
+			script.addEventListener("load", finish, { once: true });
+			script.addEventListener("error", function() {
+				console.error(
+					"[VelarionProfile] Não foi possível carregar velarion-card.js em:",
+					urls.jsUrl
+				);
+				officialCardLoadPromise = null;
+				resolve(false);
+			}, { once: true });
+			document.head.appendChild(script);
+		});
+
+		return officialCardLoadPromise;
+	}
+
+	function buildOfficialCardContext() {
+		return {
+			extensionsData: extensionsData || {},
+			badges_verified: extensionsData?.badges_verified || {},
+			badges_levelranks: extensionsData?.badges_levelranks || {},
+			badges_avatarlocks: extensionsData?.badges_avatarlocks || {},
+			badges_raritys: extensionsData?.badges_raritys || extensionsData?.badges_rarities || {},
+			server_panel: extensionsData?.server_panel || {},
+			nickname_colors: extensionsData?.server_panel?.nickname_colors || {},
+			clanPlayers: clansData || {},
+			profilePlayers: profilePlayersDataSource || {}
+		};
+	}
+
+	function mountOfficialProfileCard(detailRoot, player) {
+		if (!detailRoot || !player) return false;
+
+		const renderer = window.VelarionLumenCard;
+		if (!renderer || typeof renderer.renderPlayerCard !== "function") {
+			if (detailRoot.dataset.vlOfficialCardLoading !== "true") {
+				detailRoot.dataset.vlOfficialCardLoading = "true";
+
+				ensureOfficialCardAssets().then(function(loaded) {
+					delete detailRoot.dataset.vlOfficialCardLoading;
+
+					if (!loaded || !detailRoot.isConnected) {
+						console.error(
+							"[VelarionProfile] O card oficial continua indisponível. " +
+							"Confirme se assets/js/velarion-card.js existe."
+						);
+						return;
+					}
+
+					mountOfficialProfileCard(detailRoot, player);
+				});
+			}
+			return false;
+		}
+
+		const identity =
+			detailRoot.querySelector(".vl-profile-identity") ||
+			detailRoot.querySelector(".vl-profile-identity--official-card") ||
+			detailRoot.querySelector(".detail-left-column");
+
+		if (!identity) {
+			console.error("[VelarionProfile] Coluna esquerda do perfil não encontrada.");
+			return false;
+		}
+
+		try {
+			const html = renderer.renderPlayerCard(player, 0, buildOfficialCardContext());
+			if (!html) return false;
+
+			/* Remove qualquer card legado/horizontal que tenha vindo do renderer do perfil. */
+			identity.innerHTML = `
+				<div class="vl-profile-card-port" data-official-card-port="true">
+					${html}
+				</div>
+			`;
+
+			const port = identity.querySelector(".vl-profile-card-port");
+
+			if (typeof renderer.hydrate === "function") {
+				renderer.hydrate(port || identity);
+			}
+
+			/* Garantia: nenhum efeito antigo de .detail-card é aplicado ao card oficial. */
+			identity.querySelectorAll(".detail-card").forEach(function(node) {
+				node.remove();
+			});
+
+			return true;
+		} catch (error) {
+			console.error("[VelarionProfile] Falha ao montar VelarionLumenCard no perfil.", error);
+			return false;
+		}
+	}
+
 	function showDetailInstant(player) {
 		const gridView = document.getElementById("gridView");
 		const detailView = document.getElementById("detailView");
@@ -3445,13 +3641,17 @@
 		detailView.classList.remove("ready");
 		detailView.scrollTop = 0;
 
-		attach3DEffect(detailView.querySelectorAll(".detail-card"));
+		mountOfficialProfileCard(detailView, player);
 		setupAchievementGalleries(detailView);
 
 		gridView.classList.add("hidden");
 
 		requestAnimationFrame(function() {
 			detailView.classList.add("ready");
+
+			if (window.VelarionLumenCard && typeof window.VelarionLumenCard.hydrate === "function") {
+				window.VelarionLumenCard.hydrate(detailView);
+			}
 		});
 	}
 
@@ -3515,7 +3715,7 @@
 		try {
 			activePlayerId = player._id;
 
-			const allCards = Array.from(players.querySelectorAll(".vl-card[data-player-id], .card[data-player-id]"));
+			const allCards = Array.from(players.querySelectorAll(".vlc-roster-entry[data-player-id], .card[data-player-id]"));
 			const sourceRect = getRectRelativeToViewport(sourceCard);
 			const accentColor = normalizeHexColor(player?.theme?.card_embed?.card_color || "#5865F2");
 			const transitionFrontCard = buildTransitionFrontCard(sourceCard);
@@ -3593,7 +3793,7 @@
 			detailView.classList.remove("ready");
 			detailView.scrollTop = 0;
 
-			attach3DEffect(detailView.querySelectorAll(".detail-card"));
+			mountOfficialProfileCard(detailView, player);
 			setupAchievementGalleries(detailView);
 
 			gridView.classList.add("hidden");
@@ -4146,7 +4346,7 @@
 
 	const playersRoot = document.getElementById("players");
 	if (playersRoot) playersRoot.addEventListener("click", function(event) {
-		const card = event.target.closest(".vl-card[data-player-id], .card[data-player-id]");
+		const card = event.target.closest(".vlc-roster-entry[data-player-id], .card[data-player-id]");
 		if (!card || isTransitionRunning) return;
 		openDetail(card.dataset.playerId, card);
 	});
@@ -4154,7 +4354,7 @@
 	if (playersRoot) playersRoot.addEventListener("keydown", function(event) {
 		if (event.key !== "Enter" && event.key !== " ") return;
 
-		const card = event.target.closest(".vl-card[data-player-id], .card[data-player-id]");
+		const card = event.target.closest(".vlc-roster-entry[data-player-id], .card[data-player-id]");
 		if (!card || isTransitionRunning) return;
 
 		event.preventDefault();
@@ -4164,7 +4364,7 @@
 	// Segurança extra para o card novo: captura cliques mesmo se alguma camada interna
 	// ou wrapper visual impedir o listener normal do grid.
 	document.addEventListener("click", function(event) {
-		const card = event.target.closest("#players .vl-card[data-player-id], #players .card[data-player-id], #players [data-vl-card-slot] .vl-card[data-player-id]");
+		const card = event.target.closest("#players .vlc-roster-entry[data-player-id], #players .card[data-player-id]");
 		if (!card || isTransitionRunning) return;
 		const detailView = document.getElementById("detailView");
 		if (detailView && detailView.classList.contains("active")) return;
