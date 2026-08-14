@@ -2032,28 +2032,6 @@
     }
   }
 
-  function setupBackButton() {
-    const button = document.getElementById("profileBackBtn");
-    if (!button) return;
-
-    button.addEventListener("click", function() {
-      try {
-        if (document.referrer && new URL(document.referrer).origin === window.location.origin && window.history.length > 1) {
-          window.history.back();
-          return;
-        }
-      } catch (error) {}
-
-      if (window.location.protocol === "file:") {
-        window.location.href = "../pages/aventureiros.html";
-        return;
-      }
-
-      window.location.href = getProjectBasePath() + "pages/aventureiros.html";
-    });
-  }
-
-  setupBackButton();
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bootProfilePage, { once: true });
   } else {
