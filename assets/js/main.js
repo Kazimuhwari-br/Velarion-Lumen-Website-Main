@@ -753,12 +753,30 @@
 
 	// ===== Rotas separadas GitHub Pages =====
 	const SITE_BASE_PATH = "";
-	function getSiteBasePath() { return ""; }
+	function getSiteBasePath() {
+		const path = window.location.pathname || "/";
+		const pagesIndex = path.lastIndexOf("/pages/");
+		if (pagesIndex >= 0) return path.slice(0, pagesIndex + 1);
+		const usersIndex = path.lastIndexOf("/users/");
+		if (usersIndex >= 0) return path.slice(0, usersIndex + 1);
+		return path.replace(/[^/]*$/, "");
+	}
 	function cleanProfileSlug(value) {
 		return String(value || "").trim().replace(/^ID[_-]?/i, "");
 	}
 	function makeProfileUrl(playerId) {
-		return "#profile-" + encodeURIComponent(cleanProfileSlug(playerId));
+		const slug = encodeURIComponent(cleanProfileSlug(playerId));
+
+		/* Rota pública oficial do perfil.
+		   Em hospedagem HTTP/GitHub Pages, 404.html funciona como roteador
+		   para esta URL sem expor ?id= na barra do navegador. */
+		if (window.location.protocol !== "file:") {
+			return getSiteBasePath() + "users/" + slug + "/profile.html";
+		}
+
+		/* file:// não possui roteamento dinâmico. Mantém apenas o fallback de
+		   desenvolvimento local; em servidor local a rota acima é usada. */
+		return "../users/profile.html?id=" + slug;
 	}
 	function makeSearchUrl() {
 		return (window.location.pathname || "");
@@ -767,7 +785,7 @@
 		const base = getSiteBasePath();
 		let path = window.location.pathname || "/";
 		if (base && path.startsWith(base)) path = path.slice(base.length) || "/";
-		const match = path.match(/^\/users\/([^\/]+)\/profile\/?$/i);
+		const match = path.match(/^\/users\/([^\/]+)\/profile\.html$/i);
 		return match ? decodeURIComponent(match[1]) : "";
 	}
 
@@ -3659,8 +3677,14 @@
 		if (!playerId || isTransitionRunning) return;
 		const player = playersData.find(function(item) { return String(item._id) === String(playerId); });
 		if (!player) return;
-		showDetailInstant(player);
-		try { history.replaceState(null, "", makeProfileUrl(playerId)); } catch(e) {}
+
+		const profileUrl = makeProfileUrl(playerId);
+		if (sourceCard && sourceCard.getBoundingClientRect) {
+			await animateOpenDetail(player, sourceCard, profileUrl);
+			return;
+		}
+
+		window.location.href = profileUrl;
 	}
 
 	function closeDetail() {
@@ -3707,7 +3731,7 @@
 		const players = document.getElementById("players");
 		const fade = ensureScreenFade();
 
-		if (!gridView || !detailView || !players || !sourceCard) {
+		if (!gridView || !players || !sourceCard || (!redirectUrl && !detailView)) {
 			isTransitionRunning = false;
 			return;
 		}
@@ -3821,10 +3845,13 @@
 			const existingLayer = document.querySelector(".transition-layer");
 			if (existingLayer) existingLayer.remove();
 
-			document.getElementById("detailView").classList.remove("active", "ready");
-			document.getElementById("detailView").innerHTML = "";
+			const detailFallback = document.getElementById("detailView");
+			if (detailFallback) {
+				detailFallback.classList.remove("active", "ready");
+				detailFallback.innerHTML = "";
+			}
 
-			document.getElementById("gridView").classList.remove("hidden");
+			document.getElementById("gridView")?.classList.remove("hidden");
 			document.getElementById("players").classList.remove("transitioning");
 
 			Array.from(document.querySelectorAll(".card-faded, .card-selected-source")).forEach(function(card) {
@@ -4260,6 +4287,7 @@
 
 		try {
 			setStatus("Abrindo o Codex...", "Buscando registros do mundo de Velarion.");
+
 			const dataResultPromise = fetchFirstUsefulJson(DATA_URLS);
 			const extensionsPromise = fetchJsonSafe(EXTENSIONS_DATA_URL);
 			const serverPanelPromise = fetchJsonSafe(SERVER_PANEL_DATA_URL);
@@ -4289,10 +4317,12 @@
 			updateCounters();
 			hideSummonBoot();
 
-			const requestedSlug = getRequestedProfileSlug();
+			/* Compatibilidade com links antigos: aventureiros.html#profile-1. */
+			const requestedSlug = getProfileSlugFromHash();
 			const requestedPlayer = requestedSlug ? findPlayerBySlug(requestedSlug) : null;
-			if (requestedPlayer && document.getElementById("detailView")) {
-				showDetailInstant(requestedPlayer);
+			if (requestedPlayer) {
+				window.location.replace(makeProfileUrl(requestedPlayer._id));
+				return;
 			}
 
 		} catch (e) {
@@ -4406,12 +4436,9 @@
 
 	window.addEventListener("hashchange", function() {
 		const slug = getProfileSlugFromHash();
-		if (!slug) {
-			if (activePlayerId && !isTransitionRunning) animateCloseDetail();
-			return;
-		}
+		if (!slug) return;
 		const player = findPlayerBySlug(slug);
-		if (player && (!activePlayerId || String(activePlayerId) !== String(player._id))) showDetailInstant(player);
+		if (player) window.location.replace(makeProfileUrl(player._id));
 	});
 
 	const detailRoot = document.getElementById("detailView");

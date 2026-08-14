@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Velarion Lumen" />
+  <title>Velarion Lumen</title>
+
+  <script>
+    (function(){
+      var path = location.pathname || "/";
+      var match = path.match(/^(.*\/)users\/([^/]+)\/profile\.html$/i);
+
+      if (!match) {
+        document.documentElement.dataset.vl404 = "true";
+        return;
+      }
+
+      var base = match[1] || "/";
+      var id = match[2] || "";
+      try { id = decodeURIComponent(id); } catch (e) {}
+
+      document.documentElement.dataset.vlProfileRoute = "true";
+      window.__VL_PROFILE_ROUTE__ = { base: base, id: id };
+
+      function addCss(href, id) {
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        if (id) link.id = id;
+        document.head.appendChild(link);
+      }
+
+      function addScript(src, id) {
+        return new Promise(function(resolve, reject){
+          var script = document.createElement("script");
+          script.src = src;
+          script.async = false;
+          if (id) script.id = id;
+          script.onload = function(){ resolve(script); };
+          script.onerror = function(){ reject(new Error("Falha ao carregar " + src)); };
+          document.head.appendChild(script);
+        });
+      }
+
+      window.addEventListener("DOMContentLoaded", function(){
+        document.body.className = "vl-standalone-profile-page";
+        document.body.innerHTML =
+          '<button id="profileBackBtn" class="detail-close detail-back-btn" type="button" aria-label="Voltar para aventureiros">← Voltar</button>' +
+          '<main id="profileRoot" class="detail-view active ready" data-state="loading" aria-label="Perfil do aventureiro">' +
+            '<section class="vl-profile-page-state" role="status" aria-live="polite">' +
+              '<span>✦</span><strong>Abrindo registro</strong>' +
+              '<p>Sincronizando o perfil público do aventureiro.</p>' +
+            '</section>' +
+          '</main>';
+
+        addCss(base + "assets/css/style.css?v=18.4");
+        addCss(base + "assets/css/velarion-card.css?v=18.4");
+        addCss(base + "assets/css/velarion-profile.css?v=18.4");
+        addCss(base + "assets/css/velarion-card-fx.css?v=18.4", "velarion-card-fx-css");
+
+        addScript(base + "assets/js/velarion-card.js?v=18.4")
+          .then(function(){ return addScript(base + "assets/js/velarion-card-fx.js?v=18.4", "velarion-card-fx-js"); })
+          .then(function(){ return addScript(base + "assets/js/velarion-profile.js?v=18.4"); })
+          .then(function(){ return addScript(base + "assets/js/velarion-profile-page.js?v=18.4"); })
+          .catch(function(error){
+            console.error("[VelarionProfileRoute]", error);
+            var root = document.getElementById("profileRoot");
+            if (root) root.innerHTML = '<section class="vl-profile-page-state"><span>!</span><strong>Falha ao abrir o perfil</strong><p>Não foi possível carregar os arquivos do perfil.</p></section>';
+          });
+      }, { once: true });
+    })();
+  </script>
+
+  <style>
+    html,body{margin:0;min-height:100%;background:#070a18;color:#eef3ff;font-family:Arial,sans-serif}
+    html[data-vl-profile-route="true"] body.vl-standalone-profile-page{overflow:hidden}
+    .vl-profile-page-state{width:min(560px,calc(100% - 40px));min-height:220px;margin:14vh auto 0;display:grid;place-items:center;align-content:center;gap:10px;padding:32px;text-align:center;border-radius:28px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(15,20,42,.92),rgba(7,10,24,.94));box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.05);color:#eef3ff;box-sizing:border-box}
+    .vl-profile-page-state>span{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;font-size:1.45rem;background:rgba(111,102,255,.14);border:1px solid rgba(139,108,255,.34);box-shadow:0 0 28px rgba(111,102,255,.22)}
+    .vl-profile-page-state strong{font-size:1.15rem;letter-spacing:.02em}.vl-profile-page-state p{margin:0;max-width:440px;color:rgba(226,233,255,.68);line-height:1.55}
+    html[data-vl404="true"] body{display:grid;place-items:center;padding:24px;box-sizing:border-box}
+    html[data-vl404="true"] main{width:min(560px,100%);padding:32px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:#0d1226;text-align:center;box-sizing:border-box}
+    html[data-vl404="true"] a{color:#79dfff}
+  </style>
+</head>
+<body>
+  <main id="vl404Fallback">
+    <h1>Página não encontrada</h1>
+    <p>O caminho solicitado não existe no Velarion Lumen.</p>
+    <a id="vl404Home" href="./index.html">Voltar ao Hub</a>
+  </main>
+
+  <script>
+    (function(){
+      if (document.documentElement.dataset.vl404 !== "true") return;
+      var path = location.pathname || "/";
+      var link = document.getElementById("vl404Home");
+      if (!link) return;
+      var marker = path.indexOf("/users/");
+      var base = marker >= 0 ? path.slice(0, marker + 1) : path.replace(/[^/]*$/, "");
+      link.href = base + "index.html";
+    })();
+  </script>
+</body>
+</html>

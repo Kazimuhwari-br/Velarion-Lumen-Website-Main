@@ -74,7 +74,7 @@
 
 /* ==========================================================
    Velarion Lumen — Profile Detail Renderer
-   Arquivo separado para a tela #profile-{id}.
+   Arquivo separado para a rota /users/{id}/profile.html.
    Edite este arquivo para alterar apenas o perfil completo.
    ========================================================== */
 
@@ -153,8 +153,11 @@
 }
 
 .vl-profile-identity {
-  position: sticky;
-  top: 86px;
+  /* A coluna esquerda permanece na posição natural da página.
+     Não acompanha o scroll; assim, ao descer, o conteúdo inferior
+     da coluna direita ganha toda a área visível da tela. */
+  position: relative;
+  top: auto;
   display: grid;
   gap: 18px;
 }

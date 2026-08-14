@@ -8,6 +8,132 @@
   const DEFAULT_BANNER = "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80";
   const DEFAULT_CHARACTER = "";
 
+  /* ======================================================================
+     CARD FX LOADER — camada visual externa ao card oficial
+
+     Estrutura esperada do projeto:
+       assets/js/velarion-profile.js
+       assets/js/velarion-card-fx.js
+       assets/css/velarion-card-fx.css
+
+     O card oficial (velarion-card.js / velarion-card.css) permanece intacto.
+     ====================================================================== */
+  const PROFILE_SCRIPT_URL = (() => {
+    try {
+      const current = document.currentScript;
+      if (current && current.src) return new URL(current.src, location.href);
+
+      /* Fallback para casos em que document.currentScript não esteja disponível. */
+      const scripts = Array.from(document.scripts || []);
+      const profileScript = scripts.reverse().find((script) => /(?:^|\/)velarion-profile(?:\.min)?\.js(?:[?#]|$)/i.test(script.src || ""));
+      return profileScript?.src ? new URL(profileScript.src, location.href) : null;
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  function inheritProfileVersion(url) {
+    if (!url || !PROFILE_SCRIPT_URL?.search) return url;
+    try {
+      const parsed = new URL(url, location.href);
+      parsed.search = PROFILE_SCRIPT_URL.search;
+      return parsed.href;
+    } catch (e) {
+      return url;
+    }
+  }
+
+  function getProfileFxAssetUrl(type) {
+    try {
+      if (!PROFILE_SCRIPT_URL) {
+        return type === "css"
+          ? "../assets/css/velarion-card-fx.css"
+          : "../assets/js/velarion-card-fx.js";
+      }
+
+      if (type === "js") {
+        return inheritProfileVersion(new URL("velarion-card-fx.js", PROFILE_SCRIPT_URL).href);
+      }
+
+      /*
+       * velarion-profile.js mora em assets/js, enquanto folhas de estilo
+       * ficam em assets/css. Não trate o CSS como arquivo irmão do JS.
+       */
+      const scriptDir = new URL("./", PROFILE_SCRIPT_URL);
+      const inJsDirectory = /\/js\/$/i.test(scriptDir.pathname);
+      const cssUrl = inJsDirectory
+        ? new URL("../css/velarion-card-fx.css", scriptDir)
+        : new URL("velarion-card-fx.css", scriptDir);
+
+      return inheritProfileVersion(cssUrl.href);
+    } catch (e) {
+      return type === "css" ? "../css/velarion-card-fx.css" : "velarion-card-fx.js";
+    }
+  }
+
+  function ensureProfileCardFxAssets() {
+    const cssId = "velarion-card-fx-css";
+    const jsId = "velarion-card-fx-js";
+
+    if (!document.getElementById(cssId)) {
+      const link = document.createElement("link");
+      link.id = cssId;
+      link.rel = "stylesheet";
+      link.href = getProfileFxAssetUrl("css");
+      link.addEventListener("error", () => {
+        console.warn("[VelarionProfile] Não foi possível carregar velarion-card-fx.css em assets/css.");
+      }, { once: true });
+      document.head.appendChild(link);
+    }
+
+    if (window.VelarionCardFX) {
+      return Promise.resolve(window.VelarionCardFX);
+    }
+
+    if (window.__velarionCardFxLoadPromise) {
+      return window.__velarionCardFxLoadPromise;
+    }
+
+    window.__velarionCardFxLoadPromise = new Promise((resolve) => {
+      let script = document.getElementById(jsId);
+
+      const finish = () => resolve(window.VelarionCardFX || null);
+
+      if (!script) {
+        script = document.createElement("script");
+        script.id = jsId;
+        script.src = getProfileFxAssetUrl("js");
+        script.async = true;
+        script.addEventListener("load", finish, { once: true });
+        script.addEventListener("error", () => {
+          console.warn("[VelarionProfile] Não foi possível carregar velarion-card-fx.js em assets/js.");
+          finish();
+        }, { once: true });
+        document.head.appendChild(script);
+      } else {
+        script.addEventListener("load", finish, { once: true });
+        window.setTimeout(finish, 1200);
+      }
+    });
+
+    return window.__velarionCardFxLoadPromise;
+  }
+
+  function scheduleProfileCardFx(root) {
+    requestAnimationFrame(() => {
+      ensureProfileCardFxAssets().then((fx) => {
+        try {
+          fx?.refresh?.(root || document);
+        } catch (error) {
+          console.warn("[VelarionProfile] Falha ao inicializar efeitos do card.", error);
+        }
+      });
+    });
+  }
+
+  /* Carrega o módulo uma vez; ele observa cards que forem montados depois. */
+  ensureProfileCardFxAssets();
+
   function pick(ctx, name, fallback) {
     return ctx && typeof ctx[name] === "function" ? ctx[name] : fallback;
   }
@@ -725,11 +851,13 @@ function buildStatusVisualCard(player, ctx) {
         const html = renderer.renderPlayerCard(player, 0, buildProfileCardContext(ctx));
         if (html) {
           setTimeout(function() {
+            const profileCardPort = document.querySelector(".vl-profile-card-port");
             try {
               if (renderer && typeof renderer.hydrate === "function") {
-                renderer.hydrate(document.querySelector(".vl-profile-card-port") || document);
+                renderer.hydrate(profileCardPort || document);
               }
             } catch (e) {}
+            scheduleProfileCardFx(profileCardPort || document);
           }, 0);
           return `<div class="vl-profile-card-port" data-official-card-port="true" aria-label="Card visual de ${escapeHtml(displayNamePlain || "Perfil")}">${html}</div>`;
         }
