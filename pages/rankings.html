@@ -38,6 +38,7 @@
   <link rel="preload" as="image" href="../assets/img/loading/background1.png" fetchpriority="high" />
   <link rel="stylesheet" href="../assets/css/style.css?v=18.5-rank-webm-profile" />
   <link rel="stylesheet" href="../assets/css/velarion-profile.css?v=nickname-colors-server-panel-v17" />
+  <link rel="stylesheet" href="../assets/css/velarion-rankings.css?v=world-championship-v8" />
 </head>
 <body data-page="rankings" data-vl-data-page="rankings">
 
@@ -104,19 +105,32 @@
       <p>O ranking antigo foi movido para uma página própria, usando a pontuação registrada dentro da interface nova.</p>
     </section>
 
-    <section class="content-block reveal vl-rankings-page" data-vl-firebase>
-      <div class="block-head">
-        <div>
+    <section class="content-block reveal vl-rankings-page" data-vl-firebase data-vl-rankings-module>
+      <div class="vl-ranking-panel-head">
+        <div class="vl-ranking-panel-copy">
           <span class="section-kicker">Ranking Panel</span>
-          <h2>Top da Comunidade</h2>
-          <p>Classificação gerada a partir de <code>stats.progression.pts</code>, nível e XP dos perfis carregados.</p>
+          <h2>World Ranking</h2>
+          <p>Classificação oficial dos aventureiros de Velarion Lumen, com destaque para os maiores resultados da comunidade.</p>
+        </div>
+
+        <div class="vl-ranking-panel-summary" aria-label="Resumo do ranking">
+          <article class="vl-ranking-summary-card">
+            <span aria-hidden="true">♛</span>
+            <div>
+              <small>Maior pontuação</small>
+              <strong data-vl-top-score>--</strong>
+            </div>
+          </article>
+          <article class="vl-ranking-summary-card">
+            <span aria-hidden="true">✦</span>
+            <div>
+              <small>Maior nível</small>
+              <strong data-vl-top-level>--</strong>
+            </div>
+          </article>
         </div>
       </div>
-      <div class="portal-grid data-metric-grid compact-metrics">
-        <article class="portal-card data-metric"><span>👥</span><strong data-vl-total-players>--</strong><small>Perfis carregados</small></article>
-        <article class="portal-card data-metric"><span>♛</span><strong data-vl-top-score>--</strong><small>Maior pontuação</small></article>
-        <article class="portal-card data-metric"><span>✦</span><strong data-vl-top-level>--</strong><small>Maior nível</small></article>
-      </div>
+
       <div id="rankingsList" class="vl-rankings-list"><div class="empty">Carregando rankings...</div></div>
     </section>
   </main>
@@ -133,5 +147,6 @@
 
   <script src="../assets/js/velarion-profile.js?v=nickname-colors-server-panel-v17" defer></script>
   <script src="../assets/js/main.js?v=18.5-rank-webm-profile" defer></script>
+  <script src="../assets/js/velarion-rankings.js?v=world-championship-v8" defer></script>
 </body>
 </html>
