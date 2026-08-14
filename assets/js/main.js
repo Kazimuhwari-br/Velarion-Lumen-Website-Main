@@ -1203,7 +1203,35 @@
 	}
 
 	function getCharacter(player) {
-		return getMediaUrl(player?.theme?.card_embed?.character_image);
+		const value = player?.theme?.card_embed?.character_image;
+		let raw = "";
+
+		if (typeof value === "string") {
+			raw = value.trim();
+		} else if (value && typeof value === "object" && !Array.isArray(value)) {
+			raw = cleanValue(value.url || value.src || value.image || value.path || "");
+		}
+
+		if (!raw) return "";
+		if (/^data:(?:image|video)\//i.test(raw)) return raw;
+		return getMediaUrl(raw);
+	}
+
+	function isWebMMedia(value) {
+		const source = String(value || "").trim();
+		if (!source) return false;
+		return /^data:video\/webm(?:;|,)/i.test(source) || /\.webm(?:$|[?#])/i.test(source);
+	}
+
+	function renderRankingCharacterMedia(source, displayName) {
+		const media = String(source || "").trim();
+		if (!media) return "";
+
+		if (isWebMMedia(media)) {
+			return `<video class="vl-rank-feature-character vl-rank-feature-character--webm" data-media-type="video" src="${escapeHtml(media)}" autoplay loop muted playsinline preload="auto" aria-hidden="true" tabindex="-1" referrerpolicy="no-referrer" onerror="this.remove()"></video>`;
+		}
+
+		return `<img class="vl-rank-feature-character" data-media-type="image" src="${escapeHtml(media)}" alt="Character de ${escapeHtml(displayName || "Jogador")}" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.remove()">`;
 	}
 
 	function hasBanner(player) {
@@ -3262,8 +3290,9 @@
 		const progress = Math.max(0, Math.min(100, getXPPercent(player)));
 		const xpText = escapeHtml(formatXPText(player));
 		const role = escapeHtml(getPrimaryRoleLabel(player, "Global"));
+		const profileUrl = makeProfileUrl(player._id);
 		return `
-			<article class="vl-rank-row" data-player-id="${escapeHtml(player._id)}" tabindex="0" style="--rank-accent:${color};--rank-accent-soft:${hexToRgba(color,.18)};--rank-accent-line:${hexToRgba(color,.42)}">
+			<a class="vl-rank-row" data-player-id="${escapeHtml(player._id)}" href="${escapeHtml(profileUrl)}" aria-label="Abrir perfil de ${displayName}" style="--rank-accent:${color};--rank-accent-soft:${hexToRgba(color,.18)};--rank-accent-line:${hexToRgba(color,.42)}">
 				<div class="vl-rank-pos">${rankNo}</div>
 				<div class="vl-rank-user">
 					<img class="vl-rank-avatar" src="${escapeHtml(avatar)}" alt="Avatar de ${username}" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_AVATAR)}'">
@@ -3274,7 +3303,7 @@
 				<div class="vl-rank-role">${role}</div>
 				<div class="vl-rank-score">${formatRankingPoints(score)}</div>
 				<div class="vl-rank-medal">✦</div>
-			</article>
+			</a>
 		`;
 	}
 
@@ -3307,25 +3336,26 @@
 		const topOnline = isPlayerOnline(top);
 		const topOnlineText = topOnline ? "Online" : "Offline";
 		const rows = ranked.slice(0, 10).map(buildRankingPlayerCard).join("");
+		const topProfileUrl = makeProfileUrl(top._id);
 
 		rankingList.className = "vl-rankings-experience";
 		rankingList.innerHTML = `
 			<div class="vl-rank-hero" style="--rank-accent:${topColor};--rank-accent-soft:${hexToRgba(topColor,.18)};--rank-accent-line:${hexToRgba(topColor,.42)}">
-				<section class="vl-rank-feature" data-player-id="${escapeHtml(top._id)}" tabindex="0">
+				<a class="vl-rank-feature" data-player-id="${escapeHtml(top._id)}" href="${escapeHtml(topProfileUrl)}" aria-label="Abrir perfil de ${topName}">
 					<img class="vl-rank-feature-bg" src="${escapeHtml(topBanner)}" alt="Banner de ${topName}" loading="eager" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_BANNER)}'">
-					${topCharacter ? `<img class="vl-rank-feature-character" src="${escapeHtml(topCharacter)}" alt="Character de ${topName}" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.remove()">` : ""}
+					${renderRankingCharacterMedia(topCharacter, stripMinecraftCodes(getDisplayName(top)) || "Jogador")}
 					<div class="vl-rank-feature-avatar"><img src="${escapeHtml(topAvatar)}" alt="Avatar de ${topUser}" loading="lazy" onerror="this.onerror=null; this.src='${escapeHtml(DEFAULT_PLAYER_AVATAR)}'"></div>
 					<div class="vl-rank-feature-name"><span>#01</span><strong>${topName}${buildVerifiedEmblemHtml(top)}</strong></div>
-				</section>
+				</a>
 
-				<section class="vl-rank-profile" data-player-id="${escapeHtml(top._id)}" tabindex="0">
+				<a class="vl-rank-profile" data-player-id="${escapeHtml(top._id)}" href="${escapeHtml(topProfileUrl)}" aria-label="Abrir perfil de ${topName}">
 					<span class="vl-rank-kicker">Perfil Destaque</span>
 					<div class="vl-rank-profile-title"><h3>${topName}</h3><span>@${topUser}</span><b class="${topOnline ? 'is-online' : 'is-offline'}">${topOnlineText}</b></div>
 					<p>${topTitle}</p>
 					<div class="vl-rank-tags"><span>${topRole}</span><span>Global</span><span>VLS</span></div>
 					<div class="vl-rank-mini-stats"><div><small>Nível</small><strong>${topLevel || "--"}</strong></div><div><small>XP</small><strong>${topXPText}</strong></div><div><small>Rank</small><strong>#01</strong></div></div>
 					<div class="vl-rank-total"><small>Pontuação Global</small><strong>${formatRankingPoints(topScore)}</strong></div>
-				</section>
+				</a>
 
 				<section class="vl-rank-trophy">
 					<div class="vl-rank-trophy-head"><span>Top Global</span><select aria-label="Categoria do ranking"><option>Global</option><option>Nível</option><option>XP</option></select></div>
@@ -3679,7 +3709,17 @@
 		if (!player) return;
 
 		const profileUrl = makeProfileUrl(playerId);
-		if (sourceCard && sourceCard.getBoundingClientRect) {
+
+		/* A animação antiga depende do grid #players da página de Aventureiros.
+		   Rankings, Hub e outras páginas não possuem esse grid; nesses casos,
+		   navega diretamente para a rota standalone do perfil. */
+		const playersRoot = document.getElementById("players");
+		if (!playersRoot || !sourceCard || !playersRoot.contains(sourceCard)) {
+			window.location.href = profileUrl;
+			return;
+		}
+
+		if (sourceCard.getBoundingClientRect) {
 			await animateOpenDetail(player, sourceCard, profileUrl);
 			return;
 		}
@@ -4407,6 +4447,7 @@
 		rankingsRoot.addEventListener("click", function(event) {
 			const item = event.target.closest("[data-player-id]");
 			if (!item || isTransitionRunning) return;
+			event.preventDefault();
 			openDetail(item.dataset.playerId, item);
 		});
 		rankingsRoot.addEventListener("keydown", function(event) {
