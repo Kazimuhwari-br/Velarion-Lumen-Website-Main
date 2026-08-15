@@ -534,3 +534,229 @@
   38% { opacity: 1; transform: translate(-50%, -50%) scale(1.028); }
   100% { opacity: .74; transform: translate(-50%, -50%) scale(1); }
 }
+
+/* ======================================================================
+   v4 — FLUTUAÇÃO EXCLUSIVA DO VELARION PROFILE
+
+   A carta oficial e as camadas FX sobem/descem juntas sem alterar a
+   geometria da página. O seletor exige .vl-profile-card-port, portanto
+   este comportamento NÃO afeta cards usados em listas, previews ou
+   qualquer outra área do site.
+   ====================================================================== */
+
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] {
+  --vfx-float-distance: 7px;
+  --vfx-float-duration: 5.4s;
+}
+
+/*
+   `translate` é uma propriedade de transformação independente de
+   `transform`. Assim preservamos o transform interno do FX (que posiciona
+   e faz o parallax) e acrescentamos apenas a flutuação vertical.
+*/
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-slot,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx-front {
+  animation: vl-vfx-profile-float var(--vfx-float-duration) cubic-bezier(.45, .05, .55, .95) infinite;
+  will-change: translate;
+}
+
+/* Pequena defasagem visual do brilho traseiro, sem desalinhá-lo da carta. */
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx {
+  animation-timing-function: cubic-bezier(.42, .02, .58, .98);
+}
+
+/*
+   A plataforma luminosa compensa a subida do grupo. Na prática ela fica
+   quase parada enquanto a carta sobe, reforçando a sensação de suspensão.
+*/
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] .vl-card-fx__floor {
+  animation:
+    vl-vfx-floor 3.8s ease-in-out infinite,
+    vl-vfx-profile-floor-anchor var(--vfx-float-duration) cubic-bezier(.45, .05, .55, .95) infinite;
+  will-change: transform, translate, opacity;
+}
+
+/* Uma sombra ambiente discreta cresce quando a carta sobe. */
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: var(--vfx-card-center-x, 50%);
+  top: calc(var(--vfx-card-center-y, 260px) + var(--vfx-half-card-height, 260px) + 28px);
+  width: calc(var(--vfx-card-width, 360px) * .70);
+  height: 28px;
+  translate: -50% 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--vfx-color) 19%, rgba(0,0,0,.36)),
+    rgba(0,0,0,.18) 42%,
+    transparent 72%
+  );
+  filter: blur(9px);
+  opacity: .52;
+  animation: vl-vfx-profile-shadow var(--vfx-float-duration) cubic-bezier(.45, .05, .55, .95) infinite;
+}
+
+@keyframes vl-vfx-profile-float {
+  0%, 100% {
+    translate: 0 0;
+  }
+  22% {
+    translate: 0 calc(var(--vfx-float-distance) * -.42);
+  }
+  50% {
+    translate: 0 calc(var(--vfx-float-distance) * -1);
+  }
+  78% {
+    translate: 0 calc(var(--vfx-float-distance) * -.35);
+  }
+}
+
+@keyframes vl-vfx-profile-floor-anchor {
+  0%, 100% {
+    translate: 0 0;
+  }
+  22% {
+    translate: 0 calc(var(--vfx-float-distance) * .42);
+  }
+  50% {
+    translate: 0 var(--vfx-float-distance);
+  }
+  78% {
+    translate: 0 calc(var(--vfx-float-distance) * .35);
+  }
+}
+
+@keyframes vl-vfx-profile-shadow {
+  0%, 100% {
+    scale: 1;
+    opacity: .52;
+    filter: blur(9px);
+  }
+  50% {
+    scale: .84;
+    opacity: .30;
+    filter: blur(11px);
+  }
+}
+
+/* Mobile: movimento menor para não parecer que o card "pula". */
+@media (max-width: 520px) {
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] {
+    --vfx-float-distance: 4px;
+    --vfx-float-duration: 5.8s;
+  }
+}
+
+/* Acessibilidade: a carta continua estática quando o sistema reduz movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-slot,
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx,
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx-front,
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] .vl-card-fx__floor,
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"]::after {
+    animation: none !important;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* ======================================================================
+   Velarion Card FX V5 — flutuação 3D por ARFAGEM (pitch)
+
+   O conjunto inteiro (.vl-card + FX) inclina suavemente no eixo X entre
+   -30deg e +30deg dentro do velarion-profile. Não altera velarion-card.css
+   nem velarion-card.js; somente o host oficial do perfil recebe o movimento.
+   ====================================================================== */
+
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] {
+  --vfx-pitch-angle: 30deg;
+  --vfx-pitch-duration: 8s;
+  --vfx-pitch-lift: 9px;
+  --vfx-pitch-perspective: 1150px;
+
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: vl-vfx-profile-pitch-float var(--vfx-pitch-duration) cubic-bezier(.45,.05,.55,.95) infinite;
+}
+
+/*
+   V4 fazia cada camada subir separadamente. Na V5 isso é desligado: agora
+   o PORT inteiro se move, então card, borda, partículas, cristais e aura
+   permanecem perfeitamente presos uns aos outros durante a rotação 3D.
+*/
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-slot,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx-front {
+  animation: none !important;
+  translate: 0 0 !important;
+}
+
+/* A plataforma volta à animação própria do FX, sem compensação da V4. */
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] .vl-card-fx__floor {
+  animation: vl-vfx-floor 3.8s ease-in-out infinite;
+  translate: 0 0;
+}
+
+/* Remove a sombra auxiliar da flutuação vertical antiga. */
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"]::after {
+  display: none !important;
+}
+
+@keyframes vl-vfx-profile-pitch-float {
+  0%, 100% {
+    transform:
+      perspective(var(--vfx-pitch-perspective))
+      translate3d(0, 3px, 0)
+      rotateX(calc(var(--vfx-pitch-angle) * -1));
+  }
+
+  25% {
+    transform:
+      perspective(var(--vfx-pitch-perspective))
+      translate3d(0, calc(var(--vfx-pitch-lift) * -1), 0)
+      rotateX(0deg);
+  }
+
+  50% {
+    transform:
+      perspective(var(--vfx-pitch-perspective))
+      translate3d(0, 3px, 0)
+      rotateX(var(--vfx-pitch-angle));
+  }
+
+  75% {
+    transform:
+      perspective(var(--vfx-pitch-perspective))
+      translate3d(0, calc(var(--vfx-pitch-lift) * -1), 0)
+      rotateX(0deg);
+  }
+}
+
+/* Mantém os elementos internos em uma composição 3D estável. */
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-slot,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx,
+.vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] > .vl-card-fx-front {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Em telas pequenas continua 3D, mas com um pouco menos de deslocamento. */
+@media (max-width: 520px) {
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] {
+    --vfx-pitch-lift: 5px;
+    --vfx-pitch-duration: 8.6s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-profile-card-port[data-official-card-port="true"][data-vfx-ready="true"] {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+

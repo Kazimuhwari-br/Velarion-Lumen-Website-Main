@@ -74,7 +74,7 @@
 
 /* ==========================================================
    Velarion Lumen — Profile Detail Renderer
-   Arquivo separado para a tela #profile-{id}.
+   Arquivo separado para a rota /users/{id}/profile.html.
    Edite este arquivo para alterar apenas o perfil completo.
    ========================================================== */
 

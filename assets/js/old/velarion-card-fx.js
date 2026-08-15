@@ -7,7 +7,7 @@
    - pausa quando sai da viewport;
    - respeita prefers-reduced-motion;
    - acompanha em tempo real a cor visual do card;
-   - v3: acompanha também tamanho e centro reais renderizados da carta.
+   - v4: mantém a geometria v3; a flutuação exclusiva do profile é controlada pelo CSS.
    ====================================================================== */
 (function() {
   "use strict";
