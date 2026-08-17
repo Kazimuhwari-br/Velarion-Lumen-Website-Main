@@ -1876,7 +1876,7 @@ function buildStatusVisualCard(player, ctx) {
   /* V20.43 — cópia local garantida do website_panel enviado pelo usuário.
      O Firebase continua podendo sobrescrever/atualizar os dados quando acessível,
      mas o perfil não depende de CORS/file:// para obter as cores corretas. */
-  const WEBSITE_PANEL_EMBEDDED = {"social_fallback":{"custom":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link personalizado","color":"#8B5CF6","color2":"#EC4899","emblem":"","glow":"#A855F7","gradient":"linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)","icon":"","intensity":0.28,"label":"Personalizado","particles":true,"shimmer":true,"title":"Link personalizado"}},"default":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link externo","color":"#6D7CFF","color2":"#9B8CFF","emblem":"","glow":"#7B86FF","gradient":"linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)","icon":"","intensity":0.25,"label":"Website","particles":false,"shimmer":true,"title":"Link externo"}},"discord_invite":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Entre no servidor pelo Discord","color":"#5865F2","color2":"#7289DA","emblem":"","glow":"#5865F2","gradient":"linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)","icon":"","intensity":0.3,"label":"Discord","particles":true,"shimmer":true,"title":"Convite do Discord"}},"twitch":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe as transmissões ao vivo","color":"#9146FF","color2":"#C084FC","emblem":"","glow":"#A970FF","gradient":"linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)","icon":"","intensity":0.32,"label":"Twitch","particles":true,"shimmer":true,"title":"Canal da Twitch"}},"xbox":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Perfil e atividades no Xbox","color":"#107C10","color2":"#52B043","emblem":"","glow":"#2ECC40","gradient":"linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)","icon":"","intensity":0.28,"label":"Xbox","particles":true,"shimmer":false,"title":"Perfil do Xbox"}},"youtube":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe os vídeos e conteúdos","color":"#FF0033","color2":"#FF5A5F","emblem":"","glow":"#FF0033","gradient":"linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)","icon":"","intensity":0.3,"label":"YouTube","particles":false,"shimmer":true,"title":"Canal do YouTube"}},"twitter":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.25,"label":"X / Twitter","particles":false,"shimmer":true,"title":"X / Twitter"}},"x":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.25,"label":"X / Twitter","particles":false,"shimmer":true,"title":"X / Twitter"}}}};
+  const WEBSITE_PANEL_EMBEDDED = {"social_fallback":{"custom":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link personalizado","color":"#8B5CF6","color2":"#EC4899","emblem":"","glow":"#A855F7","gradient":"linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)","icon":"","intensity":0.28,"label":"Personalizado","particles":true,"shimmer":true,"title":"Link personalizado"}},"default":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link externo","color":"#6D7CFF","color2":"#9B8CFF","emblem":"","glow":"#7B86FF","gradient":"linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)","icon":"","intensity":0.25,"label":"Website","particles":false,"shimmer":true,"title":"Link externo"}},"discord_invite":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Entre no servidor pelo Discord","color":"#5865F2","color2":"#7289DA","emblem":"","glow":"#5865F2","gradient":"linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)","icon":"","intensity":0.3,"label":"Discord","particles":true,"shimmer":true,"title":"Convite do Discord"}},"twitch":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe as transmissões ao vivo","color":"#9146FF","color2":"#C084FC","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/twitch_icon.png","glow":"#A970FF","gradient":"linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)","icon":"","intensity":0.32,"label":"Twitch","particles":true,"shimmer":true,"title":"Canal da Twitch"}},"twitter":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"x":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"xbox":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Perfil e atividades no Xbox","color":"#107C10","color2":"#52B043","emblem":"","glow":"#2ECC40","gradient":"linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)","icon":"","intensity":0.28,"label":"Xbox","particles":true,"shimmer":false,"title":"Perfil do Xbox"}},"youtube":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe os vídeos e conteúdos","color":"#FF0033","color2":"#FF5A5F","emblem":"","glow":"#FF0033","gradient":"linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)","icon":"","intensity":0.3,"label":"YouTube","particles":false,"shimmer":true,"title":"Canal do YouTube"}}}};
 
   let websitePanelCache = null;
   let websitePanelPromise = null;
@@ -1895,54 +1895,115 @@ function buildStatusVisualCard(player, ctx) {
     return candidates.find((item) => item && typeof item === "object" && !Array.isArray(item)) || WEBSITE_PANEL_EMBEDDED;
   }
 
+  function loadWebsitePanelJsonp() {
+    return new Promise((resolve, reject) => {
+      const callbackName =
+        `__vlWebsitePanelJsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+      const script = document.createElement("script");
+      const timeout = window.setTimeout(() => {
+        cleanup();
+        reject(new Error("website_panel JSONP timeout"));
+      }, 8000);
+
+      const cleanup = () => {
+        window.clearTimeout(timeout);
+        try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+        script.remove();
+      };
+
+      window[callbackName] = (data) => {
+        cleanup();
+        resolve(data && typeof data === "object" ? data : {});
+      };
+
+      script.onerror = () => {
+        cleanup();
+        reject(new Error("website_panel JSONP load failed"));
+      };
+
+      script.async = true;
+      script.src =
+        `${WEBSITE_PANEL_URL}?callback=${encodeURIComponent(callbackName)}&v=${Date.now()}`;
+      document.head.appendChild(script);
+    });
+  }
+
   async function loadWebsitePanel(ctx) {
-    const local = getWebsitePanelFromContext(ctx) || WEBSITE_PANEL_EMBEDDED;
-
-    if (local && local !== WEBSITE_PANEL_EMBEDDED) {
-      websitePanelCache = local;
-      return local;
-    }
-
-    if (websitePanelCache) return websitePanelCache;
     if (websitePanelPromise) return websitePanelPromise;
 
-    websitePanelPromise = fetch(WEBSITE_PANEL_URL, {
-      method: "GET",
-      mode: "cors",
-      cache: "no-store",
-      credentials: "omit",
-      headers: { "Accept": "application/json" }
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error(`website_panel HTTP ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
-        const remote =
-          data && typeof data === "object" && !Array.isArray(data) ? data : {};
+    const contextPanel = (() => {
+      const candidates = [
+        ctx?.websitePanel,
+        ctx?.website_panel,
+        ctx?.extensionsData?.website_panel,
+        ctx?.extensionsData?.websitePanel,
+        window.VelarionWebsitePanel,
+        window.website_panel,
+        websitePanelCache
+      ];
 
-        websitePanelCache = {
-          ...WEBSITE_PANEL_EMBEDDED,
-          ...remote,
-          social_fallback: {
-            ...(WEBSITE_PANEL_EMBEDDED.social_fallback || {}),
-            ...(remote.social_fallback || {})
-          }
-        };
+      return candidates.find((item) =>
+        item &&
+        typeof item === "object" &&
+        !Array.isArray(item) &&
+        item !== WEBSITE_PANEL_EMBEDDED
+      ) || {};
+    })();
 
+    const mergePanel = (remoteData) => {
+      const remote =
+        remoteData && typeof remoteData === "object" && !Array.isArray(remoteData)
+          ? remoteData
+          : {};
+
+      return {
+        ...WEBSITE_PANEL_EMBEDDED,
+        ...contextPanel,
+        ...remote,
+        social_fallback: {
+          ...(WEBSITE_PANEL_EMBEDDED.social_fallback || {}),
+          ...(contextPanel.social_fallback || {}),
+          ...(remote.social_fallback || {})
+        }
+      };
+    };
+
+    websitePanelPromise = (async () => {
+      try {
+        const response = await fetch(`${WEBSITE_PANEL_URL}?v=${Date.now()}`, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-store",
+          credentials: "omit",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error(`website_panel HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        websitePanelCache = mergePanel(data);
         return websitePanelCache;
-      })
-      .catch((error) => {
-        console.warn(
-          "[VelarionProfile] website_panel remoto indisponível; usando cópia local.",
-          error
-        );
-        websitePanelCache = WEBSITE_PANEL_EMBEDDED;
-        return websitePanelCache;
-      })
-      .finally(() => {
+      } catch (fetchError) {
+        try {
+          const data = await loadWebsitePanelJsonp();
+          websitePanelCache = mergePanel(data);
+          return websitePanelCache;
+        } catch (jsonpError) {
+          console.warn(
+            "[VelarionProfile] website_panel remoto indisponível; usando dados locais.",
+            { fetchError, jsonpError }
+          );
+
+          websitePanelCache = mergePanel({});
+          return websitePanelCache;
+        }
+      } finally {
         websitePanelPromise = null;
-      });
+      }
+    })();
 
     return websitePanelPromise;
   }
@@ -2193,6 +2254,8 @@ function buildStatusVisualCard(player, ctx) {
           const title = cleanValue(website.title || website.label) || socialDefaultTitle(entry.key);
           const label = cleanValue(website.label) || title;
           const bio = cleanValue(website.bio) || `Acesse ${label}.`;
+          /* V20.51 — cada mídia lê SOMENTE o próprio campo.
+             Nunca reutilizar icon como emblem/banner, nem qualquer outra combinação. */
           const icon = cleanValue(website.icon);
           const emblem = cleanValue(website.emblem);
           const banner = cleanValue(website.banner);
@@ -2220,7 +2283,7 @@ function buildStatusVisualCard(player, ctx) {
           ].filter(Boolean).join(" ");
 
           const inner = `
-            ${banner ? `<img class="vl-social-clan-card__banner" src="${esc(banner)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
+            ${banner ? `<img class="vl-social-clan-card__banner" data-social-media-role="banner" src="${esc(banner)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
             <div class="vl-social-clan-card__overlay" aria-hidden="true"></div>
 
             ${aura ? `<span class="vl-social-clan-card__aura" aria-hidden="true"></span>` : ""}
@@ -2235,7 +2298,7 @@ function buildStatusVisualCard(player, ctx) {
 
               <span class="vl-social-clan-card__icon">
                 ${icon
-                  ? `<img src="${esc(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+                  ? `<img data-social-media-role="icon" src="${esc(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
                   : `<span aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
                 }
               </span>
@@ -2248,7 +2311,7 @@ function buildStatusVisualCard(player, ctx) {
             </div>
 
             ${emblem
-              ? `<img class="vl-social-clan-card__emblem" src="${esc(emblem)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+              ? `<img class="vl-social-clan-card__emblem" data-social-media-role="emblem" src="${esc(emblem)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
               : `<span class="vl-social-clan-card__ghost-emblem" aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
             }
 
@@ -2263,7 +2326,10 @@ function buildStatusVisualCard(player, ctx) {
                  rel="noopener noreferrer"
                  data-social-key="${esc(entry.key)}"
                  data-social-type="${esc(type)}"
-                 data-social-visual="${esc(resolved?.key || "default")}"
+                 data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(icon || emblem || banner ? "website_panel" : "fallback")}"
+                 data-social-has-icon="${icon ? "1" : "0"}"
+                 data-social-has-emblem="${emblem ? "1" : "0"}"
+                 data-social-has-banner="${banner ? "1" : "0"}"
                  style="${style}">
                 ${inner}
               </a>`;
@@ -2273,7 +2339,10 @@ function buildStatusVisualCard(player, ctx) {
             <article class="${classes}"
                      data-social-key="${esc(entry.key)}"
                      data-social-type="${esc(type)}"
-                     data-social-visual="${esc(resolved?.key || "default")}"
+                     data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(icon || emblem || banner ? "website_panel" : "fallback")}"
+                 data-social-has-icon="${icon ? "1" : "0"}"
+                 data-social-has-emblem="${emblem ? "1" : "0"}"
+                 data-social-has-banner="${banner ? "1" : "0"}"
                      style="${style}">
               ${inner}
             </article>`;
@@ -2310,9 +2379,8 @@ function buildStatusVisualCard(player, ctx) {
   }
 
   function hydrateWebsiteSocialPanel(player, ctx, h) {
-    const local = getWebsitePanelFromContext(ctx);
-    if (local && Object.keys(getSocialFallbackRoot(local)).length) return;
-
+    /* V20.45 — sempre atualiza website_panel pelo Firebase.
+       A cópia embutida continua servindo apenas para o primeiro render/fallback. */
     setTimeout(async () => {
       const roots = document.querySelectorAll("[data-vl-website-social-panel]");
       if (!roots.length) return;
@@ -2325,6 +2393,9 @@ function buildStatusVisualCard(player, ctx) {
 
         content.innerHTML = buildWebsiteSocialCardsHtml(player, panel, h);
         root.dataset.panelState = "ready";
+        root.dataset.panelSource = websitePanelCache === WEBSITE_PANEL_EMBEDDED
+          ? "embedded"
+          : "remote";
       });
     }, 0);
   }

@@ -12723,3 +12723,497 @@ a.vl-social-clan-card:focus-visible {
     opacity: .06;
   }
 }
+
+
+/* ============================================================
+   V20.45 — WEBSITE SOCIAL MEDIA FIX
+   icon / emblem / banner
+   ============================================================ */
+
+/* O banner e o emblem estavam com z-index negativo nas versões anteriores.
+   Como o card possui background próprio + isolation, isso podia escondê-los. */
+.vl-social-clan-card {
+  isolation: isolate !important;
+}
+
+.vl-social-clan-card__banner {
+  z-index: 0 !important;
+  opacity: .42 !important;
+  pointer-events: none !important;
+}
+
+.vl-social-clan-card__overlay {
+  z-index: 1 !important;
+}
+
+.vl-social-clan-card__aura {
+  z-index: 2 !important;
+}
+
+.vl-social-clan-card__particles {
+  z-index: 3 !important;
+}
+
+.vl-social-clan-card__emblem {
+  z-index: 4 !important;
+  opacity: .22 !important;
+  pointer-events: none !important;
+}
+
+.vl-social-clan-card__ghost-emblem {
+  z-index: 2 !important;
+}
+
+.vl-social-clan-card__shimmer {
+  z-index: 5 !important;
+}
+
+.vl-social-clan-card__left,
+.vl-social-clan-card__main,
+.vl-social-clan-card__open {
+  position: relative !important;
+  z-index: 6 !important;
+}
+
+/* website.icon */
+.vl-social-clan-card__icon img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 6px;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  border-radius: inherit;
+}
+
+/* website.banner */
+.vl-social-clan-card__banner {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+/* website.emblem */
+.vl-social-clan-card__emblem {
+  right: 22px !important;
+  top: 50% !important;
+  width: 118px !important;
+  height: 82px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Mantém legibilidade quando existir banner. */
+.vl-social-clan-card:has(.vl-social-clan-card__banner) .vl-social-clan-card__overlay {
+  background:
+    linear-gradient(90deg,
+      rgba(7,9,17,.82) 0%,
+      rgba(7,9,17,.52) 50%,
+      rgba(7,9,17,.70) 100%),
+    var(--vl-social-gradient) !important;
+  opacity: .62 !important;
+}
+
+
+/* ============================================================
+   V20.47 — CONEXÕES MAIS COMPACTAS
+   Remove o espaço vertical excessivo dentro dos cards sociais.
+   ============================================================ */
+
+.vl-social-clan-list {
+  gap: 10px !important;
+}
+
+.vl-social-clan-card {
+  min-height: 88px !important;
+  grid-template-columns: 62px minmax(0,1fr) !important;
+  gap: 14px !important;
+  padding: 11px 66px 11px 14px !important;
+  align-items: center !important;
+}
+
+.vl-social-clan-card__left {
+  gap: 5px !important;
+}
+
+.vl-social-clan-card__tag {
+  font-size: .46rem !important;
+}
+
+.vl-social-clan-card__icon {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 13px !important;
+}
+
+.vl-social-clan-card__main strong {
+  font-size: .94rem !important;
+}
+
+.vl-social-clan-card__main p {
+  margin-top: 3px !important;
+  font-size: .58rem !important;
+}
+
+.vl-social-clan-card__main small {
+  margin-top: 5px !important;
+  font-size: .53rem !important;
+}
+
+.vl-social-clan-card__emblem {
+  width: 92px !important;
+  height: 64px !important;
+  right: 18px !important;
+}
+
+.vl-social-clan-card__ghost-emblem {
+  width: 76px !important;
+  height: 56px !important;
+  right: 18px !important;
+  font-size: 2.9rem !important;
+}
+
+.vl-social-clan-card__open {
+  right: 15px !important;
+  bottom: 10px !important;
+}
+
+.vl-profile-panel--social-links {
+  padding: 18px 22px 20px !important;
+}
+
+.vl-social-links-heading {
+  min-height: 46px !important;
+  margin-bottom: 12px !important;
+}
+
+@media (max-width: 720px) {
+  .vl-social-clan-card {
+    min-height: 82px !important;
+    grid-template-columns: 54px minmax(0,1fr) !important;
+    padding: 10px 48px 10px 12px !important;
+  }
+
+  .vl-social-clan-card__icon {
+    width: 46px !important;
+    height: 46px !important;
+  }
+}
+
+
+/* ============================================================
+   V20.48 — SOCIAL LINK ARROW + MEDIA
+   ============================================================ */
+
+/* A seta ↗ não ocupa mais uma célula/coluna do grid. */
+.vl-social-clan-card__open {
+  position: absolute !important;
+  z-index: 9 !important;
+  left: auto !important;
+  right: 15px !important;
+  top: auto !important;
+  bottom: 10px !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* Garante que o grid só tenha ícone + conteúdo principal. */
+.vl-social-clan-card {
+  grid-template-areas: "social-icon social-main" !important;
+}
+
+.vl-social-clan-card__left {
+  grid-area: social-icon !important;
+}
+
+.vl-social-clan-card__main {
+  grid-area: social-main !important;
+}
+
+/* Media layers vindas de website.banner/emblem devem ficar visíveis. */
+.vl-social-clan-card__banner {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: .34 !important;
+  pointer-events: none !important;
+}
+
+.vl-social-clan-card__overlay {
+  z-index: 1 !important;
+}
+
+.vl-social-clan-card__emblem {
+  display: block !important;
+  position: absolute !important;
+  z-index: 4 !important;
+  right: 22px !important;
+  top: 50% !important;
+  width: 104px !important;
+  height: 76px !important;
+  transform: translateY(-50%) !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: .18 !important;
+  pointer-events: none !important;
+}
+
+/* Se há imagem real de emblem, o placeholder gigante não deve aparecer. */
+.vl-social-clan-card:has(.vl-social-clan-card__emblem) .vl-social-clan-card__ghost-emblem {
+  display: none !important;
+}
+
+/* Conteúdo acima das imagens. */
+.vl-social-clan-card__left,
+.vl-social-clan-card__main {
+  position: relative !important;
+  z-index: 7 !important;
+}
+
+
+/* ============================================================
+   V20.49 — WEBSITE SOCIAL MEDIA ROLES
+   icon, emblem e banner são completamente independentes.
+   ============================================================ */
+
+/* ICON: somente dentro do bloco quadrado à esquerda. */
+.vl-social-clan-card [data-social-media-role="icon"] {
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* BANNER: somente camada de fundo do card. */
+.vl-social-clan-card [data-social-media-role="banner"] {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: .34 !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* EMBLEM: somente decoração no lado direito. */
+.vl-social-clan-card [data-social-media-role="emblem"] {
+  position: absolute !important;
+  left: auto !important;
+  right: 22px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  z-index: 4 !important;
+  width: 104px !important;
+  height: 76px !important;
+  max-width: 18% !important;
+  max-height: 78% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: .18 !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+}
+
+/* Se não existir emblem, só então usa o placeholder textual. */
+.vl-social-clan-card:has([data-social-media-role="emblem"]) .vl-social-clan-card__ghost-emblem {
+  display: none !important;
+}
+
+/* O icon jamais pode virar banner ou emblem por seletor genérico. */
+.vl-social-clan-card__icon [data-social-media-role="icon"] {
+  position: relative !important;
+  inset: auto !important;
+  z-index: auto !important;
+}
+
+/* O banner não altera tamanho/fluxo do conteúdo. */
+.vl-social-clan-card:has([data-social-media-role="banner"]) {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* O conteúdo sempre fica acima de banner/emblem. */
+.vl-social-clan-card__left,
+.vl-social-clan-card__main,
+.vl-social-clan-card__open {
+  z-index: 7 !important;
+}
+
+
+/* ============================================================
+   V20.50 — WEBSITE SOCIAL / MEDIA FINAL
+   icon ≠ banner ≠ emblem
+   ============================================================ */
+
+/* ICON: somente o quadrado à esquerda. */
+.vl-profile-panel--social-links .vl-social-clan-card__icon
+[data-social-media-role="icon"] {
+  position: static !important;
+  inset: auto !important;
+  z-index: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  padding: 6px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* BANNER: somente o fundo completo do card. */
+.vl-profile-panel--social-links .vl-social-clan-card >
+[data-social-media-role="banner"] {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: .30 !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* EMBLEM: somente decoração no canto direito. */
+.vl-profile-panel--social-links .vl-social-clan-card >
+[data-social-media-role="emblem"] {
+  display: block !important;
+  position: absolute !important;
+  left: auto !important;
+  right: 22px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  z-index: 4 !important;
+  width: 92px !important;
+  height: 68px !important;
+  max-width: 16% !important;
+  max-height: 72% !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: .20 !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+}
+
+/* Quando existe emblem real, não renderiza visualmente a letra fantasma. */
+.vl-profile-panel--social-links
+.vl-social-clan-card:has(> [data-social-media-role="emblem"])
+.vl-social-clan-card__ghost-emblem {
+  display: none !important;
+}
+
+/* Overlay e conteúdo sobre o banner. */
+.vl-profile-panel--social-links .vl-social-clan-card__overlay {
+  z-index: 1 !important;
+}
+
+.vl-profile-panel--social-links .vl-social-clan-card__aura {
+  z-index: 2 !important;
+}
+
+.vl-profile-panel--social-links .vl-social-clan-card__particles {
+  z-index: 3 !important;
+}
+
+.vl-profile-panel--social-links .vl-social-clan-card__shimmer {
+  z-index: 5 !important;
+}
+
+.vl-profile-panel--social-links .vl-social-clan-card__left,
+.vl-profile-panel--social-links .vl-social-clan-card__main {
+  position: relative !important;
+  z-index: 7 !important;
+}
+
+/* A ↗ nunca participa do layout. */
+.vl-profile-panel--social-links .vl-social-clan-card >
+.vl-social-clan-card__open {
+  position: absolute !important;
+  left: auto !important;
+  right: 14px !important;
+  top: auto !important;
+  bottom: 9px !important;
+  z-index: 9 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+
+/* ============================================================
+   V20.51 — MEDIA FIELDS ESTRITAMENTE INDEPENDENTES
+   icon   -> bloco esquerdo
+   emblem -> decoração direita
+   banner -> fundo
+   ============================================================ */
+
+.vl-social-clan-card [data-social-media-role="icon"],
+.vl-social-clan-card [data-social-media-role="emblem"],
+.vl-social-clan-card [data-social-media-role="banner"] {
+  content: normal !important;
+}
+
+/* Sem icon: mantém o fallback textual somente no slot de icon. */
+.vl-social-clan-card:not(:has([data-social-media-role="icon"]))
+.vl-social-clan-card__icon > span {
+  display: grid !important;
+}
+
+/* Com icon: esconde apenas o fallback textual do slot de icon. */
+.vl-social-clan-card:has([data-social-media-role="icon"])
+.vl-social-clan-card__icon > span {
+  display: none !important;
+}
+
+/* Sem emblem: permite o ghost emblem; com emblem real, esconde apenas o ghost. */
+.vl-social-clan-card:not(:has(> [data-social-media-role="emblem"]))
+.vl-social-clan-card__ghost-emblem {
+  display: grid !important;
+}
+
+.vl-social-clan-card:has(> [data-social-media-role="emblem"])
+.vl-social-clan-card__ghost-emblem {
+  display: none !important;
+}
+
+/* Sem banner: nenhuma imagem é inventada para o fundo. */
+.vl-social-clan-card:not(:has(> [data-social-media-role="banner"])) {
+  background-image: none;
+}
+
+/* Banner, quando existir, continua sendo somente fundo. */
+.vl-social-clan-card > [data-social-media-role="banner"] {
+  pointer-events: none !important;
+}
