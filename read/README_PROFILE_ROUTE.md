@@ -13,9 +13,11 @@ Arquivos principais:
   404.html
 
 Em GitHub Pages/HTTP, o link público é sempre /users/{ID}/profile.html.
-O 404.html funciona como roteador para IDs dinâmicos: ele usa internamente
-users/profile.html?id={ID}, e velarion-profile-page.js restaura imediatamente
-a URL pública /users/{ID}/profile.html na barra do navegador.
+O 404.html funciona apenas como roteador para IDs dinâmicos: ele redireciona
+para a única página canônica users/profile.html?id={ID}. Depois que o perfil
+é carregado, velarion-profile-page.js restaura a URL pública
+/users/{ID}/profile.html na barra do navegador. O 404 não mantém uma cópia
+visual do perfil e não carrega CSS/JS próprios do perfil.
 
 Ao abrir o projeto diretamente por file://, não existe roteamento dinâmico de
 pastas. Nesse modo, o fallback local continua sendo users/profile.html?id={ID}.
