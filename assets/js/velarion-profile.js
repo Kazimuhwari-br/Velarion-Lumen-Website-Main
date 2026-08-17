@@ -494,6 +494,247 @@
     return `<div class="vl-profile-badge-card"><strong>${escapeHtml(getRankLabel(player))}</strong><span>Rank atual</span></div>`;
   }
 
+
+  function findAchievementDefinitionDeep(root, achievementId) {
+    const wanted = cleanValue(achievementId);
+    if (!wanted || !root || typeof root !== "object") return null;
+
+    const visited = new WeakSet();
+    const queue = [root];
+
+    while (queue.length) {
+      const current = queue.shift();
+      if (!current || typeof current !== "object") continue;
+      if (visited.has(current)) continue;
+      visited.add(current);
+
+      if (!Array.isArray(current)) {
+        if (Object.prototype.hasOwnProperty.call(current, wanted)) {
+          const direct = current[wanted];
+          if (direct && typeof direct === "object") return direct;
+        }
+
+        const currentId = cleanValue(
+          current.id ||
+          current.achievement_id ||
+          current.achievementId ||
+          current.badge_id ||
+          current.badgeId
+        );
+        if (currentId && currentId === wanted) return current;
+      }
+
+      const values = Array.isArray(current) ? current : Object.values(current);
+      for (const value of values) {
+        if (value && typeof value === "object") queue.push(value);
+      }
+    }
+
+    return null;
+  }
+
+  function getAchievementEntries(player) {
+    const raw = player?.badges?.achievements;
+    if (!Array.isArray(raw)) return [];
+
+    return raw
+      .map((entry) => {
+        if (typeof entry === "string" || typeof entry === "number") {
+          return { id: cleanValue(entry), unlocked_at: "" };
+        }
+        if (!entry || typeof entry !== "object") return null;
+        return {
+          ...entry,
+          id: cleanValue(
+            entry.id ||
+            entry.achievement_id ||
+            entry.achievementId ||
+            entry.badge_id ||
+            entry.badgeId
+          ),
+          unlocked_at: cleanValue(
+            entry.unlocked_at ||
+            entry.unlockedAt ||
+            entry.created_at ||
+            entry.createdAt
+          )
+        };
+      })
+      .filter((entry) => entry?.id);
+  }
+
+  function getAchievementVisualData(entry, ctx) {
+    const definition = findAchievementDefinitionDeep(ctx?.extensionsData || {}, entry.id) || {};
+    const website = definition?.website && typeof definition.website === "object"
+      ? definition.website
+      : {};
+
+    const color = normalizeHexColor(
+      website.color ||
+      definition.color ||
+      "#7b8190"
+    );
+    const color2 = normalizeHexColor(
+      website.color2 ||
+      definition.color2 ||
+      color
+    );
+    const glow = normalizeHexColor(
+      website.glow ||
+      definition.glow ||
+      color
+    );
+
+    const label = cleanValue(
+      website.label ||
+      website.badge_text ||
+      website.title_text ||
+      definition.label ||
+      definition.name ||
+      entry.label ||
+      entry.name ||
+      entry.id
+    );
+
+    const description = cleanValue(
+      website.description ||
+      definition.description ||
+      definition.profile?.lore ||
+      entry.description ||
+      ""
+    );
+
+    const icon = cleanValue(
+      website.icon ||
+      website.emblem ||
+      definition.icon ||
+      definition.emblem ||
+      ""
+    );
+
+    const titleImage = cleanValue(
+      website.title ||
+      website.title_image ||
+      website.titleImage ||
+      ""
+    );
+
+    const banner = cleanValue(
+      website.banner ||
+      definition.banner ||
+      ""
+    );
+
+    return {
+      id: entry.id,
+      label,
+      description,
+      icon,
+      titleImage,
+      banner,
+      color,
+      color2,
+      glow,
+      unlockedAt: entry.unlocked_at || ""
+    };
+  }
+
+  function buildAchievementsMedalsHtml(player, ctx) {
+    const entries = getAchievementEntries(player);
+    const achievements = entries.map((entry) => getAchievementVisualData(entry, ctx));
+
+    if (!achievements.length) {
+      return `
+        <section class="vl-achievements-card vl-achievements-card--source" data-achievement-count="0">
+          <header class="vl-achievements-card__header">
+            <div class="vl-achievements-header-help" tabindex="0" aria-describedby="vl-achievements-tooltip">
+              <span aria-hidden="true">◆</span>
+              <strong>Conquistas</strong>
+              <span id="vl-achievements-tooltip" class="vl-achievements-header-tooltip" role="tooltip">
+                Conquistas especiais desbloqueadas e registradas neste perfil.
+              </span>
+            </div>
+            <span class="vl-achievements-card__total">0 totais</span>
+          </header>
+          <div class="vl-achievements-empty">Nenhuma conquista exibida.</div>
+        </section>`;
+    }
+
+    const medals = achievements.map((item, index) => {
+      const safeId = escapeHtml(item.id);
+      const safeLabel = escapeHtml(item.label || item.id);
+      const safeDescription = escapeHtml(item.description || "");
+      const safeIcon = escapeHtml(item.icon || "");
+      const safeTitle = escapeHtml(item.titleImage || "");
+      const safeBanner = escapeHtml(item.banner || "");
+      const safeUnlocked = escapeHtml(item.unlockedAt || "");
+      const safeColor = escapeHtml(item.color);
+      const safeColor2 = escapeHtml(item.color2);
+      const safeGlow = escapeHtml(item.glow);
+
+      return `
+        <button
+          class="achievement-gallery-thumb vl-achievement-medal-source"
+          type="button"
+          data-vl-achievement-id="${safeId}"
+          data-vl-achievement-label="${safeLabel}"
+          data-vl-achievement-description="${safeDescription}"
+          data-vl-achievement-icon="${safeIcon}"
+          data-vl-achievement-title="${safeTitle}"
+          data-vl-achievement-banner="${safeBanner}"
+          data-vl-achievement-unlocked="${safeUnlocked}"
+          aria-label="${safeLabel}"
+          aria-expanded="false"
+          style="
+            --vl-medal-color:${safeColor};
+            --vl-medal-color-2:${safeColor2};
+            --vl-medal-glow:${safeGlow};
+            --achievement-color:${safeColor};
+            --achievement-color-2:${safeColor2};
+            --achievement-glow:${safeGlow};
+          "
+        >
+          ${safeIcon
+            ? `<img src="${safeIcon}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">`
+            : `<span class="vl-achievement-medal-source__fallback" aria-hidden="true">✦</span>`
+          }
+        </button>`;
+    }).join("");
+
+    return `
+      <section class="vl-achievements-card vl-achievements-card--source" data-achievement-count="${achievements.length}">
+        <header class="vl-achievements-card__header">
+          <div class="vl-achievements-header-help" tabindex="0" aria-describedby="vl-achievements-tooltip">
+            <span aria-hidden="true">◆</span>
+            <strong>Conquistas</strong>
+            <span id="vl-achievements-tooltip" class="vl-achievements-header-tooltip" role="tooltip">
+              Conquistas especiais desbloqueadas e registradas neste perfil.
+            </span>
+          </div>
+          <span class="vl-achievements-card__total">${achievements.length} ${achievements.length === 1 ? "total" : "totais"}</span>
+        </header>
+
+        <div class="achievement-gallery-list" aria-label="Medalhas de conquistas">
+          ${medals}
+        </div>
+
+        <section class="vl-achievement-source-preview" aria-hidden="true">
+          <button class="vl-achievement-preview-close" type="button" data-vl-achievement-close="1" aria-label="Fechar banner da conquista">
+            <span aria-hidden="true">×</span>
+          </button>
+          <div class="vl-achievement-source-preview__banner"></div>
+          <div class="vl-achievement-source-preview__body">
+            <div class="vl-achievement-source-preview__icon"></div>
+            <div class="vl-achievement-source-preview__copy">
+              <strong></strong>
+              <p></p>
+              <small></small>
+            </div>
+          </div>
+        </section>
+      </section>`;
+  }
+
   function fallbackAchievements() {
     return `<div class="vl-profile-empty-achievements">Nenhuma conquista exibida.</div>`;
   }
@@ -615,109 +856,324 @@
 
   
   function buildRarityV8Section(player, ctx, orderSystems) {
+    const h = makeHelpers(ctx || {});
+
+    /*
+     * V20.1 — SISTEMAS PÚBLICOS
+     * Página visual do jogador:
+     * - sem raridade / summon / categoria / descrição;
+     * - personagem + efeitos à esquerda;
+     * - estrelas conquistadas em bloco compacto à direita, acima do personagem.
+     */
+
     const extensions = ctx?.extensionsData || {};
     const source = extensions.badges_raritys || extensions.badges_rarities || {};
     const rarityId = getRarityId(player);
-    let data = null;
-
-    if (rarityId) {
-      const aliases = [
-        rarityId,
-        rarityId.replace(/^rarity_id_/i, "raritys_id_"),
-        rarityId.replace(/^raritys_id_/i, "rarity_id_")
-      ];
-      const key = aliases.find((item) => source && source[item]);
-      data = mergeBadge(key ? source[key] : null);
-      if (data && !badgeVisible(data, "profile")) data = null;
-    }
-
-    const rarity = cleanValue(
-      data?.label ||
-      data?.name ||
-      data?.website?.short_label ||
-      data?.website?.badge_text ||
-      rarityId?.replace(/^raritys?_id_/i, "") ||
-      "SSR"
-    ).toUpperCase();
-
-    const category = cleanValue(data?.category || data?.tier || "Card rarity");
-    const description = cleanValue(
-      data?.description ||
-      (rarityId ? "Raridade extremamente rara concedida por invocações de alto nível." : "Nenhuma raridade pública definida.")
-    );
-    const starsRaw = cleanValue(data?.website?.stars || data?.stars || "★★★★★");
-    const stars = starsRaw || "★★★★★";
-    const starCount = Math.max(0, (stars.match(/★/g) || []).length) || 5;
-    const color = normalizeHexColor(data?.color || "#F7D58A");
-    const color2 = normalizeHexColor(data?.color2 || "#FFF0C4");
-    const glow = normalizeHexColor(data?.glow || "#FFD27A");
-
     const esc = (value) => escapeHtml(String(value ?? ""));
 
+    const aliases = rarityId ? [
+      rarityId,
+      rarityId.replace(/^rarity_id_/i, "raritys_id_"),
+      rarityId.replace(/^raritys_id_/i, "rarity_id_")
+    ] : [];
+
+    const rarityKey = aliases.find((key) => source?.[key]) || "";
+    const rarityData = mergeBadge(rarityKey ? source[rarityKey] : null) || {};
+
+    /*
+     * As estrelas continuam vindo dos mesmos dados públicos já usados antes.
+     * A raridade deixa de ser exibida; ela só é consultada para obter stars/max_stars.
+     */
+    const starsValue =
+      rarityData.website?.stars ??
+      rarityData.stars ??
+      rarityData.profile?.stars ??
+      "";
+
+    let stars = 0;
+    let maxStars = Number(
+      rarityData.website?.max_stars ??
+      rarityData.max_stars ??
+      rarityData.profile?.max_stars ??
+      0
+    );
+
+    if (
+      typeof starsValue === "number" ||
+      /^\d+(?:\.\d+)?$/.test(String(starsValue).trim())
+    ) {
+      stars = Math.max(0, Math.round(Number(starsValue)));
+    } else {
+      stars = Math.max(0, (cleanValue(starsValue).match(/★/g) || []).length);
+    }
+
+    if (!Number.isFinite(maxStars) || maxStars <= 0) maxStars = stars;
+    if (maxStars < stars) maxStars = stars;
+
+    /*
+     * V20.16 — dados secundários públicos do jogador.
+     * Usa somente:
+     * - stats
+     * - stats.rarity
+     * - stats.social
+     * - website_social
+     */
+    const stats = player?.stats && typeof player.stats === "object" ? player.stats : {};
+    const combat = stats?.combat && typeof stats.combat === "object" ? stats.combat : {};
+    const rarityStats = stats?.rarity && typeof stats.rarity === "object" ? stats.rarity : {};
+
+    const publicInfoNickname =
+      cleanValue(player?.profile?.display_nickname) ||
+      cleanValue(player?.profile?.display_username) ||
+      cleanValue(player?.display_nickname) ||
+      cleanValue(player?.display_username) ||
+      cleanValue(player?.id) ||
+      "Jogador";
+
+    const publicInfoUsername =
+      cleanValue(player?.profile?.display_username) ||
+      cleanValue(player?.display_username) ||
+      cleanValue(player?.id) ||
+      "—";
+
+    const publicInfoId =
+      cleanValue(player?.id) ||
+      cleanValue(player?._id) ||
+      cleanValue(player?.profile_id) ||
+      "—";
+
+    const publicInfoRegisteredAt =
+      cleanValue(stats?.timestamps?.account_created_at);
+
+    const formatDocumentDateTime = (value) => {
+      const raw = cleanValue(value);
+      if (!raw) return "—";
+      const date = new Date(raw);
+      if (Number.isNaN(date.getTime())) return raw;
+
+      return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      }).format(date);
+    };
+
+    const asNumber = (value, fallback = 0) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+
+    const formatInteger = (value) => new Intl.NumberFormat("pt-BR", {
+      maximumFractionDigits: 0
+    }).format(Math.max(0, Math.round(asNumber(value, 0))));
+
+    const formatRatio = (value) => {
+      const number = asNumber(value, 0);
+      return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    };
+
+    const normalizeRarityLabel = (value) => {
+      const raw = cleanValue(value);
+      if (!raw) return "—";
+      return raw
+        .replace(/^raritys?_id_/i, "")
+        .replace(/^rarity_id_/i, "")
+        .replace(/[_-]+/g, " ")
+        .trim()
+        .toUpperCase() || "—";
+    };
+
+    /*
+     * Mesma origem real do velarion-card.
+     * Suporta string e objeto { url, src, image, path }.
+     */
+    const getProfileMediaSource = (value) => {
+      if (typeof value === "string") return cleanValue(value);
+      if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+      return cleanValue(value.url || value.src || value.image || value.path || "");
+    };
+
+    const characterMediaRaw = player?.theme?.card_embed?.character_image;
+    const configuredCharacterImage = getProfileMediaSource(characterMediaRaw);
+
+    /*
+     * Mesma política do velarion-card:
+     * character_image -> fallback por gênero -> default/undefined/missing.
+     */
+    const characterFallbackKey =
+      cleanValue(player?.profile?.gender) ||
+      cleanValue(player?.gender) ||
+      "default";
+
+    const fallbackCharacterImage = getProfileMediaSource(
+      getFallbackMedia(ctx, "character", "", characterFallbackKey)
+    );
+
+    const characterImage = configuredCharacterImage || fallbackCharacterImage;
+
+    const characterIsWebM = Boolean(
+      characterImage &&
+      (
+        /^data:video\/webm(?:;|,)/i.test(characterImage) ||
+        /\.webm(?:$|[?#])/i.test(characterImage)
+      )
+    );
+
+    const fallbackCharacterIsWebM = Boolean(
+      fallbackCharacterImage &&
+      (
+        /^data:video\/webm(?:;|,)/i.test(fallbackCharacterImage) ||
+        /\.webm(?:$|[?#])/i.test(fallbackCharacterImage)
+      )
+    );
+
     return `
-      <section class="vl-profile-panel vl-profile-panel--systems-v2 vl-profile-panel--summon-v8" style="order:${Number(orderSystems) || 40}">
-        <div class="vl-profile-section-head"><span>Sistemas públicos</span><i></i></div>
+      <section class="vl-profile-panel vl-profile-panel--systems-v2 vl-profile-panel--systems-stars-only"
+               style="order:${Number(orderSystems) || 40}">
+        <div class="vl-profile-section-head vl-profile-section-head--public"><span>Registro Público</span><i></i></div>
 
-        <section class="vl-rarity-v8" data-rarity="${esc(rarity)}" style="--rv8-accent:${esc(color)};--rv8-accent2:${esc(color2)};--rv8-glow:${esc(glow)};">
-          <header class="vl-rarity-v8__head">
-            <div class="vl-rarity-v8__label">
-              <span>Raridade de invocação</span>
-              <strong>${esc(rarity)}</strong>
-            </div>
-            <div class="vl-rarity-v8__summary">
-              <span>${esc(stars)}</span>
-              <em>Summon rarity tier</em>
-            </div>
-          </header>
+        <div class="vl-public-stars-only ${characterImage ? "has-character" : "no-character"}">
 
-          <div class="vl-rarity-v8__scene">
-            <div class="vl-rarity-v8__sky"></div>
-            <div class="vl-rarity-v8__streaks"></div>
-            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--a"></div>
-            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--b"></div>
-            <div class="vl-rarity-v8__halo vl-rarity-v8__halo--c"></div>
-
-            <div class="vl-rarity-v8__sidecopy">
-              <small>${esc(category)}</small>
-              <strong>${esc(rarity)}</strong>
-              <p>${esc(description)}</p>
-            </div>
-
-            <div class="vl-rarity-v8__core" aria-label="Invocação ${esc(rarity)}">
-              <div class="vl-rarity-v8__seal"><i></i><i></i><i></i></div>
-              <div class="vl-rarity-v8__crystal">
-                <span class="vl-rarity-v8__crystal-top"></span>
-                <b>✦</b>
-                <strong>${esc(rarity)}</strong>
-                <em>SUMMON</em>
+          <div class="vl-public-stars-only__left-zone">
+            <div class="vl-public-stars-only__visual" aria-hidden="true">
+              <div class="vl-public-stars-only__effects">
+                <span class="vl-public-stars-only__ring vl-public-stars-only__ring--one"></span>
+                <span class="vl-public-stars-only__ring vl-public-stars-only__ring--two"></span>
+                <span class="vl-public-stars-only__diamond vl-public-stars-only__diamond--one"></span>
+                <span class="vl-public-stars-only__diamond vl-public-stars-only__diamond--two"></span>
+                <span class="vl-public-stars-only__diamond vl-public-stars-only__diamond--three"></span>
               </div>
-              <div class="vl-rarity-v8__flare"></div>
+
+              ${characterImage ? `
+                <div class="vl-public-stars-only__character ${characterIsWebM ? "is-webm" : "is-image"}">
+                  ${characterIsWebM
+                    ? `<video
+                         src="${esc(characterImage)}"
+                         autoplay
+                         loop
+                         muted
+                         playsinline
+                         preload="auto"
+                         tabindex="-1"
+                         data-vl-character-fallback="${esc(fallbackCharacterImage)}"
+                         data-vl-character-fallback-webm="${fallbackCharacterIsWebM ? "1" : "0"}"
+                         onerror="window.VelarionProfile?.applyCharacterMediaFallback?.(this)"
+                       ></video>`
+                    : `<img
+                         src="${esc(characterImage)}"
+                         alt=""
+                         loading="eager"
+                         decoding="async"
+                         data-vl-character-fallback="${esc(fallbackCharacterImage)}"
+                         data-vl-character-fallback-webm="${fallbackCharacterIsWebM ? "1" : "0"}"
+                         onerror="window.VelarionProfile?.applyCharacterMediaFallback?.(this)"
+                       >`
+                  }
+                </div>` : ""}
             </div>
 
-            <div class="vl-rarity-v8__stats">
-              <div><small>Classe</small><strong>${esc(rarity)}</strong></div>
-              <div><small>Estrelas</small><strong>${starCount}</strong></div>
-              <div><small>Sistema</small><strong>Gacha</strong></div>
-            </div>
+            <div class="vl-public-info-stack vl-public-info-stack--document">
+              <section class="vl-adventurer-document" aria-label="Documento público do jogador">
+                <div class="vl-adventurer-document__top">
+                  <span class="vl-adventurer-document__sigil" aria-hidden="true"><i></i></span>
+                  <div class="vl-adventurer-document__title vl-adventurer-document__title--username">
+                    <strong>${esc(publicInfoUsername)}</strong>
+                  </div>
+                </div>
 
-            <div class="vl-rarity-v8__sparks" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <div class="vl-adventurer-document__divider" aria-hidden="true"></div>
+
+                <div class="vl-adventurer-document__rows vl-adventurer-document__rows--single">
+                  <div class="vl-adventurer-document__row vl-adventurer-document__row--registration">
+                    <span class="vl-adventurer-document__row-icon" aria-hidden="true">◷</span>
+                    <div>
+                      <small>Registro</small>
+                      <strong>${esc(formatDocumentDateTime(publicInfoRegisteredAt))}</strong>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <aside class="vl-public-secondary vl-public-secondary--compact vl-public-quickstats vl-public-quickstats--rebuild"
+                   aria-label="Dados públicos do jogador">
+              <div class="vl-public-quickstats__frame-corner vl-public-quickstats__frame-corner--tl" aria-hidden="true"></div>
+              <div class="vl-public-quickstats__frame-corner vl-public-quickstats__frame-corner--br" aria-hidden="true"></div>
+
+              <div class="vl-public-secondary__topline vl-public-quickstats__header">
+                <span>Dados públicos</span>
+                <small>Resumo</small>
+              </div>
+
+              <section class="vl-public-quickstats__rarity vl-public-quickstats__rarity--hero" aria-label="Rarity">
+                <span class="vl-public-quickstats__rarity-mark vl-public-quickstats__rarity-mark--hero" aria-hidden="true">
+                  <i></i>
+                </span>
+
+                <div class="vl-public-quickstats__rarity-copy vl-public-quickstats__rarity-copy--hero">
+                  <strong>${esc(normalizeRarityLabel(rarityStats.id))}</strong>
+                  <small>Rarity</small>
+                </div>
+              </section>
+
+              <div class="vl-public-quickstats__divider"></div>
+
+              <section class="vl-public-quickstats__combat vl-public-quickstats__combat--hero" aria-label="Estatísticas de combate">
+                <div class="vl-public-quickstats__combat-title">
+                  <span class="vl-public-quickstats__combat-icon" aria-hidden="true">⚔</span>
+                  <strong>Combate</strong>
+                </div>
+
+                <div class="vl-public-quickstats__combat-grid vl-public-quickstats__combat-grid--hero">
+                  <span><small>Kills</small><strong>${esc(formatInteger(combat.kills))}</strong></span>
+                  <span><small>Deaths</small><strong>${esc(formatInteger(combat.deaths))}</strong></span>
+                  <span><small>Assists</small><strong>${esc(formatInteger(combat.assists))}</strong></span>
+                  <span><small>K/D</small><strong>${esc(formatRatio(combat.kd_ratio))}</strong></span>
+                </div>
+              </section>
+            </aside>
             </div>
           </div>
 
-          <div class="vl-rarity-v8__tiers" aria-label="Escala de raridade">
-            <div data-tier="N" class="${rarity === "N" ? "is-active" : ""}"><span>N</span><small>Normal</small></div>
-            <div data-tier="R" class="${rarity === "R" ? "is-active" : ""}"><span>R</span><small>Rare</small></div>
-            <div data-tier="SR" class="${rarity === "SR" ? "is-active" : ""}"><span>SR</span><small>Super Rare</small></div>
-            <div data-tier="SSR" class="${rarity === "SSR" ? "is-active" : ""}"><span>SSR</span><small>Super Super Rare</small></div>
-            <div data-tier="UR" class="${rarity === "UR" ? "is-active" : ""}"><span>UR</span><small>Ultra Rare</small></div>
+          <div class="vl-public-stars-only__right-zone">
+            <div class="vl-public-systems-switcher"
+                 data-vl-public-systems-switcher
+                 data-subpage-index="0"
+                 data-sub-direction="none">
+
+              <button class="vl-public-systems-switcher__nav vl-public-systems-switcher__nav--next"
+                      type="button"
+                      data-vl-public-subnav="1"
+                      aria-label="Avançar para Rank">
+                <span aria-hidden="true">›</span>
+              </button>
+
+              <div class="vl-public-systems-switcher__viewport">
+                <article class="vl-public-systems-switcher__page is-active"
+                         data-vl-public-subpage
+                         data-vl-public-subpage-label="Cargo"
+                         aria-hidden="false">
+                  <div class="vl-public-systems-switcher__content">
+                    ${h.buildRoleInfoEmblemHtml(player)}
+                  </div>
+                </article>
+
+                <article class="vl-public-systems-switcher__page"
+                         data-vl-public-subpage
+                         data-vl-public-subpage-label="Rank"
+                         aria-hidden="true"
+                         inert>
+                  <div class="vl-public-systems-switcher__content">
+                    ${h.buildRankInfoEmblemHtml(player)}
+                  </div>
+                </article>
+              </div>
+            </div>
           </div>
 
-          <footer class="vl-rarity-v8__foot">
-            <span>✦ Sistema de invocação Gacha</span>
-            <span>Raridade atual: <b>${esc(rarity)}</b></span>
-          </footer>
-        </section>
+        </div>
       </section>
     `;
   }
@@ -818,6 +1274,163 @@ function buildStatusVisualCard(player, ctx) {
     ], 0);
   }
 
+  function getTierProgressPercent(player) {
+    const raw = firstRaw(player, [
+      "stats.progression.percent",
+      "stats.progression.percentage",
+      "stats.progression.progress_percent",
+      "stats.progression.progress",
+      "progression.percent",
+      "progression.percentage",
+      "progression.progress_percent",
+      "progression.progress",
+      "rank.progress_percent",
+      "rank.progress",
+      "tier.progress_percent",
+      "tier.progress"
+    ], 100);
+
+    let value = Number(raw);
+    if (!Number.isFinite(value)) value = 100;
+    if (value >= 0 && value <= 1) value *= 100;
+    return Math.max(0, Math.min(100, value));
+  }
+
+  function getLevelRankSource(ctx) {
+    const extensions = ctx?.extensionsData || {};
+    const nested = extensions?.information_panel && typeof extensions.information_panel === "object"
+      ? extensions.information_panel
+      : {};
+    const source = extensions.badges_levelranks || nested.badges_levelranks || {};
+    return source && typeof source === "object" && !Array.isArray(source) ? source : {};
+  }
+
+  function resolveLevelRank(player, ctx) {
+    const source = getLevelRankSource(ctx);
+    const level = getPlayerLevel(player);
+    const raw = player?.badges?.levelrank_id
+      ?? player?.badges?.levelrank
+      ?? player?.badges?.rank_id
+      ?? player?.rank?.levelrank_id
+      ?? player?.rank?.id
+      ?? player?.profile?.levelrank_id
+      ?? "";
+
+    const rawObject = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : null;
+    const requestedId = cleanValue(
+      rawObject?.id || rawObject?.levelrank_id || rawObject?.key ||
+      (typeof raw === "string" || typeof raw === "number" ? raw : "")
+    );
+
+    let key = requestedId && Object.prototype.hasOwnProperty.call(source, requestedId) ? requestedId : "";
+    if (!key && requestedId) {
+      const wanted = requestedId.toLowerCase();
+      key = Object.keys(source).find((candidate) => cleanValue(candidate).toLowerCase() === wanted) || "";
+    }
+
+    if (!key) {
+      const entries = Object.entries(source).filter(([, rank]) => rank && typeof rank === "object" && rank.enabled !== false);
+      const match = entries.find(([, rank]) => {
+        const minRaw = rank?.progression?.level_min ?? rank?.min;
+        const maxRaw = rank?.progression?.level_max ?? rank?.max;
+        const min = Number(minRaw);
+        const max = Number(maxRaw);
+        if (!Number.isFinite(min)) return false;
+        if (!Number.isFinite(max)) return level >= min;
+        return level >= min && level <= max;
+      });
+      key = match?.[0] || "";
+    }
+
+    const rank = key ? source[key] : (rawObject || null);
+    if (!rank || typeof rank !== "object") return null;
+    return { key: key || cleanValue(rank.id), rank };
+  }
+
+  function getPlayerMaxLevel(player) {
+    const raw = firstRaw(player, [
+      "stats.progression.max_level",
+      "stats.progression.maxLevel",
+      "stats.max_level",
+      "stats.maxLevel",
+      "progression.max_level",
+      "progression.maxLevel",
+      "profile.max_level",
+      "profile.maxLevel",
+      "max_level",
+      "maxLevel"
+    ], 0);
+
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(0, value) : 0;
+  }
+
+  function getPlayerLevelProgressPercent(player) {
+    const level = getPlayerLevel(player);
+    const maxLevel = getPlayerMaxLevel(player);
+
+    /*
+     * A porcentagem pertence aos dados do jogador.
+     * As insígnias/levelranks fornecem somente identidade visual e nome do Tier.
+     * NÃO usar rank.min / rank.max / progression.level_min / level_max para a barra.
+     */
+    if (maxLevel > 0) {
+      return Math.max(0, Math.min(100, (level / maxLevel) * 100));
+    }
+
+    /* Compatibilidade: se max_level ainda não chegou no objeto do jogador,
+       aceita somente uma porcentagem explícita também vinda do jogador. */
+    return getTierProgressPercent(player);
+  }
+
+  function buildProfileLevelTier(player, h, ctx) {
+    const level = getPlayerLevel(player);
+    const resolved = resolveLevelRank(player, ctx || {});
+    const rank = resolved?.rank || null;
+    const website = rank?.website && typeof rank.website === "object" ? rank.website : {};
+
+    const rawFallbackTier = getTierName(player);
+    const fallbackTier = rawFallbackTier && rawFallbackTier !== "[object Object]" ? rawFallbackTier : "Novice";
+    const tier = cleanValue(rank?.label || website.title_text || website.label || fallbackTier) || "Novice";
+
+    const percent = getPlayerLevelProgressPercent(player);
+    const percentRounded = Math.round(percent * 10) / 10;
+    const percentLabel = `${percentRounded}`.replace(/\.0$/, "") + "%";
+
+    const color = normalizeHexColor(website.color || "#f4df9a");
+    const color2 = normalizeHexColor(website.color2 || color);
+    const glow = normalizeHexColor(website.glow || color);
+    const icon = getMediaSource(website.icon || website.title || "");
+    const banner = cleanValue(website.banner || website.gradient || "");
+    const style = [
+      `--vl-lt-color:${h.escapeHtml(color)}`,
+      `--vl-lt-color2:${h.escapeHtml(color2)}`,
+      `--vl-lt-glow:${h.escapeHtml(glow)}`,
+      banner ? `--vl-lt-banner:${h.escapeHtml(banner)}` : ""
+    ].filter(Boolean).join(";");
+
+    return `
+      <div class="vl-profile-level-tier-rebuilt" data-levelrank-id="${h.escapeHtml(resolved?.key || "")}" data-player-max-level="${h.escapeHtml(getPlayerMaxLevel(player) || "")}" style="${style}" aria-label="Nível ${h.escapeHtml(level)}, tier ${h.escapeHtml(tier)}, progresso ${h.escapeHtml(percentLabel)}">
+        <div class="vl-profile-level-tier-rebuilt__top">
+          <div class="vl-profile-level-tier-rebuilt__level">
+            <span class="vl-profile-level-tier-rebuilt__crystal" aria-hidden="true">
+              ${icon ? `<img src="${h.escapeHtml(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.remove();">` : `<i></i>`}
+            </span>
+            <span>Lv.</span>
+            <strong>${h.escapeHtml(level || 0)}</strong>
+          </div>
+          <div class="vl-profile-level-tier-rebuilt__tier">
+            <span>Tier:</span>
+            <strong>${h.escapeHtml(tier)}</strong>
+          </div>
+        </div>
+        <div class="vl-profile-level-tier-rebuilt__progress">
+          <div class="vl-profile-level-tier-rebuilt__track" aria-hidden="true"><i style="width:${h.escapeHtml(percent)}%"></i></div>
+          <strong>${h.escapeHtml(percentLabel)}</strong>
+        </div>
+      </div>`;
+  }
+
   function getOnlineLabel(player) {
     const raw = firstRaw(player, [
       "presence.online",
@@ -866,11 +1479,16 @@ function buildStatusVisualCard(player, ctx) {
   }
 
   function buildMetricChip(label, value, note, token) {
+    const metricToken = cleanValue(token || label).toLowerCase();
+    const sigil = metricToken === "points" ? "✦" : metricToken === "xp" ? "XP" : "•";
     return `
-      <div class="vl-profile-metric" data-metric="${escapeHtml(cleanValue(token || label).toLowerCase())}">
-        <small>${escapeHtml(label)}</small>
-        <strong>${escapeHtml(value)}</strong>
-        ${note ? `<span>${escapeHtml(note)}</span>` : ""}
+      <div class="vl-profile-metric vl-profile-metric--featured" data-metric="${escapeHtml(metricToken)}">
+        <div class="vl-profile-metric__copy">
+          <small>${escapeHtml(label)}</small>
+          <strong>${escapeHtml(value)}</strong>
+          ${note ? `<span>${escapeHtml(note)}</span>` : ""}
+        </div>
+        <div class="vl-profile-metric__sigil" aria-hidden="true"><b>${escapeHtml(sigil)}</b></div>
       </div>`;
   }
 
@@ -1251,6 +1869,466 @@ function buildStatusVisualCard(player, ctx) {
     return h;
   }
 
+
+  const WEBSITE_PANEL_URL =
+    "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com/website_panel.json";
+
+  /* V20.43 — cópia local garantida do website_panel enviado pelo usuário.
+     O Firebase continua podendo sobrescrever/atualizar os dados quando acessível,
+     mas o perfil não depende de CORS/file:// para obter as cores corretas. */
+  const WEBSITE_PANEL_EMBEDDED = {"social_fallback":{"custom":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link personalizado","color":"#8B5CF6","color2":"#EC4899","emblem":"","glow":"#A855F7","gradient":"linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)","icon":"","intensity":0.28,"label":"Personalizado","particles":true,"shimmer":true,"title":"Link personalizado"}},"default":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link externo","color":"#6D7CFF","color2":"#9B8CFF","emblem":"","glow":"#7B86FF","gradient":"linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)","icon":"","intensity":0.25,"label":"Website","particles":false,"shimmer":true,"title":"Link externo"}},"discord_invite":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Entre no servidor pelo Discord","color":"#5865F2","color2":"#7289DA","emblem":"","glow":"#5865F2","gradient":"linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)","icon":"","intensity":0.3,"label":"Discord","particles":true,"shimmer":true,"title":"Convite do Discord"}},"twitch":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe as transmissões ao vivo","color":"#9146FF","color2":"#C084FC","emblem":"","glow":"#A970FF","gradient":"linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)","icon":"","intensity":0.32,"label":"Twitch","particles":true,"shimmer":true,"title":"Canal da Twitch"}},"xbox":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Perfil e atividades no Xbox","color":"#107C10","color2":"#52B043","emblem":"","glow":"#2ECC40","gradient":"linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)","icon":"","intensity":0.28,"label":"Xbox","particles":true,"shimmer":false,"title":"Perfil do Xbox"}},"youtube":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe os vídeos e conteúdos","color":"#FF0033","color2":"#FF5A5F","emblem":"","glow":"#FF0033","gradient":"linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)","icon":"","intensity":0.3,"label":"YouTube","particles":false,"shimmer":true,"title":"Canal do YouTube"}},"twitter":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.25,"label":"X / Twitter","particles":false,"shimmer":true,"title":"X / Twitter"}},"x":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.25,"label":"X / Twitter","particles":false,"shimmer":true,"title":"X / Twitter"}}}};
+
+  let websitePanelCache = null;
+  let websitePanelPromise = null;
+
+  function getWebsitePanelFromContext(ctx) {
+    const candidates = [
+      ctx?.websitePanel,
+      ctx?.website_panel,
+      ctx?.extensionsData?.website_panel,
+      ctx?.extensionsData?.websitePanel,
+      window.VelarionWebsitePanel,
+      window.website_panel,
+      WEBSITE_PANEL_EMBEDDED
+    ];
+
+    return candidates.find((item) => item && typeof item === "object" && !Array.isArray(item)) || WEBSITE_PANEL_EMBEDDED;
+  }
+
+  async function loadWebsitePanel(ctx) {
+    const local = getWebsitePanelFromContext(ctx) || WEBSITE_PANEL_EMBEDDED;
+
+    if (local && local !== WEBSITE_PANEL_EMBEDDED) {
+      websitePanelCache = local;
+      return local;
+    }
+
+    if (websitePanelCache) return websitePanelCache;
+    if (websitePanelPromise) return websitePanelPromise;
+
+    websitePanelPromise = fetch(WEBSITE_PANEL_URL, {
+      method: "GET",
+      mode: "cors",
+      cache: "no-store",
+      credentials: "omit",
+      headers: { "Accept": "application/json" }
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`website_panel HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        const remote =
+          data && typeof data === "object" && !Array.isArray(data) ? data : {};
+
+        websitePanelCache = {
+          ...WEBSITE_PANEL_EMBEDDED,
+          ...remote,
+          social_fallback: {
+            ...(WEBSITE_PANEL_EMBEDDED.social_fallback || {}),
+            ...(remote.social_fallback || {})
+          }
+        };
+
+        return websitePanelCache;
+      })
+      .catch((error) => {
+        console.warn(
+          "[VelarionProfile] website_panel remoto indisponível; usando cópia local.",
+          error
+        );
+        websitePanelCache = WEBSITE_PANEL_EMBEDDED;
+        return websitePanelCache;
+      })
+      .finally(() => {
+        websitePanelPromise = null;
+      });
+
+    return websitePanelPromise;
+  }
+
+  function normalizeSocialKey(value) {
+    return cleanValue(value)
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/-+/g, "_");
+  }
+
+  function socialKeyVariants(key) {
+    const raw = normalizeSocialKey(key);
+    const variants = new Set([raw]);
+
+    variants.add(raw.replace(/_invite$/i, ""));
+    variants.add(raw.replace(/_url$/i, ""));
+    variants.add(raw.replace(/_link$/i, ""));
+    variants.add(raw.replace(/^website_/, ""));
+
+    if (raw === "twitter") variants.add("x");
+    if (raw === "x") variants.add("twitter");
+    if (raw === "discord_invite") variants.add("discord");
+    if (raw === "youtube") variants.add("yt");
+    if (raw === "twitch") variants.add("stream");
+
+    return [...variants].filter(Boolean);
+  }
+
+  function getSocialFallbackRoot(panel) {
+    const source =
+      panel?.social_fallback ||
+      panel?.socialFallback ||
+      panel?.website?.social_fallback ||
+      {};
+
+    return source && typeof source === "object" && !Array.isArray(source)
+      ? source
+      : {};
+  }
+
+  function socialDefinitionAliases(entry, key) {
+    const website = entry?.website && typeof entry.website === "object"
+      ? entry.website
+      : {};
+
+    const values = [
+      key,
+      entry?.id,
+      entry?.key,
+      entry?.name,
+      entry?.social,
+      entry?.website_social,
+      entry?.websiteSocial,
+      website?.id,
+      website?.key,
+      website?.social,
+      website?.website_social
+    ];
+
+    const arrays = [
+      entry?.aliases,
+      entry?.keys,
+      entry?.social_keys,
+      entry?.website_social_keys,
+      website?.aliases,
+      website?.keys
+    ];
+
+    arrays.forEach((list) => {
+      if (Array.isArray(list)) values.push(...list);
+    });
+
+    return values.map(normalizeSocialKey).filter(Boolean);
+  }
+
+  function resolveSocialFallback(panel, socialKey, socialValue) {
+    const root = getSocialFallbackRoot(panel);
+    const key = normalizeSocialKey(socialKey);
+
+    const valueObject =
+      socialValue && typeof socialValue === "object" && !Array.isArray(socialValue)
+        ? socialValue
+        : {};
+
+    const explicitType = normalizeSocialKey(
+      valueObject.type ||
+      valueObject.social_type ||
+      valueObject.website_social_type
+    );
+
+    /* 1. Correspondência literal pelo nome do objeto. */
+    if (key && root[key] && typeof root[key] === "object") {
+      return { key, data: root[key], source: "exact-key" };
+    }
+
+    /* 2. Compatibilidade oficial entre X e o antigo Twitter. */
+    if (key === "x" && root.twitter && typeof root.twitter === "object") {
+      return { key: "twitter", data: root.twitter, source: "x-twitter-alias" };
+    }
+
+    if (key === "twitter" && root.x && typeof root.x === "object") {
+      return { key: "x", data: root.x, source: "twitter-x-alias" };
+    }
+
+    /* 3. Type explícito só substitui a chave quando nomeia um visual concreto. */
+    if (
+      explicitType &&
+      explicitType !== "website_social" &&
+      root[explicitType] &&
+      typeof root[explicitType] === "object"
+    ) {
+      return { key: explicitType, data: root[explicitType], source: "explicit-type" };
+    }
+
+    /* Também permite type=x/twitter com compatibilidade cruzada. */
+    if (explicitType === "x" && root.twitter && typeof root.twitter === "object") {
+      return { key: "twitter", data: root.twitter, source: "type-x-twitter-alias" };
+    }
+
+    if (explicitType === "twitter" && root.x && typeof root.x === "object") {
+      return { key: "x", data: root.x, source: "type-twitter-x-alias" };
+    }
+
+    /* 4. Fallback apenas quando realmente não houver definição. */
+    if (root.default && typeof root.default === "object") {
+      return { key: "default", data: root.default, source: "default" };
+    }
+
+    return null;
+  }
+
+  function getWebsiteSocialEntries(player) {
+    const source =
+      player?.website_social && typeof player.website_social === "object" && !Array.isArray(player.website_social)
+        ? player.website_social
+        : {};
+
+    return Object.entries(source)
+      .map(([key, raw]) => {
+        const valueObject =
+          raw && typeof raw === "object" && !Array.isArray(raw) ? raw : null;
+
+        const value = cleanValue(
+          valueObject?.value ??
+          valueObject?.url ??
+          valueObject?.href ??
+          valueObject?.username ??
+          raw
+        );
+
+        if (!value) return null;
+
+        return {
+          key,
+          raw,
+          value,
+          type: cleanValue(
+            valueObject?.type ||
+            valueObject?.social_type ||
+            valueObject?.website_social_type
+          )
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function buildSocialHref(key, value) {
+    const raw = cleanValue(value);
+    if (!raw) return "";
+
+    if (/^(?:https?:)?\/\//i.test(raw)) {
+      return raw.startsWith("//") ? `https:${raw}` : raw;
+    }
+
+    const normalizedKey = normalizeSocialKey(key);
+
+    if (normalizedKey === "discord_invite" || normalizedKey === "discord") {
+      return `https://discord.gg/${encodeURIComponent(raw.replace(/^discord\.gg\//i, ""))}`;
+    }
+    if (normalizedKey === "twitch") {
+      return `https://www.twitch.tv/${encodeURIComponent(raw.replace(/^@/, ""))}`;
+    }
+    if (normalizedKey === "twitter" || normalizedKey === "x") {
+      return `https://x.com/${encodeURIComponent(raw.replace(/^@/, ""))}`;
+    }
+    if (normalizedKey === "youtube") {
+      const name = raw.replace(/^@/, "");
+      return `https://www.youtube.com/@${encodeURIComponent(name)}`;
+    }
+
+    return "";
+  }
+
+  function socialDefaultTitle(key) {
+    const normalized = normalizeSocialKey(key);
+    const labels = {
+      custom: "Website",
+      discord_invite: "Discord",
+      discord: "Discord",
+      twitch: "Twitch",
+      twitter: "X / Twitter",
+      x: "X",
+      youtube: "YouTube"
+    };
+
+    return labels[normalized] ||
+      String(key || "Social")
+        .replace(/[_-]+/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  function buildWebsiteSocialCardsHtml(player, panel, h) {
+    const entries = getWebsiteSocialEntries(player);
+    const esc = h?.escapeHtml || escapeHtml;
+
+    if (!entries.length) {
+      return `
+        <section class="vl-social-clan-empty">
+          <span class="vl-social-clan-empty__mark" aria-hidden="true">◇</span>
+          <div>
+            <strong>Nenhuma conexão pública</strong>
+            <small>Este aventureiro ainda não publicou links sociais.</small>
+          </div>
+        </section>`;
+    }
+
+    return `
+      <div class="vl-social-clan-list">
+        ${entries.map((entry) => {
+          const resolved = resolveSocialFallback(panel, entry.key, entry.raw);
+          const definition = resolved?.data || {};
+          const website =
+            definition?.website && typeof definition.website === "object"
+              ? definition.website
+              : {};
+
+          if (definition.enabled === false) return "";
+
+          const color = normalizeHexColor(website.color || "#6D7CFF");
+          const color2 = normalizeHexColor(website.color2 || color);
+          const glow = normalizeHexColor(website.glow || color);
+          const intensityRaw = Number(website.intensity);
+          const intensity = Number.isFinite(intensityRaw)
+            ? Math.max(0, Math.min(1, intensityRaw))
+            : 0.25;
+
+          const title = cleanValue(website.title || website.label) || socialDefaultTitle(entry.key);
+          const label = cleanValue(website.label) || title;
+          const bio = cleanValue(website.bio) || `Acesse ${label}.`;
+          const icon = cleanValue(website.icon);
+          const emblem = cleanValue(website.emblem);
+          const banner = cleanValue(website.banner);
+          const gradient = cleanValue(website.gradient);
+          const href = buildSocialHref(entry.key, entry.value);
+          const type = cleanValue(definition.type || entry.type || "website_social");
+
+          const aura = website.aura === true;
+          const particles = website.particles === true;
+          const shimmer = website.shimmer === true;
+
+          const style = [
+            `--vl-social-color:${esc(color)}`,
+            `--vl-social-color-2:${esc(color2)}`,
+            `--vl-social-glow:${esc(glow)}`,
+            `--vl-social-intensity:${intensity}`,
+            gradient ? `--vl-social-gradient:${esc(gradient)}` : ""
+          ].filter(Boolean).join(";");
+
+          const classes = [
+            "vl-social-clan-card",
+            aura ? "has-aura" : "",
+            particles ? "has-particles" : "",
+            shimmer ? "has-shimmer" : ""
+          ].filter(Boolean).join(" ");
+
+          const inner = `
+            ${banner ? `<img class="vl-social-clan-card__banner" src="${esc(banner)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
+            <div class="vl-social-clan-card__overlay" aria-hidden="true"></div>
+
+            ${aura ? `<span class="vl-social-clan-card__aura" aria-hidden="true"></span>` : ""}
+            ${particles ? `
+              <span class="vl-social-clan-card__particles" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i>
+              </span>` : ""}
+            ${shimmer ? `<span class="vl-social-clan-card__shimmer" aria-hidden="true"></span>` : ""}
+
+            <div class="vl-social-clan-card__left">
+              <span class="vl-social-clan-card__tag">${esc(label)}</span>
+
+              <span class="vl-social-clan-card__icon">
+                ${icon
+                  ? `<img src="${esc(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+                  : `<span aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
+                }
+              </span>
+            </div>
+
+            <div class="vl-social-clan-card__main">
+              <strong>${esc(title)}</strong>
+              <p>${esc(bio)}</p>
+              <small>${esc(entry.value)}</small>
+            </div>
+
+            ${emblem
+              ? `<img class="vl-social-clan-card__emblem" src="${esc(emblem)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+              : `<span class="vl-social-clan-card__ghost-emblem" aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
+            }
+
+            ${href ? `<span class="vl-social-clan-card__open" aria-hidden="true">↗</span>` : ""}
+          `;
+
+          if (href) {
+            return `
+              <a class="${classes}"
+                 href="${esc(href)}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 data-social-key="${esc(entry.key)}"
+                 data-social-type="${esc(type)}"
+                 data-social-visual="${esc(resolved?.key || "default")}"
+                 style="${style}">
+                ${inner}
+              </a>`;
+          }
+
+          return `
+            <article class="${classes}"
+                     data-social-key="${esc(entry.key)}"
+                     data-social-type="${esc(type)}"
+                     data-social-visual="${esc(resolved?.key || "default")}"
+                     style="${style}">
+              ${inner}
+            </article>`;
+        }).join("")}
+      </div>`;
+  }
+
+  function buildWebsiteSocialPanelHtml(player, ctx, h) {
+    const localPanel =
+      getWebsitePanelFromContext(ctx) ||
+      websitePanelCache ||
+      WEBSITE_PANEL_EMBEDDED;
+    const hasPanel = Boolean(
+      localPanel && Object.keys(getSocialFallbackRoot(localPanel)).length
+    );
+
+    return `
+      <section class="vl-profile-panel vl-profile-panel--social-links"
+               data-vl-website-social-panel
+               data-panel-state="${hasPanel ? "ready" : "loading"}">
+        <header class="vl-social-links-heading">
+          <div>
+            <span class="vl-social-links-heading__eyebrow">03</span>
+            <strong>Conexões públicas</strong>
+            <small>Redes e vínculos externos do aventureiro</small>
+          </div>
+          <i aria-hidden="true"></i>
+        </header>
+
+        <div class="vl-social-links-content" data-vl-website-social-content>
+          ${buildWebsiteSocialCardsHtml(player, localPanel, h)}
+        </div>
+      </section>`;
+  }
+
+  function hydrateWebsiteSocialPanel(player, ctx, h) {
+    const local = getWebsitePanelFromContext(ctx);
+    if (local && Object.keys(getSocialFallbackRoot(local)).length) return;
+
+    setTimeout(async () => {
+      const roots = document.querySelectorAll("[data-vl-website-social-panel]");
+      if (!roots.length) return;
+
+      const panel = await loadWebsitePanel(ctx);
+
+      roots.forEach((root) => {
+        const content = root.querySelector("[data-vl-website-social-content]");
+        if (!content) return;
+
+        content.innerHTML = buildWebsiteSocialCardsHtml(player, panel, h);
+        root.dataset.panelState = "ready";
+      });
+    }, 0);
+  }
+
   function getFallbacks(ctx) {
     const source = ctx?.extensionsData?.badges_fallbacks || ctx?.extensionsData?.information_panel?.badges_fallbacks;
     return source && typeof source === "object" ? source : {};
@@ -1264,11 +2342,19 @@ function buildStatusVisualCard(player, ctx) {
     return Number.isFinite(number) ? number : fallback;
   }
 
-  function getFallbackMedia(ctx, kind, fallback) {
+  function getFallbackMedia(ctx, kind, fallback, key = "default") {
     const fallbacks = getFallbacks(ctx);
     const entry = fallbacks?.[kind];
     const website = entry?.website && typeof entry.website === "object" ? entry.website : {};
-    const value = website.default || website.undefined || website.missing || fallbacks?.defaults?.[kind];
+    const requestedKey = cleanValue(key) || "default";
+
+    const value =
+      website[requestedKey] ||
+      website.default ||
+      website.undefined ||
+      website.missing ||
+      fallbacks?.defaults?.[kind];
+
     return cleanValue(value) || fallback;
   }
 
@@ -1493,6 +2579,202 @@ function buildStatusVisualCard(player, ctx) {
     requestAnimationFrame(() => setupProfileDocumentColorEffects(document));
   }
 
+
+  let profileShowcaseNavigationReady = false;
+
+  function setProfileShowcasePage(showcase, nextIndex, direction = 0) {
+    if (!showcase) return;
+
+    const pages = Array.from(showcase.querySelectorAll(":scope > .vl-profile-showcase__viewport > .vl-profile-showcase__page"));
+    if (!pages.length) return;
+
+    const total = pages.length;
+    const normalized = ((Number(nextIndex) % total) + total) % total;
+    const current = Number(showcase.dataset.pageIndex || 0);
+
+    pages.forEach((page, index) => {
+      const active = index === normalized;
+      page.classList.toggle("is-active", active);
+      page.setAttribute("aria-hidden", active ? "false" : "true");
+      if (active) page.removeAttribute("inert");
+      else page.setAttribute("inert", "");
+    });
+
+    showcase.dataset.pageIndex = String(normalized);
+    showcase.dataset.direction = direction < 0 ? "prev" : direction > 0 ? "next" : "none";
+
+    const currentPage = pages[normalized];
+    const label = currentPage?.dataset.pageLabel || `Página ${normalized + 1}`;
+
+    const counter = showcase.querySelector(".vl-profile-showcase__counter");
+    if (counter) counter.textContent = `${String(normalized + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+
+    const live = showcase.querySelector(".vl-profile-showcase__live");
+    if (live) live.textContent = `${label}. Página ${normalized + 1} de ${total}.`;
+
+    showcase.querySelectorAll("[data-vl-profile-page-index]").forEach((button) => {
+      const buttonIndex = Number(button.dataset.vlProfilePageIndex || 0);
+      const active = buttonIndex === normalized;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+      button.tabIndex = active ? 0 : -1;
+    });
+
+    showcase.querySelectorAll("[data-vl-profile-nav]").forEach((button) => {
+      const delta = Number(button.dataset.vlProfileNav || 0);
+      const targetIndex = ((normalized + delta) % total + total) % total;
+      const targetLabel = pages[targetIndex]?.dataset.pageLabel || `Página ${targetIndex + 1}`;
+      button.setAttribute("aria-label", delta < 0 ? `Voltar para ${targetLabel}` : `Avançar para ${targetLabel}`);
+      button.title = delta < 0 ? `Voltar: ${targetLabel}` : `Próximo: ${targetLabel}`;
+    });
+
+    if (current !== normalized) {
+      requestAnimationFrame(() => {
+        currentPage?.classList.remove("vl-profile-showcase__page--enter");
+        void currentPage?.offsetWidth;
+        currentPage?.classList.add("vl-profile-showcase__page--enter");
+      });
+    }
+  }
+
+
+  let publicSystemsSubNavigationReady = false;
+
+  function setPublicSystemsSubPage(root, nextIndex, direction = 0) {
+    if (!root) return;
+
+    const pages = Array.from(root.querySelectorAll("[data-vl-public-subpage]"));
+    if (!pages.length) return;
+
+    const total = pages.length;
+    const index = ((Number(nextIndex) % total) + total) % total;
+
+    pages.forEach((page, pageIndex) => {
+      const active = pageIndex === index;
+      page.classList.toggle("is-active", active);
+      page.setAttribute("aria-hidden", active ? "false" : "true");
+      if (active) page.removeAttribute("inert");
+      else page.setAttribute("inert", "");
+    });
+
+    root.dataset.subpageIndex = String(index);
+    root.dataset.subDirection = direction < 0 ? "prev" : direction > 0 ? "next" : "none";
+
+    const current = pages[index];
+    const label = current?.dataset.vlPublicSubpageLabel || `Página ${index + 1}`;
+
+    const labelNode = root.querySelector("[data-vl-public-subpage-current]");
+    if (labelNode) labelNode.textContent = label;
+
+    const counter = root.querySelector("[data-vl-public-subpage-counter]");
+    if (counter) counter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+
+    root.querySelectorAll("[data-vl-public-subnav]").forEach((button) => {
+      const delta = Number(button.dataset.vlPublicSubnav || 0);
+      const targetIndex = ((index + delta) % total + total) % total;
+      const targetLabel = pages[targetIndex]?.dataset.vlPublicSubpageLabel || `Página ${targetIndex + 1}`;
+      button.setAttribute(
+        "aria-label",
+        delta < 0 ? `Voltar para ${targetLabel}` : `Avançar para ${targetLabel}`
+      );
+      button.title = delta < 0 ? `Voltar: ${targetLabel}` : `Próximo: ${targetLabel}`;
+    });
+
+    if (current) {
+      current.classList.remove("vl-public-systems-switcher__page--enter");
+      void current.offsetWidth;
+      current.classList.add("vl-public-systems-switcher__page--enter");
+    }
+  }
+
+  function ensurePublicSystemsSubNavigation() {
+    if (publicSystemsSubNavigationReady) return;
+    publicSystemsSubNavigationReady = true;
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-vl-public-subnav]");
+      if (!button) return;
+
+      const root = button.closest("[data-vl-public-systems-switcher]");
+      if (!root) return;
+
+      const current = Number(root.dataset.subpageIndex || 0);
+      const delta = Number(button.dataset.vlPublicSubnav || 0);
+      if (!delta) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setPublicSystemsSubPage(root, current + delta, delta);
+    });
+  }
+
+  function ensureProfileShowcaseNavigation() {
+    if (profileShowcaseNavigationReady) return;
+    profileShowcaseNavigationReady = true;
+
+    document.addEventListener("click", (event) => {
+      const categoryButton = event.target.closest("[data-vl-profile-page-index]");
+      if (categoryButton) {
+        const showcase = categoryButton.closest("[data-vl-profile-showcase]");
+        if (!showcase) return;
+
+        const current = Number(showcase.dataset.pageIndex || 0);
+        const targetIndex = Number(categoryButton.dataset.vlProfilePageIndex || 0);
+        const direction = targetIndex < current ? -1 : targetIndex > current ? 1 : 0;
+
+        event.preventDefault();
+        setProfileShowcasePage(showcase, targetIndex, direction);
+        return;
+      }
+
+      const button = event.target.closest("[data-vl-profile-nav]");
+      if (!button) return;
+
+      const showcase = button.closest("[data-vl-profile-showcase]");
+      if (!showcase) return;
+
+      const current = Number(showcase.dataset.pageIndex || 0);
+      const delta = Number(button.dataset.vlProfileNav || 0);
+      if (!delta) return;
+
+      setProfileShowcasePage(showcase, current + delta, delta);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+      const target = event.target;
+
+      if (target?.matches?.("[data-vl-profile-page-index]")) {
+        const showcase = target.closest("[data-vl-profile-showcase]");
+        if (!showcase) return;
+        event.preventDefault();
+
+        const delta = event.key === "ArrowLeft" ? -1 : 1;
+        const current = Number(showcase.dataset.pageIndex || 0);
+        setProfileShowcasePage(showcase, current + delta, delta);
+
+        requestAnimationFrame(() => {
+          showcase.querySelector("[data-vl-profile-page-index].is-active")?.focus();
+        });
+        return;
+      }
+      if (target && /INPUT|TEXTAREA|SELECT/.test(target.tagName)) return;
+
+      const showcase =
+        target?.closest?.("[data-vl-profile-showcase]") ||
+        document.querySelector("[data-vl-profile-showcase]");
+
+      if (!showcase) return;
+
+      event.preventDefault();
+      const delta = event.key === "ArrowLeft" ? -1 : 1;
+      const current = Number(showcase.dataset.pageIndex || 0);
+      setProfileShowcasePage(showcase, current + delta, delta);
+    });
+  }
+
   function render(player, ctx) {
     const h = makeHelpers(ctx || {});
     const verifiedBadgeSourceHtml = h.buildVerifiedCardBadgeHtml(player);
@@ -1530,24 +2812,80 @@ function buildStatusVisualCard(player, ctx) {
     const onlineLabel = getOnlineLabel(player);
     const onlineToken = getOnlineToken(player);
     const orderOverview = getSectionOrder(ctx, "overview", 20);
-    const orderProgression = getSectionOrder(ctx, "progression", 30);
     const orderSystems = getSectionOrder(ctx, "systems", 40);
     const orderClanTitle = getSectionOrder(ctx, "clan_title", 50);
     const orderBadges = getSectionOrder(ctx, "badges", 60);
 
     scheduleProfileDocumentColorEffects();
+    ensureProfileShowcaseNavigation();
+    hydrateWebsiteSocialPanel(player, ctx || {}, h);
+    ensureAchievementMedalInteraction();
+    prepareAchievementMedalCards();
+    ensurePublicSystemsSubNavigation();
 
     return `
       <div class="detail-stage vl-profile-stage" style="--vp-accent:${color};">
         <div class="vl-profile-orbit" aria-hidden="true"></div>
-        <div class="vl-profile-layout">
+        <div class="vl-profile-showcase" data-vl-profile-showcase data-page-index="0" data-direction="none">
+          <button class="vl-profile-showcase__nav vl-profile-showcase__nav--prev" type="button" data-vl-profile-nav="-1" aria-label="Página anterior">
+            <span aria-hidden="true">‹</span>
+          </button>
+
+          <nav class="vl-luminous-categories" aria-label="Categorias do perfil">
+            <div class="vl-luminous-categories__emblem" aria-hidden="true">
+              <span></span>
+            </div>
+
+            <button class="vl-luminous-category is-active" type="button"
+                    data-vl-profile-page-index="0" aria-selected="true">
+              <span class="vl-luminous-category__number">01</span>
+              <span class="vl-luminous-category__copy">
+                <strong>Identidade</strong>
+                <small>Perfil e progressão</small>
+              </span>
+            </button>
+
+            <button class="vl-luminous-category" type="button"
+                    data-vl-profile-page-index="1" aria-selected="false" tabindex="-1">
+              <span class="vl-luminous-category__number">02</span>
+              <span class="vl-luminous-category__copy">
+                <strong>Registro Público</strong>
+                <small>Dados e atividade</small>
+              </span>
+            </button>
+
+            <button class="vl-luminous-category" type="button"
+                    data-vl-profile-page-index="2" aria-selected="false" tabindex="-1">
+              <span class="vl-luminous-category__number">03</span>
+              <span class="vl-luminous-category__copy">
+                <strong>Conexões</strong>
+                <small>Redes e links</small>
+              </span>
+            </button>
+
+            <button class="vl-luminous-category" type="button"
+                    data-vl-profile-page-index="3" aria-selected="false" tabindex="-1">
+              <span class="vl-luminous-category__number">04</span>
+              <span class="vl-luminous-category__copy">
+                <strong>Conquistas</strong>
+                <small>Medalhas e feitos</small>
+              </span>
+            </button>
+
+            <span class="vl-luminous-categories__ornament" aria-hidden="true"></span>
+          </nav>
+
+          <div class="vl-profile-showcase__viewport">
+            <article class="vl-profile-showcase__page vl-profile-showcase__page--main is-active" data-page="main" data-page-label="Identidade" aria-hidden="false">
+              <div class="vl-profile-layout">
           <aside class="vl-profile-identity vl-profile-identity--official-card">
             ${renderOfficialProfileCard(player, ctx || {}, displayNamePlain)}
           </aside>
 
           <section class="vl-profile-content vl-profile-content--dossier" aria-label="Informações completas do perfil">
             <section class="vl-profile-panel vl-profile-panel--overview vl-profile-panel--record" style="order:${orderOverview}">
-              <div class="vl-profile-section-head"><span>Registro principal</span><i></i></div>
+              <div class="vl-profile-section-head vl-profile-section-head--adventurer"><span>Perfil do Aventureiro</span><i></i></div>
+              <div class="vl-profile-record-stack">
               <div class="vl-profile-record-grid vl-profile-record-grid--document-only">
                 <article
                   class="vl-profile-record-main vl-profile-public-id-card"
@@ -1610,46 +2948,216 @@ function buildStatusVisualCard(player, ctx) {
 
               </div>
 
-              <div class="vl-profile-metrics-row" aria-label="Resumo rápido">
-                ${buildMetricChip("Nível", String(level || 0), "Nível atual", "level")}
+              <div class="vl-profile-record-progression vl-profile-panel--progress-v2" aria-label="Nível, tier e progresso">
+                ${buildProfileLevelTier(player, h, ctx || {})}
+              </div>
+
+              <div class="vl-profile-metrics-row vl-profile-metrics-row--record" aria-label="Experiência e pontuação">
                 ${buildMetricChip("XP", xp, "Experiência", "xp")}
                 ${buildMetricChip("Pontos", points, "Pontuação", "points")}
-                ${buildMetricChip("Status", onlineLabel, "Presença", onlineToken)}
+              </div>
               </div>
             </section>
 
-            <section class="vl-profile-panel vl-profile-panel--tier vl-profile-panel--progress-v2" style="order:${orderProgression}">
-              <div class="vl-profile-section-head"><span>Progressão</span><i></i></div>
-              ${h.buildLevelInfoEmblemHtml(player)}
-              ${h.buildRankTitleMarkHtml(player, "vl-profile-rank-mark")}
-            </section>
-
-            ${buildRarityV8Section(player, ctx || {}, orderSystems)}
-
-            <section class="vl-profile-duo vl-profile-duo--records vl-profile-duo--records-single" style="order:${orderClanTitle}">
-              <div class="vl-profile-panel vl-profile-panel--clan">
-                <div class="vl-profile-section-head"><span>Clã</span><i></i></div>
-                ${h.buildClanInfoCardHtml(player)}
+                      </section>
               </div>
-            </section>
+            </article>
 
-            <section class="vl-profile-panel vl-profile-panel--badges vl-profile-panel--badges-v3" style="order:${orderBadges}">
-              <div class="vl-profile-section-head"><span>Distintivos & conquistas</span><i></i></div>
-              <div class="vl-distinctives-grid">
-                ${h.buildRoleInfoEmblemHtml(player)}
-                ${h.buildRankInfoEmblemHtml(player)}
-              </div>
-              <div class="vl-achievements-zone">
-                ${h.buildAchievementsGalleryHtml(player)}
-              </div>
-            </section>
-          </section>
+            <article class="vl-profile-showcase__page vl-profile-showcase__page--systems" data-page="systems" data-page-label="Registro Público" aria-hidden="true" inert>
+              <section class="vl-profile-content vl-profile-content--dossier vl-profile-showcase__page-content" aria-label="Registro Público">
+                ${buildRarityV8Section(player, ctx || {}, orderSystems)}
+              </section>
+            </article>
+
+            <article class="vl-profile-showcase__page vl-profile-showcase__page--clan vl-profile-showcase__page--social" data-page="clan" data-page-label="Conexões" aria-hidden="true" inert>
+              <section class="vl-profile-content vl-profile-content--dossier vl-profile-showcase__page-content" aria-label="Conexões públicas do perfil">
+                ${buildWebsiteSocialPanelHtml(player, ctx || {}, h)}
+              </section>
+            </article>
+
+            <article class="vl-profile-showcase__page vl-profile-showcase__page--badges" data-page="badges" data-page-label="Conquistas" aria-hidden="true" inert>
+              <section class="vl-profile-content vl-profile-content--dossier vl-profile-showcase__page-content" aria-label="Distintivos e conquistas">
+                <section class="vl-profile-panel vl-profile-panel--badges vl-profile-panel--badges-v3 vl-profile-panel--achievements-only" style="order:${orderBadges}">
+                  <div class="vl-profile-section-head vl-profile-section-head--achievements"><span>Conquistas</span><i></i></div>
+                  <div class="vl-achievements-zone vl-achievements-zone--medals">
+                    ${buildAchievementsMedalsHtml(player, ctx || {})}
+                  </div>
+                </section>
+              </section>
+            </article>
+          </div>
+
+          <button class="vl-profile-showcase__nav vl-profile-showcase__nav--next" type="button" data-vl-profile-nav="1" aria-label="Próxima página">
+            <span aria-hidden="true">›</span>
+          </button>
+
+          <div class="vl-profile-showcase__meta" aria-hidden="true">
+            <span class="vl-profile-showcase__counter">01 / 04</span>
+          </div>
+          <span class="vl-profile-showcase__live" aria-live="polite">Identidade. Página 1 de 4.</span>
         </div>
       </div>`;
   }
 
+
+
+  let achievementMedalInteractionReady = false;
+
+  function formatAchievementUnlockDate(value) {
+    const raw = cleanValue(value);
+    if (!raw) return "";
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return raw;
+    try {
+      return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  function openAchievementSourcePreview(medal) {
+    const card = medal?.closest(".vl-achievements-card--source");
+    const preview = card?.querySelector(".vl-achievement-source-preview");
+    if (!card || !preview) return;
+
+    card.querySelectorAll(".achievement-gallery-thumb").forEach((item) => {
+      item.classList.toggle("is-medal-selected", item === medal);
+      item.setAttribute("aria-expanded", item === medal ? "true" : "false");
+    });
+
+    const banner = cleanValue(medal.dataset.vlAchievementBanner);
+    const icon = cleanValue(medal.dataset.vlAchievementIcon);
+    const titleImage = cleanValue(medal.dataset.vlAchievementTitle);
+    const label = cleanValue(medal.dataset.vlAchievementLabel) || "Conquista";
+    const description = cleanValue(medal.dataset.vlAchievementDescription);
+    const unlocked = formatAchievementUnlockDate(medal.dataset.vlAchievementUnlocked);
+
+    preview.style.setProperty("--vl-preview-color", medal.style.getPropertyValue("--vl-medal-color") || "#7b8190");
+    preview.style.setProperty("--vl-preview-color-2", medal.style.getPropertyValue("--vl-medal-color-2") || "#aeb4c0");
+    preview.style.setProperty("--vl-preview-glow", medal.style.getPropertyValue("--vl-medal-glow") || "#7b8190");
+
+    const bannerNode = preview.querySelector(".vl-achievement-source-preview__banner");
+    const iconNode = preview.querySelector(".vl-achievement-source-preview__icon");
+    const titleNode = preview.querySelector(".vl-achievement-source-preview__copy strong");
+    const descNode = preview.querySelector(".vl-achievement-source-preview__copy p");
+    const dateNode = preview.querySelector(".vl-achievement-source-preview__copy small");
+
+    if (bannerNode) {
+      bannerNode.innerHTML = banner
+        ? `<img src="${escapeHtml(banner)}" alt="" loading="eager" referrerpolicy="no-referrer">`
+        : "";
+    }
+
+    if (iconNode) {
+      const source = titleImage || icon;
+      iconNode.innerHTML = source
+        ? `<img src="${escapeHtml(source)}" alt="" loading="eager" referrerpolicy="no-referrer">`
+        : `<span aria-hidden="true">✦</span>`;
+    }
+
+    if (titleNode) titleNode.textContent = label;
+    if (descNode) descNode.textContent = description || "Conquista registrada neste perfil.";
+    if (dateNode) dateNode.textContent = unlocked ? `Desbloqueada em ${unlocked}` : "";
+
+    preview.classList.add("is-open");
+    preview.setAttribute("aria-hidden", "false");
+  }
+
+  function closeAchievementSourcePreview(card) {
+    if (!card) return;
+    const preview = card.querySelector(".vl-achievement-source-preview");
+    if (preview) {
+      preview.classList.remove("is-open");
+      preview.setAttribute("aria-hidden", "true");
+    }
+    card.querySelectorAll(".achievement-gallery-thumb").forEach((item) => {
+      item.classList.remove("is-medal-selected");
+      item.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function ensureAchievementMedalInteraction() {
+    if (achievementMedalInteractionReady) return;
+    achievementMedalInteractionReady = true;
+
+    document.addEventListener("click", (event) => {
+      const medal = event.target.closest(
+        ".vl-profile-panel--achievements-only .vl-achievement-medal-source"
+      );
+      if (medal) {
+        const card = medal.closest(".vl-achievements-card--source");
+        const selected = medal.classList.contains("is-medal-selected");
+        if (selected) closeAchievementSourcePreview(card);
+        else openAchievementSourcePreview(medal);
+        return;
+      }
+
+      const close = event.target.closest(
+        ".vl-profile-panel--achievements-only [data-vl-achievement-close]"
+      );
+      if (close) {
+        closeAchievementSourcePreview(close.closest(".vl-achievements-card--source"));
+      }
+    });
+  }
+
+  function prepareAchievementMedalCards() {
+    // O HTML já nasce com as cores corretas vindas do registro da conquista.
+    // Não existe mais probe, hover para descobrir cor, nem cor substituta global.
+  }
+
+  function applyCharacterMediaFallback(element) {
+    if (!element || element.dataset.vlFallbackApplied === "1") return;
+
+    const fallback = cleanValue(element.dataset.vlCharacterFallback);
+    if (!fallback) {
+      element.remove();
+      return;
+    }
+
+    element.dataset.vlFallbackApplied = "1";
+    const fallbackIsWebM = element.dataset.vlCharacterFallbackWebm === "1";
+
+    if (fallbackIsWebM && element.tagName !== "VIDEO") {
+      const video = document.createElement("video");
+      video.src = fallback;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.tabIndex = -1;
+      video.dataset.vlFallbackApplied = "1";
+      video.onerror = () => video.remove();
+      element.replaceWith(video);
+      return;
+    }
+
+    if (!fallbackIsWebM && element.tagName !== "IMG") {
+      const image = document.createElement("img");
+      image.src = fallback;
+      image.alt = "";
+      image.loading = "eager";
+      image.decoding = "async";
+      image.dataset.vlFallbackApplied = "1";
+      image.onerror = () => image.remove();
+      element.replaceWith(image);
+      return;
+    }
+
+    element.src = fallback;
+    element.onerror = () => element.remove();
+  }
+
   window.VelarionProfile = {
     render,
+    applyCharacterMediaFallback,
     setupProfileDocumentColorEffects
   };
 })();

@@ -1,0 +1,124 @@
+{
+  "social_fallback": {
+    "custom": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Link personalizado",
+        "color": "#8B5CF6",
+        "color2": "#EC4899",
+        "emblem": "",
+        "glow": "#A855F7",
+        "gradient": "linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)",
+        "icon": "",
+        "intensity": 0.28,
+        "label": "Personalizado",
+        "particles": true,
+        "shimmer": true,
+        "title": "Link personalizado"
+      }
+    },
+    "default": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Link externo",
+        "color": "#6D7CFF",
+        "color2": "#9B8CFF",
+        "emblem": "",
+        "glow": "#7B86FF",
+        "gradient": "linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)",
+        "icon": "",
+        "intensity": 0.25,
+        "label": "Website",
+        "particles": false,
+        "shimmer": true,
+        "title": "Link externo"
+      }
+    },
+    "discord_invite": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Entre no servidor pelo Discord",
+        "color": "#5865F2",
+        "color2": "#7289DA",
+        "emblem": "",
+        "glow": "#5865F2",
+        "gradient": "linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)",
+        "icon": "",
+        "intensity": 0.3,
+        "label": "Discord",
+        "particles": true,
+        "shimmer": true,
+        "title": "Convite do Discord"
+      }
+    },
+    "twitch": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Acompanhe as transmissões ao vivo",
+        "color": "#9146FF",
+        "color2": "#C084FC",
+        "emblem": "",
+        "glow": "#A970FF",
+        "gradient": "linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)",
+        "icon": "",
+        "intensity": 0.32,
+        "label": "Twitch",
+        "particles": true,
+        "shimmer": true,
+        "title": "Canal da Twitch"
+      }
+    },
+    "xbox": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Perfil e atividades no Xbox",
+        "color": "#107C10",
+        "color2": "#52B043",
+        "emblem": "",
+        "glow": "#2ECC40",
+        "gradient": "linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)",
+        "icon": "",
+        "intensity": 0.28,
+        "label": "Xbox",
+        "particles": true,
+        "shimmer": false,
+        "title": "Perfil do Xbox"
+      }
+    },
+    "youtube": {
+      "enabled": true,
+      "type": "website_social",
+      "website": {
+        "aura": true,
+        "banner": "",
+        "bio": "Acompanhe os vídeos e conteúdos",
+        "color": "#FF0033",
+        "color2": "#FF5A5F",
+        "emblem": "",
+        "glow": "#FF0033",
+        "gradient": "linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)",
+        "icon": "",
+        "intensity": 0.3,
+        "label": "YouTube",
+        "particles": false,
+        "shimmer": true,
+        "title": "Canal do YouTube"
+      }
+    }
+  }
+}
