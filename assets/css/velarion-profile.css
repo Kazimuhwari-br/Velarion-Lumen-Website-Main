@@ -13217,3 +13217,45 @@ a.vl-social-clan-card:focus-visible {
 .vl-social-clan-card > [data-social-media-role="banner"] {
   pointer-events: none !important;
 }
+
+/* ============================================================
+   V20.53 — SOCIAL EMBLEM: RENDERIZAÇÃO RESILIENTE
+   O estado data-social-has-emblem é definido pelo renderer.
+   Assim, X/YouTube e futuras redes não dependem de :has() para
+   exibir o selo real ou recuperar o fallback quando a imagem falhar.
+   ============================================================ */
+
+.vl-profile-panel--social-links
+.vl-social-clan-card[data-social-has-emblem="1"] >
+[data-social-media-role="emblem"] {
+  display: block !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: auto !important;
+  right: 22px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  z-index: 4 !important;
+  width: 92px !important;
+  height: 68px !important;
+  max-width: 16% !important;
+  max-height: 72% !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: .20 !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+}
+
+.vl-profile-panel--social-links
+.vl-social-clan-card[data-social-has-emblem="1"] >
+.vl-social-clan-card__ghost-emblem {
+  display: none !important;
+}
+
+.vl-profile-panel--social-links
+.vl-social-clan-card[data-social-has-emblem="0"] >
+.vl-social-clan-card__ghost-emblem {
+  display: grid !important;
+}

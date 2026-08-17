@@ -1876,7 +1876,7 @@ function buildStatusVisualCard(player, ctx) {
   /* V20.43 — cópia local garantida do website_panel enviado pelo usuário.
      O Firebase continua podendo sobrescrever/atualizar os dados quando acessível,
      mas o perfil não depende de CORS/file:// para obter as cores corretas. */
-  const WEBSITE_PANEL_EMBEDDED = {"social_fallback":{"custom":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link personalizado","color":"#8B5CF6","color2":"#EC4899","emblem":"","glow":"#A855F7","gradient":"linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)","icon":"","intensity":0.28,"label":"Personalizado","particles":true,"shimmer":true,"title":"Link personalizado"}},"default":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link externo","color":"#6D7CFF","color2":"#9B8CFF","emblem":"","glow":"#7B86FF","gradient":"linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)","icon":"","intensity":0.25,"label":"Website","particles":false,"shimmer":true,"title":"Link externo"}},"discord_invite":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Entre no servidor pelo Discord","color":"#5865F2","color2":"#7289DA","emblem":"","glow":"#5865F2","gradient":"linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)","icon":"","intensity":0.3,"label":"Discord","particles":true,"shimmer":true,"title":"Convite do Discord"}},"twitch":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe as transmissões ao vivo","color":"#9146FF","color2":"#C084FC","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/twitch_icon.png","glow":"#A970FF","gradient":"linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)","icon":"","intensity":0.32,"label":"Twitch","particles":true,"shimmer":true,"title":"Canal da Twitch"}},"twitter":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"x":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"xbox":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Perfil e atividades no Xbox","color":"#107C10","color2":"#52B043","emblem":"","glow":"#2ECC40","gradient":"linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)","icon":"","intensity":0.28,"label":"Xbox","particles":true,"shimmer":false,"title":"Perfil do Xbox"}},"youtube":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe os vídeos e conteúdos","color":"#FF0033","color2":"#FF5A5F","emblem":"","glow":"#FF0033","gradient":"linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)","icon":"","intensity":0.3,"label":"YouTube","particles":false,"shimmer":true,"title":"Canal do YouTube"}}}};
+  const WEBSITE_PANEL_EMBEDDED = {"social_fallback":{"custom":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link personalizado","color":"#8B5CF6","color2":"#EC4899","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/custom_icon.png","glow":"#A855F7","gradient":"linear-gradient(135deg, #7C3AED 0%, #8B5CF6 48%, #EC4899 100%)","icon":"","intensity":0.28,"label":"Personalizado","particles":true,"shimmer":true,"title":"Link personalizado"}},"default":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Link externo","color":"#6D7CFF","color2":"#9B8CFF","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/default_icon.png","glow":"#7B86FF","gradient":"linear-gradient(135deg, #4F5FD7 0%, #6D7CFF 52%, #9B8CFF 100%)","icon":"","intensity":0.25,"label":"Website","particles":false,"shimmer":true,"title":"Link externo"}},"discord_invite":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Entre no servidor pelo Discord","color":"#5865F2","color2":"#7289DA","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/discord_icon.png","glow":"#5865F2","gradient":"linear-gradient(135deg, #404EED 0%, #5865F2 55%, #7289DA 100%)","icon":"","intensity":0.3,"label":"Discord","particles":true,"shimmer":true,"title":"Convite do Discord"}},"twitch":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe as transmissões ao vivo","color":"#9146FF","color2":"#C084FC","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/twitch_icon.png","glow":"#A970FF","gradient":"linear-gradient(135deg, #6441A5 0%, #9146FF 55%, #C084FC 100%)","icon":"","intensity":0.32,"label":"Twitch","particles":true,"shimmer":true,"title":"Canal da Twitch"}},"twitter":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/x_icon.png","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"x":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe no X","color":"#FFFFFF","color2":"#8A8A8A","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/x_icon.png","glow":"#FFFFFF","gradient":"linear-gradient(135deg, #080808 0%, #171717 55%, #3A3A3A 100%)","icon":"","intensity":0.24,"label":"X","particles":false,"shimmer":true,"title":"Perfil no X"}},"xbox":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Perfil e atividades no Xbox","color":"#107C10","color2":"#52B043","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/xbox_icon.png","glow":"#2ECC40","gradient":"linear-gradient(135deg, #075E0B 0%, #107C10 55%, #52B043 100%)","icon":"","intensity":0.28,"label":"Xbox","particles":true,"shimmer":false,"title":"Perfil do Xbox"}},"youtube":{"enabled":true,"type":"website_social","website":{"aura":true,"banner":"","bio":"Acompanhe os vídeos e conteúdos","color":"#FF0033","color2":"#FF5A5F","emblem":"https://raw.githubusercontent.com/Kazimuhwari-br/Velarion-Lumen-Website-Main/refs/heads/main/assets/img/social/youtube_icon.png","glow":"#FF0033","gradient":"linear-gradient(135deg, #B00020 0%, #FF0033 52%, #FF5A5F 100%)","icon":"","intensity":0.3,"label":"YouTube","particles":false,"shimmer":true,"title":"Canal do YouTube"}}}};
 
   let websitePanelCache = null;
   let websitePanelPromise = null;
@@ -1929,6 +1929,33 @@ function buildStatusVisualCard(player, ctx) {
     });
   }
 
+  function mergeSocialFallbackSources(...sources) {
+    const merged = {};
+
+    sources.forEach((source) => {
+      if (!source || typeof source !== "object" || Array.isArray(source)) return;
+
+      Object.entries(source).forEach(([key, definition]) => {
+        if (!definition || typeof definition !== "object" || Array.isArray(definition)) return;
+
+        const previous = merged[key] && typeof merged[key] === "object" ? merged[key] : {};
+        const previousWebsite = previous.website && typeof previous.website === "object" ? previous.website : {};
+        const nextWebsite = definition.website && typeof definition.website === "object" ? definition.website : {};
+
+        merged[key] = {
+          ...previous,
+          ...definition,
+          website: {
+            ...previousWebsite,
+            ...nextWebsite
+          }
+        };
+      });
+    });
+
+    return merged;
+  }
+
   async function loadWebsitePanel(ctx) {
     if (websitePanelPromise) return websitePanelPromise;
 
@@ -1961,11 +1988,11 @@ function buildStatusVisualCard(player, ctx) {
         ...WEBSITE_PANEL_EMBEDDED,
         ...contextPanel,
         ...remote,
-        social_fallback: {
-          ...(WEBSITE_PANEL_EMBEDDED.social_fallback || {}),
-          ...(contextPanel.social_fallback || {}),
-          ...(remote.social_fallback || {})
-        }
+        social_fallback: mergeSocialFallbackSources(
+          WEBSITE_PANEL_EMBEDDED.social_fallback || {},
+          contextPanel.social_fallback || {},
+          remote.social_fallback || {}
+        )
       };
     };
 
@@ -2100,16 +2127,23 @@ function buildStatusVisualCard(player, ctx) {
       return { key, data: root[key], source: "exact-key" };
     }
 
-    /* 2. Compatibilidade oficial entre X e o antigo Twitter. */
-    if (key === "x" && root.twitter && typeof root.twitter === "object") {
-      return { key: "twitter", data: root.twitter, source: "x-twitter-alias" };
+    /* 2. Variações normalizadas e aliases conhecidos (ex.: X/Twitter, *_url, *_link). */
+    for (const variant of socialKeyVariants(key)) {
+      if (variant !== key && root[variant] && typeof root[variant] === "object") {
+        return { key: variant, data: root[variant], source: "key-variant" };
+      }
     }
 
-    if (key === "twitter" && root.x && typeof root.x === "object") {
-      return { key: "x", data: root.x, source: "twitter-x-alias" };
+    /* 3. Aliases declarados dentro da própria definição.
+       Isso permite adicionar novas redes no website_panel sem alterar o renderer. */
+    for (const [definitionKey, definition] of Object.entries(root)) {
+      if (!definition || typeof definition !== "object" || Array.isArray(definition)) continue;
+      if (socialDefinitionAliases(definition, definitionKey).includes(key)) {
+        return { key: definitionKey, data: definition, source: "definition-alias" };
+      }
     }
 
-    /* 3. Type explícito só substitui a chave quando nomeia um visual concreto. */
+    /* 4. Type explícito só substitui a chave quando nomeia um visual concreto. */
     if (
       explicitType &&
       explicitType !== "website_social" &&
@@ -2119,7 +2153,7 @@ function buildStatusVisualCard(player, ctx) {
       return { key: explicitType, data: root[explicitType], source: "explicit-type" };
     }
 
-    /* Também permite type=x/twitter com compatibilidade cruzada. */
+    /* 5. Também permite type=x/twitter com compatibilidade cruzada. */
     if (explicitType === "x" && root.twitter && typeof root.twitter === "object") {
       return { key: "twitter", data: root.twitter, source: "type-x-twitter-alias" };
     }
@@ -2128,7 +2162,7 @@ function buildStatusVisualCard(player, ctx) {
       return { key: "x", data: root.x, source: "type-twitter-x-alias" };
     }
 
-    /* 4. Fallback apenas quando realmente não houver definição. */
+    /* 6. Fallback apenas quando realmente não houver definição. */
     if (root.default && typeof root.default === "object") {
       return { key: "default", data: root.default, source: "default" };
     }
@@ -2311,7 +2345,7 @@ function buildStatusVisualCard(player, ctx) {
             </div>
 
             ${emblem
-              ? `<img class="vl-social-clan-card__emblem" data-social-media-role="emblem" src="${esc(emblem)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+              ? `<img class="vl-social-clan-card__emblem" data-social-media-role="emblem" src="${esc(emblem)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.closest('.vl-social-clan-card');if(c)c.setAttribute('data-social-has-emblem','0');this.remove();">`
               : `<span class="vl-social-clan-card__ghost-emblem" aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
             }
 

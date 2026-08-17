@@ -10,9 +10,11 @@
   const EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
   const EXTENSIONS_DATA_URL = EXTENSIONS_BASE_URL + "/information_panel.json";
   const SERVER_PANEL_DATA_URL = EXTENSIONS_BASE_URL + "/server_panel.json";
+  const WEBSITE_PANEL_DATA_URL = EXTENSIONS_BASE_URL + "/website_panel.json";
   const CLANS_DATA_URL = "https://kazimuhwaribedrock-clans-default-rtdb.firebaseio.com/clanPlayers.json";
 
   let extensionsData = null;
+  let websitePanelData = null;
   let clansData = {};
   let profilePlayersDataSource = {};
 
@@ -1934,6 +1936,8 @@
       DEFAULT_PLAYER_BANNER,
       DEFAULT_PLAYER_CHARACTER,
       extensionsData,
+      websitePanel: websitePanelData || undefined,
+      website_panel: websitePanelData || undefined,
       clanPlayers: clansData || {},
       clansData: clansData || {},
       profilePlayers: profilePlayersDataSource || {}
@@ -1998,16 +2002,18 @@
     setPageState("loading", "Abrindo registro", "Buscando o aventureiro " + slug + " no Codex.");
 
     try {
-      const [playersJson, extensionsJson, serverPanelJson, clansJson] = await Promise.all([
+      const [playersJson, extensionsJson, serverPanelJson, websitePanelJson, clansJson] = await Promise.all([
         fetchJsonSafe(PLAYER_DATA_URL),
         fetchJsonSafe(EXTENSIONS_DATA_URL),
         fetchJsonSafe(SERVER_PANEL_DATA_URL),
+        fetchJsonSafe(WEBSITE_PANEL_DATA_URL),
         fetchJsonSafe(CLANS_DATA_URL)
       ]);
 
       if (!playersJson) throw new Error("Não foi possível carregar profilePlayers.");
 
       extensionsData = attachServerPanelData(extensionsJson || {}, serverPanelJson || {});
+      websitePanelData = websitePanelJson && typeof websitePanelJson === "object" ? websitePanelJson : null;
       clansData = normalizeClans(clansJson || {});
       profilePlayersDataSource = playersJson || {};
       applyExtensionDataConfig();
