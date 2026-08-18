@@ -1,20 +1,26 @@
-CORREÇÃO PRONTA — VOLTAR DO PERFIL
+VELARION LUMEN — CORREÇÃO DE RETORNO DO PERFIL v18.6
 
-Arquivo corrigido:
+Arquivo pronto:
   pages/aventureiros.html
 
-Como usar:
-1. No repositório Velarion-Lumen-Website-Main, abra a pasta pages.
-2. Substitua o aventureiros.html atual pelo arquivo deste pacote.
-3. Faça commit/push.
-4. Aguarde o GitHub Pages atualizar.
-5. Teste: Aventureiros -> abra um jogador -> use o botão Voltar do navegador.
+COMO USAR
+1. Abra o repositório Velarion-Lumen-Website-Main.
+2. Entre na pasta pages.
+3. Substitua o aventureiros.html pelo arquivo deste pacote.
+4. Faça commit/push.
+5. Aguarde o GitHub Pages publicar.
+6. Faça uma atualização forçada no navegador (Ctrl+F5) UMA vez.
+7. Teste:
+   Aventureiros -> abrir um jogador -> Voltar do navegador.
 
-O que foi corrigido:
-Ao voltar pelo histórico, Edge/Chrome pode restaurar a página pelo BFCache com
-screenFade/transição ainda ativos e o estado interno do main.js bloqueado.
-O arquivo corrigido detecta essa restauração e recarrega somente quando encontra
-esse estado transitório preso, restaurando a lista corretamente.
+O QUE MUDOU
+A correção anterior dependia somente de pageshow.event.persisted.
+A v18.6:
+- marca quando a página é abandonada no meio da transição para o perfil;
+- limpa screenFade e estados visuais no pagehide, antes do BFCache salvar a página;
+- limpa novamente no pageshow;
+- ao realmente voltar de uma abertura marcada, faz um único reload para zerar
+  também isTransitionRunning/activePlayerId, que são variáveis privadas do main.js;
+- muda o cache-buster do main.js para ?v=18.6.
 
-Não precisa aplicar .diff.
-Não precisa alterar main.js para este teste.
+Não há arquivo .diff neste pacote.
