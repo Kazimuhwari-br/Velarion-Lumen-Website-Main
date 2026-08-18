@@ -13259,3 +13259,59 @@ a.vl-social-clan-card:focus-visible {
 .vl-social-clan-card__ghost-emblem {
   display: grid !important;
 }
+
+
+/* ============================================================
+   V20.54 — SOCIAL AVATAR CACHE
+   Foto real do jogador no quadrado esquerdo.
+   Prioridade: website_social_cache -> website_panel.icon -> letra.
+   ============================================================ */
+
+.vl-social-clan-card__icon {
+  position: relative !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important;
+}
+
+.vl-social-clan-card__icon > .vl-social-clan-card__icon-fallback,
+.vl-social-clan-card__icon > [data-social-media-role="icon"] {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+.vl-social-clan-card__icon-fallback {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  transition: opacity .15s ease !important;
+}
+
+.vl-social-clan-card__icon[data-social-icon-source="fallback"]
+  .vl-social-clan-card__icon-fallback {
+  opacity: 1 !important;
+}
+
+/* Avatar retornado pelas APIs: ocupa o quadrado como foto de perfil. */
+.vl-social-clan-card__icon[data-social-icon-source="website_social_cache"]
+  [data-social-media-role="icon"] {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: inherit !important;
+  image-rendering: auto !important;
+}
+
+/* Ícone manual/global continua com comportamento de logo. */
+.vl-social-clan-card__icon[data-social-icon-source="website_panel"]
+  [data-social-media-role="icon"] {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 6px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: inherit !important;
+}

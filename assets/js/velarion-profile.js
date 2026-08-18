@@ -2205,6 +2205,62 @@ function buildStatusVisualCard(player, ctx) {
       .filter(Boolean);
   }
 
+  /* V20.54 — avatar social por jogador.
+     website_social permanece intacto; o sincronizador privado grava apenas
+     website_social_cache.<rede>.icon no próprio registro do jogador. */
+  function getWebsiteSocialCacheRoot(player) {
+    const source =
+      player?.website_social_cache ||
+      player?.websiteSocialCache ||
+      {};
+
+    return source && typeof source === "object" && !Array.isArray(source)
+      ? source
+      : {};
+  }
+
+  function resolveWebsiteSocialCacheEntry(player, ...candidateKeys) {
+    const root = getWebsiteSocialCacheRoot(player);
+    const variants = new Set();
+
+    candidateKeys.forEach((candidateKey) => {
+      socialKeyVariants(candidateKey).forEach((variant) => variants.add(variant));
+      const normalized = normalizeSocialKey(candidateKey);
+      if (normalized) variants.add(normalized);
+    });
+
+    for (const variant of variants) {
+      const exact = root?.[variant];
+      if (typeof exact === "string") return { key: variant, data: { icon: exact } };
+      if (exact && typeof exact === "object" && !Array.isArray(exact)) {
+        return { key: variant, data: exact };
+      }
+    }
+
+    for (const [cacheKey, cacheValue] of Object.entries(root)) {
+      if (!variants.has(normalizeSocialKey(cacheKey))) continue;
+      if (typeof cacheValue === "string") return { key: cacheKey, data: { icon: cacheValue } };
+      if (cacheValue && typeof cacheValue === "object" && !Array.isArray(cacheValue)) {
+        return { key: cacheKey, data: cacheValue };
+      }
+    }
+
+    return null;
+  }
+
+  function getWebsiteSocialCachedIcon(player, ...candidateKeys) {
+    const resolved = resolveWebsiteSocialCacheEntry(player, ...candidateKeys);
+    const data = resolved?.data || {};
+    return cleanValue(
+      data.icon ||
+      data.avatar ||
+      data.profile_image_url ||
+      data.profile_image ||
+      data.image ||
+      ""
+    );
+  }
+
   function buildSocialHref(key, value) {
     const raw = cleanValue(value);
     if (!raw) return "";
@@ -2288,9 +2344,21 @@ function buildStatusVisualCard(player, ctx) {
           const title = cleanValue(website.title || website.label) || socialDefaultTitle(entry.key);
           const label = cleanValue(website.label) || title;
           const bio = cleanValue(website.bio) || `Acesse ${label}.`;
-          /* V20.51 — cada mídia lê SOMENTE o próprio campo.
-             Nunca reutilizar icon como emblem/banner, nem qualquer outra combinação. */
-          const icon = cleanValue(website.icon);
+          /* V20.54 — o avatar do jogador vem do cache privado no profilePlayers.
+             website.icon continua sendo apenas fallback manual/global da rede.
+             emblem e banner permanecem independentes. */
+          const panelIcon = cleanValue(website.icon);
+          const cachedIcon = getWebsiteSocialCachedIcon(player, entry.key, resolved?.key);
+          const icon = cachedIcon || panelIcon;
+          const iconSource = cachedIcon
+            ? "website_social_cache"
+            : panelIcon
+              ? "website_panel"
+              : "fallback";
+          const iconFallback = cachedIcon && panelIcon && cachedIcon !== panelIcon
+            ? panelIcon
+            : "";
+          const iconLetter = cleanValue(label).slice(0, 1).toUpperCase() || "•";
           const emblem = cleanValue(website.emblem);
           const banner = cleanValue(website.banner);
           const gradient = cleanValue(website.gradient);
@@ -2330,10 +2398,11 @@ function buildStatusVisualCard(player, ctx) {
             <div class="vl-social-clan-card__left">
               <span class="vl-social-clan-card__tag">${esc(label)}</span>
 
-              <span class="vl-social-clan-card__icon">
+              <span class="vl-social-clan-card__icon" data-social-icon-source="${esc(iconSource)}">
+                <span class="vl-social-clan-card__icon-fallback" aria-hidden="true">${esc(iconLetter)}</span>
                 ${icon
-                  ? `<img data-social-media-role="icon" src="${esc(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
-                  : `<span aria-hidden="true">${esc(label.slice(0, 1).toUpperCase())}</span>`
+                  ? `<img data-social-media-role="icon" data-social-icon-source="${esc(iconSource)}"${iconFallback ? ` data-social-fallback-src="${esc(iconFallback)}"` : ""} src="${esc(icon)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var p=this.parentElement,c=this.closest('.vl-social-clan-card'),f=this.dataset.socialFallbackSrc;if(f){this.dataset.socialFallbackSrc='';if(p)p.dataset.socialIconSource='website_panel';if(c){c.dataset.socialIconSource='website_panel';c.dataset.socialMediaSource='website_panel';}this.src=f;return;}if(p)p.dataset.socialIconSource='fallback';if(c){c.dataset.socialIconSource='fallback';c.dataset.socialMediaSource='fallback';c.dataset.socialHasIcon='0';}this.remove();">`
+                  : ""
                 }
               </span>
             </div>
@@ -2360,7 +2429,8 @@ function buildStatusVisualCard(player, ctx) {
                  rel="noopener noreferrer"
                  data-social-key="${esc(entry.key)}"
                  data-social-type="${esc(type)}"
-                 data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(icon || emblem || banner ? "website_panel" : "fallback")}"
+                 data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(cachedIcon ? "website_social_cache" : (icon || emblem || banner ? "website_panel" : "fallback"))}"
+                 data-social-icon-source="${esc(iconSource)}"
                  data-social-has-icon="${icon ? "1" : "0"}"
                  data-social-has-emblem="${emblem ? "1" : "0"}"
                  data-social-has-banner="${banner ? "1" : "0"}"
@@ -2373,7 +2443,8 @@ function buildStatusVisualCard(player, ctx) {
             <article class="${classes}"
                      data-social-key="${esc(entry.key)}"
                      data-social-type="${esc(type)}"
-                     data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(icon || emblem || banner ? "website_panel" : "fallback")}"
+                     data-social-visual="${esc(resolved?.key || "default")}" data-social-media-source="${esc(cachedIcon ? "website_social_cache" : (icon || emblem || banner ? "website_panel" : "fallback"))}"
+                     data-social-icon-source="${esc(iconSource)}"
                  data-social-has-icon="${icon ? "1" : "0"}"
                  data-social-has-emblem="${emblem ? "1" : "0"}"
                  data-social-has-banner="${banner ? "1" : "0"}"
