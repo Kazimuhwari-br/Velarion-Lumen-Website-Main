@@ -1,0 +1,20 @@
+CORREÇÃO PRONTA — VOLTAR DO PERFIL
+
+Arquivo corrigido:
+  pages/aventureiros.html
+
+Como usar:
+1. No repositório Velarion-Lumen-Website-Main, abra a pasta pages.
+2. Substitua o aventureiros.html atual pelo arquivo deste pacote.
+3. Faça commit/push.
+4. Aguarde o GitHub Pages atualizar.
+5. Teste: Aventureiros -> abra um jogador -> use o botão Voltar do navegador.
+
+O que foi corrigido:
+Ao voltar pelo histórico, Edge/Chrome pode restaurar a página pelo BFCache com
+screenFade/transição ainda ativos e o estado interno do main.js bloqueado.
+O arquivo corrigido detecta essa restauração e recarrega somente quando encontra
+esse estado transitório preso, restaurando a lista corretamente.
+
+Não precisa aplicar .diff.
+Não precisa alterar main.js para este teste.

@@ -359,6 +359,26 @@
     <a href="../index.html">Voltar ao Hub</a>
   </footer>
 
+  <!-- Corrige o estado visual/JS restaurado pelo BFCache ao voltar de um perfil standalone. -->
+  <script>
+    (function () {
+      window.addEventListener("pageshow", function (event) {
+        if (!event.persisted) return;
+
+        var fade = document.getElementById("screenFade");
+        var staleTransition =
+          (fade && fade.classList.contains("active")) ||
+          document.querySelector(
+            "#players.transitioning, .transition-layer, .card-faded, .card-selected-source"
+          );
+
+        if (staleTransition) {
+          window.location.reload();
+        }
+      });
+    })();
+  </script>
+
   <script src="../assets/js/velarion-codex-card.js?v=codex-card-v1" defer></script>
   <script src="../assets/js/main.js?v=18.4" defer></script>
 </body>
