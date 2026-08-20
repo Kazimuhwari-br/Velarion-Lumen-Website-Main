@@ -8,6 +8,7 @@
 (function(window, document) {
   "use strict";
 
+  const S = window.VelarionShared || {};
   const PREVIEW_MODE = false;
 
   function getCurrentScriptUrl() {
@@ -68,22 +69,11 @@
     profilePlayers = asObject(source.profilePlayers || source.playersData || profilePlayers);
   }
 
-    function escapeHTML(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    const escapeHTML = S.escapeHtml;
 
-    function isValidHexColor(value) {
-      return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(value ?? "").trim());
-    }
+    const isValidHexColor = S.isValidHexColor;
 
-    function getCleanText(value) {
-      return String(value ?? "").trim();
-    }
+    const getCleanText = S.cleanValue;
 
     function getMediaSource(value) {
       if (typeof value === "string") return getCleanText(value);
@@ -907,64 +897,11 @@
     }
 
 
-    // ===== Cores dos apelidos: compatível com o sistema antigo =====
-    const mcColors = {
-      "0": "#000000",
-      "1": "#0000AA",
-      "2": "#00AA00",
-      "3": "#00AAAA",
-      "4": "#AA0000",
-      "5": "#AA00AA",
-      "6": "#FFAA00",
-      "7": "#AAAAAA",
-      "8": "#555555",
-      "9": "#5555FF",
-      "a": "#55FF55",
-      "b": "#55FFFF",
-      "c": "#FF5555",
-      "d": "#FF55FF",
-      "e": "#FFFF55",
-      "f": "#FFFFFF",
-      "g": "#DDD605",
-      "h": "#E3E3E3",
-      "i": "#CECACA",
-      "j": "#443A3B",
-      "m": "#971607",
-      "n": "#B4684D",
-      "p": "#DEB12D",
-      "q": "#47A036",
-      "s": "#2CBAA8",
-      "t": "#21497B",
-      "u": "#9A5CC6",
-      "v": "#EB7114"
-    };
+    const mcColors = S.mcColors;
 
-    const GradientsColor = {
-      blue_color1: ["§1", "§9", "§t", "§3", "§s", "§b", "§3", "§9", "§1"],
-      ocean_color1: ["§1", "§3", "§b", "§s", "§b", "§3", "§1"],
-      sky_color1: ["§9", "§b", "§f", "§b", "§9"],
-      yellow_color1: ["§6", "§p", "§g", "§e", "§g", "§p", "§6"],
-      gold_color1: ["§6", "§g", "§p", "§h", "§p", "§g", "§6"],
-      sun_color1: ["§f", "§e", "§g", "§p", "§6", "§v", "§n"],
-      black_color1: ["§0", "§8", "§7", "§f", "§7", "§8", "§0"],
-      shadow_color1: ["§0", "§j", "§8", "§7", "§8", "§j", "§0"],
-      gray_color1: ["§8", "§7", "§f", "§7", "§8"],
-      red_color1: ["§4", "§m", "§c", "§m", "§4"],
-      fire_color1: ["§4", "§c", "§6", "§e", "§6", "§c", "§4"],
-      green_color1: ["§2", "§a", "§q", "§a", "§2"],
-      nature_color1: ["§2", "§a", "§f", "§a", "§2"],
-      purple_color1: ["§5", "§d", "§u", "§d", "§5"],
-      mystic_color1: ["§5", "§u", "§f", "§u", "§5"],
-      white_color1: ["§f", "§h", "§i", "§h", "§f"],
-      metal_color1: ["§8", "§i", "§h", "§f", "§h", "§i", "§8"],
-      rainbow_color1: ["§4", "§6", "§e", "§a", "§b", "§9", "§5"],
-      soft_rainbow_color1: ["§c", "§6", "§e", "§a", "§b", "§d"],
-      kazin_color1: ["§s", "§3", "§t", "§5", "§d", "§u", "§n", "§v", "§p", "§6", "§g", "§e", "§b"]
-    };
+    const GradientsColor = S.GradientsColor;
 
-    function stripMinecraftCodes(text) {
-      return String(text ?? "").replace(/§./g, "");
-    }
+    const stripMinecraftCodes = S.stripMinecraftCodes;
 
     function minecraftToHtml(text) {
       if (text == null) return "";
