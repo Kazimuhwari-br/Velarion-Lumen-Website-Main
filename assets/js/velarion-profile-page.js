@@ -1986,6 +1986,11 @@
     if (window.VelarionCardFX && typeof window.VelarionCardFX.refresh === "function") {
       window.VelarionCardFX.refresh(root);
     }
+    if (typeof window.VelarionProfile.refreshComponents === "function") {
+      window.VelarionProfile.refreshComponents(root).catch((error) => {
+        console.warn("[VelarionProfilePage] Falha ao hidratar módulos do perfil.", error);
+      });
+    }
 
     setupAchievementGalleries(root);
     updatePageMetadata(player);
@@ -2031,6 +2036,9 @@
         return;
       }
 
+      if (window.VelarionProfile?.componentsReady) {
+        await window.VelarionProfile.componentsReady;
+      }
       renderProfile(player);
     } catch (error) {
       console.error("[VelarionProfilePage]", error);

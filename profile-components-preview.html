@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velarion Profile — Components Preview</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; padding: 28px; background: #070a18; color: #eef3ff; }
+    .preview-shell { width: min(1180px, 100%); margin: 0 auto; }
+    .preview-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .preview-toolbar strong { margin-right: auto; }
+    .preview-toolbar button { border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 10px 14px; background: rgba(255,255,255,.055); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+    .preview-toolbar button.is-active { background: rgba(139,108,255,.20); border-color: rgba(139,108,255,.55); }
+    #previewMount { min-height: 320px; }
+    .preview-error { padding: 20px; border: 1px solid #8b3340; border-radius: 14px; background: rgba(139,51,64,.15); white-space: pre-wrap; }
+  </style>
+  <script src="assets/js/velarion-profile-core.js"></script>
+</head>
+<body>
+  <main class="preview-shell">
+    <div class="preview-toolbar" aria-label="Selecionar componente">
+      <strong>Preview autônomo — sem velarion-profile.js</strong>
+      <button type="button" data-component="document">1. Documento</button>
+      <button type="button" data-component="progression">2. Progression</button>
+      <button type="button" data-component="public-record">3. Public Record</button>
+    </div>
+    <section id="previewMount" aria-live="polite"></section>
+  </main>
+
+  <script>
+    (function() {
+      "use strict";
+
+      const MODULES = {
+        document: {
+          css: "assets/css/velarion-profile-document.css",
+          js: "assets/js/velarion-profile-document.js",
+          cssId: "preview-document-css",
+          jsId: "preview-document-js",
+          global: "VelarionProfileDocument"
+        },
+        progression: {
+          css: "assets/css/velarion-profile-progression.css",
+          js: "assets/js/velarion-profile-progression.js",
+          cssId: "preview-progression-css",
+          jsId: "preview-progression-js",
+          global: "VelarionProfileProgression"
+        },
+        "public-record": {
+          css: "assets/css/velarion-profile-public-record.css",
+          js: "assets/js/velarion-profile-public-record.js",
+          cssId: "preview-public-record-css",
+          jsId: "preview-public-record-js",
+          global: "VelarionProfilePublicRecord"
+        }
+      };
+
+      const previewPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVR42mNk+M/wn4GBgYGJAQoAHgQCAedzvZkAAAAASUVORK5CYII=";
+
+      const player = {
+        _id: "ID_42",
+        id: "ID_42",
+        verified: true,
+        profile: {
+          display_name: "Aventureiro Lumen",
+          display_username: "Lumen_42",
+          title: "Guardião das Estrelas",
+          gender: "default"
+        },
+        country: { code: "", name: "Brasil" },
+        clan: "VL",
+        presence: { online: true },
+        stats: {
+          progression: { level: 427, max_level: 1000, xp: 9123456 },
+          points: 138420,
+          timestamps: { account_created_at: "2025-04-21T18:35:16Z" },
+          rarity: { id: "rarity_id_legendary" },
+          combat: { kills: 1284, deaths: 316, assists: 902, kd_ratio: 4.06 }
+        },
+        badges: {
+          levelrank_id: "levelrank_id_legend",
+          role: "Aventureiro",
+          rank: "Lendário"
+        },
+        theme: {
+          profile: { accent: "#8b6cff" },
+          card_embed: {
+            avatar_bottom_image: previewPixel,
+            character_image: previewPixel,
+            card_color: {
+              cc_id1: "#8b6cff",
+              cc_id2: "#4bd8ff",
+              cc_id3: "#ff5bbd",
+              cc_id4: "#f4df9a",
+              cc_speed: 10,
+              cc_type: "gradient"
+            }
+          }
+        }
+      };
+
+      const context = {
+        extensionsData: {
+          badges_levelranks: {
+            levelrank_id_legend: {
+              enabled: true,
+              label: "Lendário",
+              progression: { level_min: 400, level_max: 499 },
+              website: {
+                color: "#f4df9a",
+                color2: "#8b6cff",
+                glow: "#f4df9a",
+                label: "Lendário"
+              }
+            }
+          },
+          badges_raritys: {
+            rarity_id_legendary: {
+              enabled: true,
+              label: "Legendary",
+              website: { stars: 5, max_stars: 5, color: "#f4df9a" }
+            }
+          },
+          badges_verified: {
+            verified_id_official: {
+              enabled: true,
+              label: "Verificado",
+              website: {
+                label: "Verificado",
+                description: "Registro oficial do aventureiro",
+                issuer: "Velarion Lumen",
+                color: "#62d9ff",
+                color2: "#8b6cff",
+                glow: "#62d9ff"
+              }
+            }
+          },
+          badges_fallbacks: {
+            character: { website: { default: previewPixel } }
+          }
+        },
+        clanPlayers: {
+          VL: {
+            name: "VL",
+            title: "Velarion Lumen",
+            bio: "Clã de demonstração do preview autônomo.",
+            theme: { card_embed: { card_color: { cc_id1: "#c74b5d", cc_id2: "#d98a96", cc_type: "gradient" } } }
+          }
+        }
+      };
+
+      const mount = document.getElementById("previewMount");
+      const buttons = Array.from(document.querySelectorAll("[data-component]"));
+      const loaded = new Map();
+
+      function loadModule(name) {
+        if (loaded.has(name)) return loaded.get(name);
+        const spec = MODULES[name];
+        const promise = new Promise((resolve, reject) => {
+          if (!document.getElementById(spec.cssId)) {
+            const link = document.createElement("link");
+            link.id = spec.cssId;
+            link.rel = "stylesheet";
+            link.href = spec.css;
+            document.head.appendChild(link);
+          }
+          if (window[spec.global]) return resolve(window[spec.global]);
+          let script = document.getElementById(spec.jsId);
+          if (!script) {
+            script = document.createElement("script");
+            script.id = spec.jsId;
+            script.src = spec.js;
+            script.async = false;
+            document.head.appendChild(script);
+          }
+          script.addEventListener("load", () => resolve(window[spec.global]), { once: true });
+          script.addEventListener("error", () => reject(new Error("Falha ao carregar " + spec.js)), { once: true });
+        });
+        loaded.set(name, promise);
+        return promise;
+      }
+
+      async function show(name) {
+        const spec = MODULES[name] || MODULES.document;
+        buttons.forEach((button) => button.classList.toggle("is-active", button.dataset.component === name));
+        try {
+          const api = await loadModule(name);
+          if (!api || typeof api.render !== "function") throw new Error(spec.global + ".render não está disponível.");
+          mount.innerHTML = api.render(player, context);
+          api.hydrate?.(mount);
+          document.documentElement.dataset.previewComponent = name;
+          document.documentElement.dataset.previewRootClass = mount.firstElementChild?.className || "";
+          history.replaceState(null, "", "?component=" + encodeURIComponent(name));
+        } catch (error) {
+          mount.innerHTML = '<pre class="preview-error"></pre>';
+          mount.firstElementChild.textContent = String(error?.stack || error);
+          document.documentElement.dataset.previewError = String(error?.message || error);
+        }
+      }
+
+      buttons.forEach((button) => button.addEventListener("click", () => show(button.dataset.component)));
+      const initial = new URLSearchParams(location.search).get("component");
+      show(Object.prototype.hasOwnProperty.call(MODULES, initial) ? initial : "document");
+    })();
+  </script>
+</body>
+</html>

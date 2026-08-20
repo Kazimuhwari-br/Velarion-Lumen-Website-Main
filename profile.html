@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Perfil público de aventureiro no Velarion Lumen." />
+  <meta name="robots" content="index,follow" />
+  <title>Perfil | Velarion Lumen</title>
+
+  <link rel="stylesheet" href="assets/css/style.css?v=20.54" />
+  <link rel="stylesheet" href="assets/css/velarion-card.css?v=20.54" />
+  <link rel="stylesheet" href="assets/css/velarion-profile.css?v=20.54" />
+  <link id="velarion-card-fx-css" rel="stylesheet" href="assets/css/velarion-card-fx.css?v=20.54" />
+
+  <style>
+    html, body { min-height: 100%; background: #070a18; }
+    body.vl-standalone-profile-page { margin: 0; overflow: hidden; }
+    body.vl-standalone-profile-page .detail-view { opacity: 1; }
+    .vl-profile-page-state {
+      width: min(560px, calc(100% - 40px));
+      min-height: 220px;
+      margin: 14vh auto 0;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 10px;
+      padding: 32px;
+      text-align: center;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(15,20,42,.92), rgba(7,10,24,.94));
+      box-shadow: 0 28px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+      color: #eef3ff;
+    }
+    .vl-profile-page-state > span {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      font-size: 1.45rem;
+      background: rgba(111,102,255,.14);
+      border: 1px solid rgba(139,108,255,.34);
+      box-shadow: 0 0 28px rgba(111,102,255,.22);
+    }
+    .vl-profile-page-state strong { font-size: 1.15rem; letter-spacing: .02em; }
+    .vl-profile-page-state p { margin: 0; max-width: 440px; color: rgba(226,233,255,.68); line-height: 1.55; }
+  </style>
+</head>
+<body class="vl-standalone-profile-page">
+  <main id="profileRoot" class="detail-view active ready" data-state="loading" aria-label="Perfil do aventureiro">
+    <section class="vl-profile-page-state" role="status" aria-live="polite">
+      <span>✦</span>
+      <strong>Abrindo registro</strong>
+      <p>Sincronizando o perfil público do aventureiro.</p>
+    </section>
+  </main>
+
+  <!-- Ordem intencional: card -> FX -> profile -> página standalone. -->
+  <script src="assets/js/velarion-card.js?v=20.54" defer></script>
+  <script id="velarion-card-fx-js" src="assets/js/velarion-card-fx.js?v=20.54" defer></script>
+  <script src="assets/js/velarion-profile.js?v=20.54" defer></script>
+  <script src="assets/js/velarion-profile-page.js?v=20.54" defer></script>
+</body>
+</html>

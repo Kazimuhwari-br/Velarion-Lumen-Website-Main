@@ -762,7 +762,7 @@
 }@media (prefers-reduced-motion: reduce){.vl-profile-public-id-card[data-vp-card-color-type="rainbow"],
   .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] .vl-profile-public-id-card__shine {
     animation: none !important;
-  }}.vl-profile-panel--overview .vl-profile-public-id-card{
+  }}.vl-profile-record-grid--document-only .vl-profile-public-id-card{
   border-color:rgba(155,128,180,.28) !important;
   background:
     radial-gradient(circle at 86% 34%,rgba(108,68,145,.14),transparent 32%),
@@ -771,29 +771,29 @@
   box-shadow:
     inset 0 1px rgba(255,255,255,.09),
     0 12px 30px rgba(0,0,0,.22) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__shine{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__shine{
   opacity:.52 !important;
   filter:none !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__top,
-.vl-profile-panel--overview .vl-profile-public-id-card__footer{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__top,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__footer{
   color:#ececf1 !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__data small{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__data small{
   color:#c8c2cc !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__data strong{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__data strong{
   color:#fff !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__data span{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__data span{
   color:#f0edf2 !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card{
   border-color:rgba(180,164,193,.30) !important;
   box-shadow:
     inset 0 1px rgba(255,255,255,.09),
     inset 0 -1px rgba(255,255,255,.025),
     0 13px 30px rgba(0,0,0,.22) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card__data strong{
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card__data strong{
   text-shadow:0 0 16px rgba(255,255,255,.055);
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="none"],
-.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="rotate"],
-.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="pulse"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="none"],
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rotate"],
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="pulse"] {
   border-color: color-mix(in srgb, var(--id-accent) 50%, rgba(255,255,255,.24)) !important;
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--id-bg) 38%, rgba(255,255,255,.13)), transparent 34%),
@@ -808,7 +808,7 @@
     inset 0 0 34px color-mix(in srgb, var(--id-accent) 12%, transparent),
     0 18px 44px rgba(0,0,0,.28),
     0 0 30px color-mix(in srgb, var(--id-accent) 15%, transparent) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
   border-color: color-mix(in srgb, var(--id-accent) 42%, rgba(255,255,255,.22)) !important;
   background:
     linear-gradient(118deg, rgba(255,255,255,.12), transparent 20%, transparent 68%, rgba(255,255,255,.06)),
@@ -819,7 +819,7 @@
     inset 0 0 42px rgba(0,0,0,.18),
     0 18px 44px rgba(0,0,0,.28),
     0 0 30px color-mix(in srgb, var(--id-accent) 15%, transparent) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
   border-color: color-mix(in srgb, var(--id-accent) 42%, rgba(255,255,255,.22)) !important;
   background:
     linear-gradient(118deg, rgba(255,255,255,.12), transparent 20%, transparent 68%, rgba(255,255,255,.06)),
@@ -835,10 +835,10 @@
 }@keyframes vlProfileDocumentWholeCardFlow {
   from { background-position: 0 0, 0 0, 0% 0; }
   to   { background-position: 0 0, 0 0, 300% 0; }
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
   opacity: .28 !important;
   mix-blend-mode: screen;
-}@media (prefers-reduced-motion: reduce){.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
+}@media (prefers-reduced-motion: reduce){.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
     animation: none !important;
   }}.vl-profile-public-id-card {
   --vp-doc-dark-1: rgba(4, 7, 14, .92);
@@ -950,9 +950,9 @@
   -webkit-mask-image: none;
   mask-image: none;
   animation: none;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="none"],
-.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="rotate"],
-.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="pulse"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="none"],
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rotate"],
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="pulse"] {
   border-color: color-mix(in srgb, var(--id-accent) 46%, rgba(255,255,255,.14)) !important;
   background:
     radial-gradient(circle at 18% 16%, color-mix(in srgb, var(--id-bg) 16%, transparent), transparent 36%),
@@ -968,7 +968,7 @@
     inset 0 0 50px rgba(0,0,0,.28),
     0 18px 44px rgba(0,0,0,.32),
     0 0 24px color-mix(in srgb, var(--id-accent) 10%, transparent) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
   border-color: color-mix(in srgb, var(--id-accent) 44%, rgba(255,255,255,.14)) !important;
   background:
     radial-gradient(circle at 17% 12%, rgba(255,255,255,.035), transparent 30%),
@@ -982,7 +982,7 @@
     inset 0 0 50px rgba(0,0,0,.30),
     0 18px 44px rgba(0,0,0,.32),
     0 0 24px color-mix(in srgb, var(--id-accent) 10%, transparent) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
   border-color: color-mix(in srgb, var(--id-accent) 44%, rgba(255,255,255,.14)) !important;
   background:
     radial-gradient(circle at 17% 12%, rgba(255,255,255,.03), transparent 30%),
@@ -998,7 +998,7 @@
     inset 0 0 50px rgba(0,0,0,.30),
     0 18px 44px rgba(0,0,0,.32),
     0 0 24px color-mix(in srgb, var(--id-accent) 10%, transparent) !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type]::before {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::before {
   background:
     linear-gradient(var(--vp-doc-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--vp-doc-grid) 1px, transparent 1px),
@@ -1006,9 +1006,9 @@
     linear-gradient(90deg, var(--vp-doc-grid-soft) 1px, transparent 1px) !important;
   background-size: 34px 34px, 34px 34px, 8.5px 8.5px, 8.5px 8.5px !important;
   opacity: .27 !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type]::after {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::after {
   opacity: .44 !important;
-}.vl-profile-panel--overview .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
+}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
   opacity: .38 !important;
   mix-blend-mode: screen !important;
 }.vl-profile-public-id-card__identity-tags {

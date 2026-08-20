@@ -2958,3 +2958,30 @@
   --vl-section-accent-2: #ffb6d2;
   --vl-section-glow: rgba(216,95,146,.10);
 }.vl-profile-section-head--public > span::after { content: "▣"; }
+
+/* V21 — fallback autônomo de Cargo/Rank (preview sem velarion-profile.css) */
+.vl-public-systems-switcher__content .vl-public-module-badge-card {
+  width: 100%;
+  min-height: 170px;
+  padding: 18px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 16px;
+  background: rgba(255,255,255,.045);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+}
+.vl-public-systems-switcher__content .vl-public-module-badge-card strong {
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 950;
+  overflow-wrap: anywhere;
+}
+.vl-public-systems-switcher__content .vl-public-module-badge-card span {
+  color: rgba(240,244,255,.62);
+  font-size: 13px;
+  font-weight: 700;
+}
