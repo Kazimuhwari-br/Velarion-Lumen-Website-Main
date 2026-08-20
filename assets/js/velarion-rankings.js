@@ -10,6 +10,14 @@
 (function () {
   "use strict";
 
+  var _s = window.VelarionShared || {};
+  var cleanValue = _s.cleanValue || function (v) { return v == null ? "" : String(v); };
+  var escapeHtml = _s.escapeHtml || function (v) { return String(v ?? ""); };
+  var stripMinecraftCodes = _s.stripMinecraftCodes || function (v) { return String(v ?? ""); };
+  var hexToRgba = _s.hexToRgba || function (hex, alpha) { return "rgba(139,108,255," + alpha + ")"; };
+  var formatNumberBR = _s.formatNumberBR || function (v) { return (Number(v) || 0).toLocaleString("pt-BR"); };
+  var normalizePossibleUrl = _s.normalizePossibleUrl || function (v) { return String(v || "").trim(); };
+
   var ROOT_ID = "rankingsList";
   var READY_CLASS = "vl-rankings-world-ready";
   var PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
@@ -73,32 +81,6 @@
     if (className) node.className = className;
     if (html != null) node.innerHTML = html;
     return node;
-  }
-
-  function escapeHtml(value) {
-    return String(value == null ? "" : value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function cleanValue(value) {
-    if (value == null || typeof value === "object") return "";
-    var text = String(value).trim();
-    return text === "[object Object]" ? "" : text;
-  }
-
-  function stripMinecraftCodes(value) {
-    return String(value == null ? "" : value)
-      .replace(/§[0-9A-FK-OR]/gi, "")
-      .replace(/&[0-9A-FK-OR]/gi, "")
-      .trim();
-  }
-
-  function formatNumberBR(value) {
-    return (Number(value) || 0).toLocaleString("pt-BR");
   }
 
   function normalizeTrophyCategory(value) {
@@ -179,40 +161,22 @@
     return !!(player && player.status && player.status.online === true);
   }
 
-  function normalizeUrl(value) {
-    var raw = "";
-    if (typeof value === "string") raw = value.trim();
-    else if (value && typeof value === "object" && !Array.isArray(value)) raw = cleanValue(value.url || value.src || value.image || value.path || "");
-    if (!raw) return "";
-    raw = raw.replace(/^['"]+|['"]+$/g, "").replace(/\\\//g, "/").replace(/&amp;/g, "&");
-    if (/^https?:\/\/(?:www\.)?github\.com\/.+\/blob\//i.test(raw)) {
-      raw = raw.replace(/^https?:\/\/(?:www\.)?github\.com\//i, "https://raw.githubusercontent.com/").replace("/blob/", "/");
-    }
-    if (/^data:(?:image|video)\//i.test(raw)) return raw;
-    try {
-      var url = new URL(raw, window.location.href);
-      return (url.protocol === "http:" || url.protocol === "https:") ? url.href : "";
-    } catch (e) {
-      return "";
-    }
-  }
-
   function getAvatar(player) {
-    return normalizeUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.avatar_bottom_image) || FALLBACK_AVATAR || "";
+    return normalizePossibleUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.avatar_bottom_image) || FALLBACK_AVATAR || "";
   }
 
   function getBanner(player) {
-    return normalizeUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.banner_bottom_image) || FALLBACK_BANNER || "";
+    return normalizePossibleUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.banner_bottom_image) || FALLBACK_BANNER || "";
   }
 
-  function getCharacter(player) { return normalizeUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.character_image); }
+  function getCharacter(player) { return normalizePossibleUrl(player && player.theme && player.theme.card_embed && player.theme.card_embed.character_image); }
 
   function extractFallbackFromOnError(node) {
     if (!node) return "";
     var code = node.getAttribute("onerror") || "";
     var match = code.match(/\bthis\.src\s*=\s*['"]([^'"]+)['"]/i);
     if (!match || !match[1]) return "";
-    return normalizeUrl(match[1]) || match[1];
+    return normalizePossibleUrl(match[1]) || match[1];
   }
 
   function captureMainFallbacks(root) {
@@ -246,14 +210,6 @@
       }
     }
     return "#8b6cff";
-  }
-
-  function hexToRgba(hex, alpha) {
-    var value = String(hex || "").replace("#", "");
-    if (value.length === 3) value = value.split("").map(function (c) { return c + c; }).join("");
-    var num = parseInt(value, 16);
-    if (!isFinite(num)) return "rgba(139,108,255," + alpha + ")";
-    return "rgba(" + ((num >> 16) & 255) + "," + ((num >> 8) & 255) + "," + (num & 255) + "," + alpha + ")";
   }
 
   function cleanProfileSlug(value) {
@@ -311,7 +267,7 @@
     var def = extensions.badges_verified[id];
     if (!def) return "";
     var website = def.website && typeof def.website === "object" ? def.website : {};
-    var icon = normalizeUrl(website.icon || def.icon || website.emblem || def.emblem);
+    var icon = normalizePossibleUrl(website.icon || def.icon || website.emblem || def.emblem);
     if (!icon) return "";
     var label = cleanValue(def.label || website.label) || "Verificado";
     var glow = cleanValue(website.glow || def.glow || website.color || def.color) || "#ffffff";

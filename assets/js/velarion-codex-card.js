@@ -12,6 +12,15 @@
 (function(window, document) {
   "use strict";
 
+  const {
+    cleanValue, escapeHtml, formatCompactNumber, formatNumberBR,
+    isValidHexColor, normalizeHexColor, hexToRgba, toNumber
+  } = window.VelarionShared;
+
+  const cleanText = cleanValue;
+  const escapeHTML = escapeHtml;
+  const compactNumber = formatCompactNumber;
+
   const DEFAULT_ACCENT = "#67d7ff";
   const DEFAULT_ACCENT_2 = "#b58cff";
   const DEFAULT_BG = "linear-gradient(135deg, rgba(18,26,48,.92), rgba(7,10,22,.98))";
@@ -71,21 +80,6 @@
 
   function asObject(value) {
     return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-  }
-
-  function cleanText(value) {
-    if (value == null) return "";
-    if (typeof value === "object") return "";
-    return String(value).trim();
-  }
-
-  function escapeHTML(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
   }
 
   function stripMinecraftCodes(value) {
@@ -158,48 +152,6 @@
     return result || escapeHTML(stripMinecraftCodes(input));
   }
 
-  function toNumber(value, fallback = 0) {
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        const n = toNumber(item, NaN);
-        if (Number.isFinite(n)) return n;
-      }
-      return fallback;
-    }
-    if (typeof value === "number" && Number.isFinite(value)) return value;
-    if (typeof value === "string") {
-      const match = value.replace(/,/g, ".").match(/-?\d+(?:\.\d+)?/);
-      if (match) {
-        const parsed = Number(match[0]);
-        if (Number.isFinite(parsed)) return parsed;
-      }
-    }
-    return fallback;
-  }
-
-  function compactNumber(value) {
-    const number = Math.max(0, Math.floor(toNumber(value, 0)));
-    if (number >= 1000000000) return (number / 1000000000).toFixed(number >= 10000000000 ? 0 : 1).replace(".", ",") + "B";
-    if (number >= 1000000) return (number / 1000000).toFixed(number >= 10000000 ? 0 : 1).replace(".", ",") + "M";
-    if (number >= 1000) return (number / 1000).toFixed(number >= 10000 ? 0 : 1).replace(".", ",") + "K";
-    return String(number);
-  }
-
-  function formatNumberBR(value) {
-    const number = Math.max(0, Math.floor(toNumber(value, 0)));
-    try { return number.toLocaleString("pt-BR"); }
-    catch (error) { return String(number); }
-  }
-
-  function normalizeHexColor(value, fallback = DEFAULT_ACCENT) {
-    let raw = cleanText(value);
-    if (!raw) return fallback;
-    if (!raw.startsWith("#")) raw = "#" + raw;
-    if (/^#[0-9a-f]{6}$/i.test(raw)) return raw;
-    if (/^#[0-9a-f]{3}$/i.test(raw)) return "#" + raw.slice(1).split("").map((char) => char + char).join("");
-    return fallback;
-  }
-
   function hexToRgb(hex) {
     const color = normalizeHexColor(hex, DEFAULT_ACCENT).replace("#", "");
     return {
@@ -207,11 +159,6 @@
       g: parseInt(color.slice(2, 4), 16),
       b: parseInt(color.slice(4, 6), 16)
     };
-  }
-
-  function hexToRgba(hex, alpha) {
-    const rgb = hexToRgb(hex);
-    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
   }
 
   function cssRgbTriplet(hex) {

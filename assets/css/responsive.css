@@ -201,10 +201,6 @@
     padding: 12px !important;
   }
   
-  .quest-list article {
-    grid-template-columns: 1fr !important;
-  }
-  
   /* Footer */
   .site-footer {
     width: calc(100% - 16px) !important;
