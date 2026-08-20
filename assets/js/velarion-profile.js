@@ -134,6 +134,157 @@
   /* Carrega o módulo uma vez; ele observa cards que forem montados depois. */
   ensureProfileCardFxAssets();
 
+
+  /* ======================================================================
+     PROFILE COMPONENT MODULE LOADER
+
+     Mantém velarion-profile.js como coordenador. Os CSS são inseridos logo
+     após velarion-profile.css e herdam a query string do script principal.
+     Os runtimes JS são carregados uma única vez e hidratam o DOM existente.
+     ====================================================================== */
+  const PROFILE_COMPONENT_ASSETS = [
+    {
+      key: "document",
+      cssId: "velarion-profile-document-css",
+      css: "velarion-profile-document.css",
+      jsId: "velarion-profile-document-js",
+      js: "velarion-profile-document.js",
+      global: "VelarionProfileDocument"
+    },
+    {
+      key: "progression",
+      cssId: "velarion-profile-progression-css",
+      css: "velarion-profile-progression.css"
+    },
+    {
+      key: "public-record",
+      cssId: "velarion-profile-public-record-css",
+      css: "velarion-profile-public-record.css",
+      jsId: "velarion-profile-public-record-js",
+      js: "velarion-profile-public-record.js",
+      global: "VelarionProfilePublicRecord"
+    }
+  ];
+
+  function getProfileComponentAssetUrl(fileName, type) {
+    try {
+      if (!PROFILE_SCRIPT_URL) {
+        return type === "css" ? `../assets/css/${fileName}` : `../assets/js/${fileName}`;
+      }
+
+      const scriptDir = new URL("./", PROFILE_SCRIPT_URL);
+      if (type === "js") return inheritProfileVersion(new URL(fileName, scriptDir).href);
+
+      const inJsDirectory = /\/js\/$/i.test(scriptDir.pathname);
+      const cssUrl = inJsDirectory
+        ? new URL(`../css/${fileName}`, scriptDir)
+        : new URL(fileName, scriptDir);
+      return inheritProfileVersion(cssUrl.href);
+    } catch (error) {
+      return type === "css" ? `../assets/css/${fileName}` : `../assets/js/${fileName}`;
+    }
+  }
+
+  function findProfileStylesheetAnchor() {
+    const links = Array.from(document.querySelectorAll('link[rel~="stylesheet"][href]'));
+    return links.find((link) => /(?:^|\/)velarion-profile(?:\.min)?\.css(?:[?#]|$)/i.test(link.href || "")) || null;
+  }
+
+  function ensureProfileComponentStyles() {
+    let anchor = findProfileStylesheetAnchor();
+
+    PROFILE_COMPONENT_ASSETS.forEach((asset) => {
+      let link = document.getElementById(asset.cssId);
+      if (!link) {
+        link = document.createElement("link");
+        link.id = asset.cssId;
+        link.rel = "stylesheet";
+        link.href = getProfileComponentAssetUrl(asset.css, "css");
+        link.addEventListener("error", () => {
+          console.warn(`[VelarionProfile] Não foi possível carregar ${asset.css}.`);
+        }, { once: true });
+
+        if (anchor?.parentNode) anchor.parentNode.insertBefore(link, anchor.nextSibling);
+        else document.head.appendChild(link);
+      }
+      anchor = link;
+    });
+  }
+
+  function ensureProfileComponentScript(asset) {
+    if (!asset?.js) return Promise.resolve(null);
+    if (window[asset.global]) return Promise.resolve(window[asset.global]);
+
+    const promiseKey = `__velarionProfileModule_${asset.key.replace(/[^a-z0-9]+/gi, "_")}`;
+    if (window[promiseKey]) return window[promiseKey];
+
+    window[promiseKey] = new Promise((resolve) => {
+      let script = document.getElementById(asset.jsId);
+      const finish = () => {
+        const api = window[asset.global] || null;
+        try { api?.refresh?.(document); } catch (error) {
+          console.warn(`[VelarionProfile] Falha ao inicializar ${asset.js}.`, error);
+        }
+        resolve(api);
+      };
+
+      if (!script) {
+        script = document.createElement("script");
+        script.id = asset.jsId;
+        script.src = getProfileComponentAssetUrl(asset.js, "js");
+        script.async = true;
+        script.addEventListener("load", finish, { once: true });
+        script.addEventListener("error", () => {
+          console.warn(`[VelarionProfile] Não foi possível carregar ${asset.js}.`);
+          finish();
+        }, { once: true });
+        document.head.appendChild(script);
+      } else {
+        script.addEventListener("load", finish, { once: true });
+        window.setTimeout(finish, 1200);
+      }
+    });
+
+    return window[promiseKey];
+  }
+
+  let profileComponentsReadyPromise = null;
+
+  function ensureProfileComponentAssets() {
+    ensureProfileComponentStyles();
+    if (!profileComponentsReadyPromise) {
+      profileComponentsReadyPromise = Promise.all(
+        PROFILE_COMPONENT_ASSETS.filter((asset) => asset.js).map(ensureProfileComponentScript)
+      );
+    }
+    return profileComponentsReadyPromise;
+  }
+
+  function refreshProfileComponentModules(root) {
+    const scope = root || document;
+    return ensureProfileComponentAssets().then(() => {
+      window.VelarionProfileDocument?.refresh?.(scope);
+      window.VelarionProfilePublicRecord?.refresh?.(scope);
+    });
+  }
+
+  function scheduleProfileComponentRefresh(root) {
+    requestAnimationFrame(() => {
+      refreshProfileComponentModules(root || document).catch((error) => {
+        console.warn("[VelarionProfile] Falha ao atualizar módulos do perfil.", error);
+      });
+    });
+  }
+
+  function setupProfileDocumentColorEffects(root) {
+    const runtime = window.VelarionProfileDocument;
+    if (runtime && typeof runtime.refresh === "function") {
+      runtime.refresh(root || document);
+      return;
+    }
+    ensureProfileComponentAssets().then(() => window.VelarionProfileDocument?.refresh?.(root || document));
+  }
+
   function pick(ctx, name, fallback) {
     return ctx && typeof ctx[name] === "function" ? ctx[name] : fallback;
   }
@@ -1614,227 +1765,6 @@ function buildStatusVisualCard(player, ctx) {
       </div>`;
   }
 
-  function ensureVerifiedPopoverEvents() {
-    if (window.__vlVerifiedPopoverEventsInstalled) return;
-    window.__vlVerifiedPopoverEventsInstalled = true;
-
-    let floatingPopover = null;
-    let activeTag = null;
-
-    const positionFloatingPopover = () => {
-      if (!floatingPopover || !activeTag || !document.body.contains(activeTag)) return;
-
-      /*
-       * O wrapper .vl-profile-public-id-card__verified-tag ocupa uma célula
-       * maior do grid. Para posicionar o popover, ancore na parte que o
-       * usuário realmente enxerga/clica (o chip), não no wrapper inteiro.
-       */
-      const anchor = activeTag.querySelector('.card-verified-chip, .vl-profile-verify, .vl-profile-public-id-card__clan-chip') || activeTag;
-      const trigger = anchor.getBoundingClientRect();
-      const panel = floatingPopover.getBoundingClientRect();
-      const margin = 14;
-      const edge = 12;
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const compact = viewportWidth <= 560;
-
-      /*
-       * O popover pertence visualmente à coluna de conteúdo do perfil.
-       * Usamos essa coluna como limite horizontal para impedir que o painel
-       * atravesse para cima da carta oficial à esquerda.
-       */
-      const contentHost = activeTag.closest('.vl-profile-content') || activeTag.closest('.vl-profile-layout');
-      const hostRect = contentHost?.getBoundingClientRect?.();
-      const safeLeft = compact ? edge : Math.max(edge, (hostRect?.left ?? edge) + 8);
-      const safeRight = compact
-        ? viewportWidth - edge
-        : Math.min(viewportWidth - edge, (hostRect?.right ?? (viewportWidth - edge)) - 8);
-
-      const roomBelow = viewportHeight - trigger.bottom;
-      const roomAbove = trigger.top;
-      const roomLeft = trigger.left - safeLeft;
-      const roomRight = safeRight - trigger.right;
-      let placement = compact ? 'bottom' : 'left';
-      let top;
-      let left;
-
-      if (compact) {
-        /* Em telas pequenas, mantém a leitura confortável abaixo do selo. */
-        left = (viewportWidth - panel.width) / 2;
-        if (roomBelow >= panel.height + margin + edge || roomBelow >= roomAbove) {
-          placement = 'bottom';
-          top = trigger.bottom + margin;
-        } else {
-          placement = 'top';
-          top = trigger.top - panel.height - margin;
-        }
-      } else if (roomLeft >= panel.width + margin) {
-        /* Preferência escolhida: abre à esquerda do selo. */
-        placement = 'left';
-        left = trigger.left - panel.width - margin;
-        top = trigger.top + (trigger.height - panel.height) / 2;
-      } else if (roomRight >= panel.width + margin) {
-        /* Fallback raro: só usa a direita se realmente não couber à esquerda. */
-        placement = 'right';
-        left = trigger.right + margin;
-        top = trigger.top + (trigger.height - panel.height) / 2;
-      } else {
-        /* Último fallback: abaixo/acima, ainda preso à coluna do perfil. */
-        left = trigger.right - panel.width;
-        if (roomBelow >= panel.height + margin + edge || roomBelow >= roomAbove) {
-          placement = 'bottom';
-          top = trigger.bottom + margin;
-        } else {
-          placement = 'top';
-          top = trigger.top - panel.height - margin;
-        }
-      }
-
-      /* Mantém o popover dentro da coluna de conteúdo e da viewport. */
-      const maxLeft = Math.max(safeLeft, safeRight - panel.width);
-      left = Math.max(safeLeft, Math.min(left, maxLeft));
-      top = Math.max(edge, Math.min(top, viewportHeight - panel.height - edge));
-
-      /*
-       * Mantém a seta apontando para o centro real do selo mesmo quando o
-       * painel precisar ser limitado verticalmente pela viewport.
-       */
-      if (placement === 'left' || placement === 'right') {
-        const arrowY = Math.max(18, Math.min(panel.height - 18, (trigger.top + trigger.height / 2) - top));
-        floatingPopover.style.setProperty('--vpop-arrow-y', `${Math.round(arrowY)}px`);
-      } else {
-        floatingPopover.style.removeProperty('--vpop-arrow-y');
-      }
-
-      floatingPopover.dataset.placement = placement;
-      floatingPopover.style.left = `${Math.round(left)}px`;
-      floatingPopover.style.top = `${Math.round(top)}px`;
-    };
-
-    const POPOVER_TRANSITION_MS = 190;
-
-    const closePopover = (restoreFocus = false, immediate = false) => {
-      const panel = floatingPopover;
-      const tag = activeTag;
-
-      if (tag) {
-        tag.classList.remove('is-open');
-        tag.setAttribute('aria-expanded', 'false');
-        tag.removeAttribute('aria-controls');
-      }
-
-      /*
-       * O painel precisa permanecer no DOM durante o fechamento para que
-       * opacity/transform consigam animar. Ao trocar diretamente de um selo
-       * para outro, usamos immediate=true para não deixar dois popovers vivos.
-       */
-      if (panel) {
-        panel.classList.remove('is-visible');
-        panel.classList.add('is-closing');
-
-        const finish = () => {
-          panel.remove();
-          if (floatingPopover === panel) floatingPopover = null;
-        };
-
-        if (immediate || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
-          finish();
-        } else {
-          let finished = false;
-          const done = () => {
-            if (finished) return;
-            finished = true;
-            panel.removeEventListener('transitionend', onTransitionEnd);
-            finish();
-          };
-          const onTransitionEnd = (event) => {
-            if (event.target === panel && (event.propertyName === 'opacity' || event.propertyName === 'transform')) done();
-          };
-          panel.addEventListener('transitionend', onTransitionEnd);
-          window.setTimeout(done, POPOVER_TRANSITION_MS + 80);
-        }
-      }
-
-      if (restoreFocus && tag?.focus) tag.focus();
-      if (activeTag === tag) activeTag = null;
-    };
-
-    const openPopover = (tag) => {
-      if (!tag) return;
-      const template = tag.querySelector('.vl-profile-verified-popover');
-      if (!template) return;
-
-      if (activeTag === tag) {
-        closePopover();
-        return;
-      }
-
-      closePopover(false, true);
-      activeTag = tag;
-      activeTag.classList.add('is-open');
-      activeTag.setAttribute('aria-expanded', 'true');
-
-      floatingPopover = template.cloneNode(true);
-      floatingPopover.classList.add('vl-profile-verified-popover--floating');
-      floatingPopover.removeAttribute('role');
-      floatingPopover.setAttribute('role', 'dialog');
-      floatingPopover.setAttribute('aria-modal', 'false');
-      floatingPopover.id = `vl-verified-popover-${Date.now()}`;
-      activeTag.setAttribute('aria-controls', floatingPopover.id);
-      document.body.appendChild(floatingPopover);
-
-      /*
-       * O browser pode agrupar a inserção no DOM e a adição de .is-visible
-       * no mesmo frame. Nesse caso, não existe um estado inicial pintado e
-       * a transition não dispara. Primeiro posicionamos e forçamos um layout;
-       * só no frame seguinte liberamos o estado visível.
-       */
-      positionFloatingPopover();
-      void floatingPopover.offsetWidth;
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!floatingPopover) return;
-          floatingPopover.classList.add('is-visible');
-        });
-      });
-    };
-
-    document.addEventListener('click', (event) => {
-      const tag = event.target.closest?.('[data-vl-info-popover="true"]');
-      if (tag) {
-        event.preventDefault();
-        event.stopPropagation();
-        openPopover(tag);
-        return;
-      }
-
-      if (floatingPopover?.contains(event.target)) return;
-      closePopover();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      const tag = event.target.closest?.('[data-vl-info-popover="true"]');
-      if (event.key === 'Escape') {
-        if (floatingPopover) {
-          event.preventDefault();
-          closePopover(true);
-        }
-        return;
-      }
-      if (!tag || (event.key !== 'Enter' && event.key !== ' ')) return;
-      event.preventDefault();
-      openPopover(tag);
-    });
-
-    window.addEventListener('resize', () => {
-      if (floatingPopover) positionFloatingPopover();
-    }, { passive: true });
-
-    window.addEventListener('scroll', () => {
-      if (floatingPopover) positionFloatingPopover();
-    }, { passive: true, capture: true });
-  }
 
   function makeHelpers(ctx) {
     const h = {
@@ -2696,64 +2626,6 @@ function buildStatusVisualCard(player, ctx) {
     return `linear-gradient(${angle}, ${stops.join(", ")})`;
   }
 
-  function applyDocumentRuntimeColor(card, color) {
-    if (!card || !isValidCardHex(color)) return;
-    card.style.setProperty("--vp-document-accent", color);
-    card.style.setProperty("--vp-document-color", color);
-  }
-
-  const profileDocumentColorRuntime = {
-    cards: new Set(),
-    raf: 0
-  };
-
-  function updateProfileDocumentColors() {
-    let active = false;
-
-    profileDocumentColorRuntime.cards.forEach((documentCard) => {
-      if (!documentCard || !documentCard.isConnected) {
-        profileDocumentColorRuntime.cards.delete(documentCard);
-        return;
-      }
-
-      const type = normalizeProfileCardColorType(documentCard.dataset.vpCardColorType);
-      if (!["rotate", "pulse"].includes(type)) return;
-
-      const stage = documentCard.closest(".vl-profile-stage") || document;
-      const officialCard = stage.querySelector(".vl-card[data-card-color-type]");
-      if (!officialCard) return;
-
-      const liveColor = getComputedStyle(officialCard).getPropertyValue("--card-color").trim();
-      if (isValidCardHex(liveColor)) {
-        applyDocumentRuntimeColor(documentCard, liveColor);
-        active = true;
-      }
-    });
-
-    if (active || profileDocumentColorRuntime.cards.size) {
-      profileDocumentColorRuntime.raf = requestAnimationFrame(updateProfileDocumentColors);
-    } else {
-      profileDocumentColorRuntime.raf = 0;
-    }
-  }
-
-  function setupProfileDocumentColorEffects(root) {
-    const scope = root || document;
-    scope.querySelectorAll(".vl-profile-public-id-card[data-vp-card-color-type]").forEach((documentCard) => {
-      const type = normalizeProfileCardColorType(documentCard.dataset.vpCardColorType);
-      if (["rotate", "pulse"].includes(type)) {
-        profileDocumentColorRuntime.cards.add(documentCard);
-      }
-    });
-
-    if (profileDocumentColorRuntime.cards.size && !profileDocumentColorRuntime.raf) {
-      profileDocumentColorRuntime.raf = requestAnimationFrame(updateProfileDocumentColors);
-    }
-  }
-
-  function scheduleProfileDocumentColorEffects() {
-    requestAnimationFrame(() => setupProfileDocumentColorEffects(document));
-  }
 
 
   let profileShowcaseNavigationReady = false;
@@ -2812,78 +2684,6 @@ function buildStatusVisualCard(player, ctx) {
       });
     }
   }
-
-
-  let publicSystemsSubNavigationReady = false;
-
-  function setPublicSystemsSubPage(root, nextIndex, direction = 0) {
-    if (!root) return;
-
-    const pages = Array.from(root.querySelectorAll("[data-vl-public-subpage]"));
-    if (!pages.length) return;
-
-    const total = pages.length;
-    const index = ((Number(nextIndex) % total) + total) % total;
-
-    pages.forEach((page, pageIndex) => {
-      const active = pageIndex === index;
-      page.classList.toggle("is-active", active);
-      page.setAttribute("aria-hidden", active ? "false" : "true");
-      if (active) page.removeAttribute("inert");
-      else page.setAttribute("inert", "");
-    });
-
-    root.dataset.subpageIndex = String(index);
-    root.dataset.subDirection = direction < 0 ? "prev" : direction > 0 ? "next" : "none";
-
-    const current = pages[index];
-    const label = current?.dataset.vlPublicSubpageLabel || `Página ${index + 1}`;
-
-    const labelNode = root.querySelector("[data-vl-public-subpage-current]");
-    if (labelNode) labelNode.textContent = label;
-
-    const counter = root.querySelector("[data-vl-public-subpage-counter]");
-    if (counter) counter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
-
-    root.querySelectorAll("[data-vl-public-subnav]").forEach((button) => {
-      const delta = Number(button.dataset.vlPublicSubnav || 0);
-      const targetIndex = ((index + delta) % total + total) % total;
-      const targetLabel = pages[targetIndex]?.dataset.vlPublicSubpageLabel || `Página ${targetIndex + 1}`;
-      button.setAttribute(
-        "aria-label",
-        delta < 0 ? `Voltar para ${targetLabel}` : `Avançar para ${targetLabel}`
-      );
-      button.title = delta < 0 ? `Voltar: ${targetLabel}` : `Próximo: ${targetLabel}`;
-    });
-
-    if (current) {
-      current.classList.remove("vl-public-systems-switcher__page--enter");
-      void current.offsetWidth;
-      current.classList.add("vl-public-systems-switcher__page--enter");
-    }
-  }
-
-  function ensurePublicSystemsSubNavigation() {
-    if (publicSystemsSubNavigationReady) return;
-    publicSystemsSubNavigationReady = true;
-
-    document.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-vl-public-subnav]");
-      if (!button) return;
-
-      const root = button.closest("[data-vl-public-systems-switcher]");
-      if (!root) return;
-
-      const current = Number(root.dataset.subpageIndex || 0);
-      const delta = Number(button.dataset.vlPublicSubnav || 0);
-      if (!delta) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      setPublicSystemsSubPage(root, current + delta, delta);
-    });
-  }
-
   function ensureProfileShowcaseNavigation() {
     if (profileShowcaseNavigationReady) return;
     profileShowcaseNavigationReady = true;
@@ -2956,7 +2756,6 @@ function buildStatusVisualCard(player, ctx) {
     const verifiedBadgeSourceHtml = h.buildVerifiedCardBadgeHtml(player);
     const verifiedBadgeHtml = useVerifiedCompactIcon(player, ctx || {}, verifiedBadgeSourceHtml, h);
     const verifiedInfoHtml = buildVerifiedInfoPopover(player, ctx || {}, verifiedBadgeSourceHtml, h);
-    ensureVerifiedPopoverEvents();
     const cardColorConfig = normalizeProfileCardColorConfig(
       player?.theme?.card_embed?.card_color,
       player?.theme?.profile?.accent || "#8b6cff"
@@ -2992,12 +2791,11 @@ function buildStatusVisualCard(player, ctx) {
     const orderClanTitle = getSectionOrder(ctx, "clan_title", 50);
     const orderBadges = getSectionOrder(ctx, "badges", 60);
 
-    scheduleProfileDocumentColorEffects();
+    scheduleProfileComponentRefresh();
     ensureProfileShowcaseNavigation();
     hydrateWebsiteSocialPanel(player, ctx || {}, h);
     ensureAchievementMedalInteraction();
     prepareAchievementMedalCards();
-    ensurePublicSystemsSubNavigation();
 
     return `
       <div class="detail-stage vl-profile-stage" style="--vp-accent:${color};">
@@ -3289,51 +3087,31 @@ function buildStatusVisualCard(player, ctx) {
   }
 
   function applyCharacterMediaFallback(element) {
-    if (!element || element.dataset.vlFallbackApplied === "1") return;
-
-    const fallback = cleanValue(element.dataset.vlCharacterFallback);
-    if (!fallback) {
-      element.remove();
+    const runtime = window.VelarionProfilePublicRecord;
+    if (runtime && typeof runtime.applyCharacterMediaFallback === "function") {
+      runtime.applyCharacterMediaFallback(element);
       return;
     }
 
-    element.dataset.vlFallbackApplied = "1";
-    const fallbackIsWebM = element.dataset.vlCharacterFallbackWebm === "1";
-
-    if (fallbackIsWebM && element.tagName !== "VIDEO") {
-      const video = document.createElement("video");
-      video.src = fallback;
-      video.autoplay = true;
-      video.loop = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = "auto";
-      video.tabIndex = -1;
-      video.dataset.vlFallbackApplied = "1";
-      video.onerror = () => video.remove();
-      element.replaceWith(video);
-      return;
-    }
-
-    if (!fallbackIsWebM && element.tagName !== "IMG") {
-      const image = document.createElement("img");
-      image.src = fallback;
-      image.alt = "";
-      image.loading = "eager";
-      image.decoding = "async";
-      image.dataset.vlFallbackApplied = "1";
-      image.onerror = () => image.remove();
-      element.replaceWith(image);
-      return;
-    }
-
-    element.src = fallback;
-    element.onerror = () => element.remove();
+    if (element?.dataset) element.dataset.vlFallbackPending = "1";
+    ensureProfileComponentAssets().then(() => {
+      window.VelarionProfilePublicRecord?.applyCharacterMediaFallback?.(element);
+    });
   }
+
 
   window.VelarionProfile = {
     render,
     applyCharacterMediaFallback,
-    setupProfileDocumentColorEffects
+    setupProfileDocumentColorEffects,
+    refreshComponents: refreshProfileComponentModules,
+    ensureComponents: ensureProfileComponentAssets,
+    helpers: {
+      cleanValue,
+      isValidCardHex,
+      normalizeProfileCardColorType
+    }
   };
+
+  window.VelarionProfile.componentsReady = ensureProfileComponentAssets();
 })();
