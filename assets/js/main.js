@@ -743,6 +743,45 @@
 /* ===== Integração funcional: lógica antiga adaptada ao visual novo ===== */
 (function(){
 	if (!document.body || !document.body.dataset.vlDataPage) return;
+
+	const S = window.VelarionShared || {};
+	const toNumber = S.toNumber;
+	const escapeHtml = S.escapeHtml;
+	const cleanValue = S.cleanValue;
+	const normalizePossibleUrl = S.normalizePossibleUrl;
+	const isValidUrl = S.isValidUrl;
+	const getMediaUrl = S.getMediaUrl;
+	const mergeBadgeRecord = S.mergeBadgeRecord;
+	const isBadgeEnabled = S.isBadgeEnabled;
+	const isBadgeVisible = S.isBadgeVisible;
+	const getBadgeSortValue = S.getBadgeSortValue;
+	const normalizeBadgeEntries = S.normalizeBadgeEntries;
+	const normalizeHexColor = S.normalizeHexColor;
+	const hexToRgba = S.hexToRgba;
+	const countryCodeToFlag = S.countryCodeToFlag;
+	const buildCountryFlagHtml = S.buildCountryFlagHtml;
+	const stripMinecraftCodes = S.stripMinecraftCodes;
+	const minecraftToHtml = S.minecraftToHtml;
+	const gradientCodesToCss = S.gradientCodesToCss;
+	const colorArrayToGradient = S.colorArrayToGradient;
+	const mcColors = S.mcColors;
+	const GradientsColor = S.GradientsColor;
+	const getDisplayName = S.getDisplayName;
+	const getUsername = S.getUsername;
+	const getCardTitle = S.getCardTitle;
+	const getLevelText = S.getLevelText;
+	const isPlayerOnline = S.isPlayerOnline;
+	const isProbablyPixelArt = S.isProbablyPixelArt;
+	const normalize = S.normalize;
+	const getByPath = S.getByPath;
+	const getNestedRaw = S.getNestedRaw;
+	const firstRaw = S.firstRaw;
+	const boolLike = S.boolLike;
+	const normalizeCardColorConfig = S.normalizeCardColorConfig;
+	const buildPaletteGradient = S.buildPaletteGradient;
+	const hexColorToRgb = S.hexColorToRgb;
+	const formatCompactNumber = S.formatCompactNumber;
+
 /* ===== original script 1  ===== */
 // ===== JavaScript: Configuração e estado global =====
 	const VL_PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
