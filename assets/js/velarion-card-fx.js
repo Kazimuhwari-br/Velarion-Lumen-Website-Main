@@ -182,7 +182,7 @@
     const particles = document.createElement("div");
     particles.className = "vl-card-fx__particles";
 
-    const particleCount = window.innerWidth <= 520 ? 10 : 18;
+    const particleCount = window.innerWidth <= 520 ? 6 : 10;
     for (let i = 0; i < particleCount; i += 1) {
       particles.appendChild(createParticle(i, false));
     }
@@ -210,7 +210,7 @@
 
     const particles = document.createElement("div");
     particles.className = "vl-card-fx-front__particles";
-    const particleCount = window.innerWidth <= 520 ? 4 : 8;
+    const particleCount = window.innerWidth <= 520 ? 2 : 4;
     for (let i = 0; i < particleCount; i += 1) {
       particles.appendChild(createParticle(i + 20, true));
     }
@@ -250,10 +250,10 @@
     const tick = () => {
       if (!state.port.isConnected) return destroy(state.port);
       if (state.visible && !document.hidden) syncColors(state);
-      state.colorTimer = window.setTimeout(tick, 90);
+      state.colorTimer = window.setTimeout(tick, 250);
     };
 
-    state.colorTimer = window.setTimeout(tick, 90);
+    state.colorTimer = window.setTimeout(tick, 250);
   }
 
   function setupPointer(state) {
@@ -410,15 +410,14 @@
     refresh(document);
 
     if ("MutationObserver" in window && document.documentElement) {
-      const observer = new MutationObserver((mutations) => {
-        let shouldRefresh = false;
-        for (const mutation of mutations) {
-          if (mutation.addedNodes?.length) {
-            shouldRefresh = true;
-            break;
-          }
-        }
-        if (shouldRefresh) refresh(document);
+      let refreshPending = false;
+      const observer = new MutationObserver(() => {
+        if (refreshPending) return;
+        refreshPending = true;
+        requestAnimationFrame(() => {
+          refreshPending = false;
+          refresh(document);
+        });
       });
       observer.observe(document.documentElement, { childList: true, subtree: true });
     }
