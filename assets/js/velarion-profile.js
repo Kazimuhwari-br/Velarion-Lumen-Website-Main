@@ -820,8 +820,48 @@
     return values.map(normalizeSocialKey).filter(Boolean);
   }
 
+  function makeSocialFallbackIndex(root) {
+    const index = new Map();
+
+    Object.entries(root || {}).forEach(([definitionKey, definition]) => {
+      if (!definition || typeof definition !== "object" || Array.isArray(definition)) return;
+
+      socialDefinitionAliases(definition, definitionKey).forEach((alias) => {
+        if (alias && !index.has(alias)) {
+          index.set(alias, { key: definitionKey, data: definition });
+        }
+      });
+    });
+
+    return index;
+  }
+
+  function getSocialVisualDefinition(definition) {
+    if (!definition || typeof definition !== "object" || Array.isArray(definition)) return {};
+
+    const rootVisual = definition.visual && typeof definition.visual === "object" && !Array.isArray(definition.visual)
+      ? definition.visual
+      : {};
+    const rootStyle = definition.style && typeof definition.style === "object" && !Array.isArray(definition.style)
+      ? definition.style
+      : {};
+    const website = definition.website && typeof definition.website === "object" && !Array.isArray(definition.website)
+      ? definition.website
+      : {};
+
+    /* V20.55 — social_fallback é livre por nome: campos visuais podem ficar
+       diretamente na definição, em visual/style ou em website. website vence. */
+    return {
+      ...definition,
+      ...rootVisual,
+      ...rootStyle,
+      ...website
+    };
+  }
+
   function resolveSocialFallback(panel, socialKey, socialValue) {
     const root = getSocialFallbackRoot(panel);
+    const index = makeSocialFallbackIndex(root);
     const key = normalizeSocialKey(socialKey);
 
     const valueObject =
@@ -835,49 +875,29 @@
       valueObject.website_social_type
     );
 
-    /* 1. Correspondência literal pelo nome do objeto. */
-    if (key && root[key] && typeof root[key] === "object") {
-      return { key, data: root[key], source: "exact-key" };
+    /* V20.55 — sincronização genérica por NOME.
+       Qualquer chave criada em profilePlayers.<id>.website_social recebe
+       automaticamente o visual da chave homônima em website_panel.social_fallback,
+       sem precisar cadastrar a rede no JavaScript. */
+    if (key && index.has(key)) {
+      const match = index.get(key);
+      return { ...match, source: normalizeSocialKey(match.key) === key ? "name-sync" : "definition-alias" };
     }
 
-    /* 2. Variações normalizadas e aliases conhecidos (ex.: X/Twitter, *_url, *_link). */
+    /* Variações continuam disponíveis para compatibilidade legada. */
     for (const variant of socialKeyVariants(key)) {
-      if (variant !== key && root[variant] && typeof root[variant] === "object") {
-        return { key: variant, data: root[variant], source: "key-variant" };
-      }
+      if (!variant || variant === key || !index.has(variant)) continue;
+      return { ...index.get(variant), source: "key-variant" };
     }
 
-    /* 3. Aliases declarados dentro da própria definição.
-       Isso permite adicionar novas redes no website_panel sem alterar o renderer. */
-    for (const [definitionKey, definition] of Object.entries(root)) {
-      if (!definition || typeof definition !== "object" || Array.isArray(definition)) continue;
-      if (socialDefinitionAliases(definition, definitionKey).includes(key)) {
-        return { key: definitionKey, data: definition, source: "definition-alias" };
-      }
+    /* Type explícito pode apontar para qualquer nome visual existente. */
+    if (explicitType && explicitType !== "website_social" && index.has(explicitType)) {
+      return { ...index.get(explicitType), source: "explicit-type" };
     }
 
-    /* 4. Type explícito só substitui a chave quando nomeia um visual concreto. */
-    if (
-      explicitType &&
-      explicitType !== "website_social" &&
-      root[explicitType] &&
-      typeof root[explicitType] === "object"
-    ) {
-      return { key: explicitType, data: root[explicitType], source: "explicit-type" };
-    }
-
-    /* 5. Também permite type=x/twitter com compatibilidade cruzada. */
-    if (explicitType === "x" && root.twitter && typeof root.twitter === "object") {
-      return { key: "twitter", data: root.twitter, source: "type-x-twitter-alias" };
-    }
-
-    if (explicitType === "twitter" && root.x && typeof root.x === "object") {
-      return { key: "x", data: root.x, source: "type-twitter-x-alias" };
-    }
-
-    /* 6. Fallback apenas quando realmente não houver definição. */
-    if (root.default && typeof root.default === "object") {
-      return { key: "default", data: root.default, source: "default" };
+    /* Fallback apenas quando realmente não houver definição com o mesmo nome. */
+    if (index.has("default")) {
+      return { ...index.get("default"), source: "default" };
     }
 
     return null;
@@ -1039,10 +1059,7 @@
         ${entries.map((entry) => {
           const resolved = resolveSocialFallback(panel, entry.key, entry.raw);
           const definition = resolved?.data || {};
-          const website =
-            definition?.website && typeof definition.website === "object"
-              ? definition.website
-              : {};
+          const website = getSocialVisualDefinition(definition);
 
           if (definition.enabled === false) return "";
 
@@ -1082,19 +1099,36 @@
           const particles = website.particles === true;
           const shimmer = website.shimmer === true;
 
+          const customCssVars = (() => {
+            const source = website.css_vars || website.cssVars || {};
+            if (!source || typeof source !== "object" || Array.isArray(source)) return [];
+
+            return Object.entries(source)
+              .filter(([name, value]) => /^--vl-social-[a-z0-9_-]+$/i.test(String(name || "")) && value != null)
+              .map(([name, value]) => `${String(name)}:${esc(cleanValue(value))}`)
+              .filter((item) => !/:$/.test(item));
+          })();
+
           const style = [
             `--vl-social-color:${esc(color)}`,
             `--vl-social-color-2:${esc(color2)}`,
             `--vl-social-glow:${esc(glow)}`,
             `--vl-social-intensity:${intensity}`,
-            gradient ? `--vl-social-gradient:${esc(gradient)}` : ""
+            gradient ? `--vl-social-gradient:${esc(gradient)}` : "",
+            ...customCssVars
           ].filter(Boolean).join(";");
+
+          const customClasses = cleanValue(website.classes || website.class_name || website.className)
+            .split(/\s+/)
+            .map((item) => item.trim())
+            .filter((item) => /^vl-social-[a-z0-9_-]+$/i.test(item));
 
           const classes = [
             "vl-social-clan-card",
             aura ? "has-aura" : "",
             particles ? "has-particles" : "",
-            shimmer ? "has-shimmer" : ""
+            shimmer ? "has-shimmer" : "",
+            ...customClasses
           ].filter(Boolean).join(" ");
 
           const inner = `
