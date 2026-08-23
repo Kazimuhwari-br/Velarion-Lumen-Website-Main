@@ -785,7 +785,7 @@
 /* ===== original script 1  ===== */
 // ===== JavaScript: Configuração e estado global =====
 	const VL_PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
-	const VL_BADGES_PLAYER_DATA_URL = "https://kazimuhwari-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
+	const VL_BADGES_PLAYER_DATA_URL = "https://kazimuhwaribedrock-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
 	const VL_EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
 	const VL_NPC_DATA_URL = "https://kazimuhwaribedrock-npcs-default-rtdb.firebaseio.com/profileNpcs";
 	const EXTENSIONS_DATA_URL = VL_EXTENSIONS_BASE_URL + "/information_panel.json";

@@ -9,7 +9,7 @@
   const S = window.VelarionShared || {};
 
   const PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
-  const BADGES_PLAYER_DATA_URL = "https://kazimuhwari-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
+  const BADGES_PLAYER_DATA_URL = "https://kazimuhwaribedrock-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
   const EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
   const EXTENSIONS_DATA_URL = EXTENSIONS_BASE_URL + "/information_panel.json";
   const SERVER_PANEL_DATA_URL = EXTENSIONS_BASE_URL + "/server_panel.json";
