@@ -785,6 +785,7 @@
 /* ===== original script 1  ===== */
 // ===== JavaScript: Configuração e estado global =====
 	const VL_PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
+	const VL_BADGES_PLAYER_DATA_URL = "https://kazimuhwari-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
 	const VL_EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
 	const VL_NPC_DATA_URL = "https://kazimuhwaribedrock-npcs-default-rtdb.firebaseio.com/profileNpcs";
 	const EXTENSIONS_DATA_URL = VL_EXTENSIONS_BASE_URL + "/information_panel.json";
@@ -816,6 +817,7 @@
 
 	let playersData = [];
 	let profilePlayersDataSource = {};
+	let badgesPlayersDataSource = {};
 	let filteredPlayers = [];
 	let activePlayerId = null;
 	let isTransitionRunning = false;
@@ -838,6 +840,30 @@
 	}
 	function cleanProfileSlug(value) {
 		return String(value || "").trim().replace(/^ID[_-]?/i, "");
+	}
+
+	function applyBadgesPlayerAchievements(playersJson, badgesPlayersJson) {
+		const players = playersJson && typeof playersJson === "object" ? playersJson : {};
+		const badgesPlayers = badgesPlayersJson && typeof badgesPlayersJson === "object" ? badgesPlayersJson : {};
+
+		Object.keys(players).forEach(function(playerId) {
+			const player = players[playerId];
+			if (!player || typeof player !== "object") return;
+
+			const sourceAchievements = badgesPlayers[playerId]?.badges?.achievements;
+			const currentBadges = player.badges && typeof player.badges === "object" ? player.badges : {};
+			const nextBadges = { ...currentBadges };
+
+			delete nextBadges.achievements;
+			if (typeof sourceAchievements !== "undefined" && sourceAchievements !== null) {
+				nextBadges.achievements = sourceAchievements;
+			}
+
+			player.badges = nextBadges;
+			if (Object.prototype.hasOwnProperty.call(player, "achievements")) delete player.achievements;
+		});
+
+		return players;
 	}
 	function makeProfileUrl(playerId) {
 		const slug = encodeURIComponent(cleanProfileSlug(playerId));
@@ -1587,7 +1613,7 @@
 	}
 
 	function getPlayerAchievementBadgeEntries(player) {
-		const entries = normalizeBadgeEntries(player?.badges?.achievements ?? player?.achievements);
+		const entries = normalizeBadgeEntries(player?.badges?.achievements);
 		if (entries.length) return entries;
 		const fallbackId = getFallbackDefaultId("achievement", "achievements_id_none");
 		return fallbackId ? [{ id: fallbackId, fallback: true }] : [];
@@ -3981,16 +4007,20 @@
 			setStatus("Abrindo o Codex...", "Buscando registros do mundo de Velarion.");
 
 			const dataResultPromise = fetchFirstUsefulJson(DATA_URLS);
+			const badgesPlayersPromise = VL_PAGE_KIND === "habitants" ? Promise.resolve({}) : fetchJsonSafe(VL_BADGES_PLAYER_DATA_URL);
 			const extensionsPromise = fetchJsonSafe(EXTENSIONS_DATA_URL);
 			const serverPanelPromise = fetchJsonSafe(SERVER_PANEL_DATA_URL);
 			const clansPromise = VL_PAGE_KIND === "habitants" ? Promise.resolve({}) : fetchJsonSafe(CLANS_DATA_URL);
-			const [dataResult, extensionsJson, serverPanelJson, clansJson] = await Promise.all([dataResultPromise, extensionsPromise, serverPanelPromise, clansPromise]);
+			const [dataResult, badgesPlayersJson, extensionsJson, serverPanelJson, clansJson] = await Promise.all([dataResultPromise, badgesPlayersPromise, extensionsPromise, serverPanelPromise, clansPromise]);
 
 			extensionsData = attachServerPanelData(extensionsJson || {}, serverPanelJson || {});
 			clansData = normalizeClans(clansJson);
 			applyExtensionDataConfig();
-			profilePlayersDataSource = dataResult.json || {};
-			playersData = normalize(dataResult.json).filter(isRenderableProfileRecord);
+			badgesPlayersDataSource = badgesPlayersJson && typeof badgesPlayersJson === "object" ? badgesPlayersJson : {};
+			profilePlayersDataSource = VL_PAGE_KIND === "habitants"
+				? (dataResult.json || {})
+				: applyBadgesPlayerAchievements(dataResult.json || {}, badgesPlayersDataSource);
+			playersData = normalize(profilePlayersDataSource).filter(isRenderableProfileRecord);
 			filteredPlayers = playersData.slice();
 
 			if (!playersData.length) {

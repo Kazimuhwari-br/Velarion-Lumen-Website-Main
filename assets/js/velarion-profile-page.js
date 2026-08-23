@@ -9,6 +9,7 @@
   const S = window.VelarionShared || {};
 
   const PLAYER_DATA_URL = "https://kazimuhwaribedrock-default-rtdb.firebaseio.com/profilePlayers.json";
+  const BADGES_PLAYER_DATA_URL = "https://kazimuhwari-badges-default-rtdb.firebaseio.com/badgesPlayers.json";
   const EXTENSIONS_BASE_URL = "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com";
   const EXTENSIONS_DATA_URL = EXTENSIONS_BASE_URL + "/information_panel.json";
   const SERVER_PANEL_DATA_URL = EXTENSIONS_BASE_URL + "/server_panel.json";
@@ -19,6 +20,7 @@
   let websitePanelData = null;
   let clansData = {};
   let profilePlayersDataSource = {};
+  let badgesPlayersDataSource = {};
 
   let DEFAULT_PLAYER_AVATAR = null;
   let DEFAULT_PLAYER_CHARACTER = null;
@@ -26,6 +28,35 @@
 
   function cleanProfileSlug(value) {
     return String(value || "").trim().replace(/^ID[_-]?/i, "");
+  }
+
+
+  function applyBadgesPlayerAchievements(playersJson, badgesPlayersJson) {
+    const players = playersJson && typeof playersJson === "object" ? playersJson : {};
+    const badgesPlayers = badgesPlayersJson && typeof badgesPlayersJson === "object" ? badgesPlayersJson : {};
+
+    Object.keys(players).forEach(function(playerId) {
+      const player = players[playerId];
+      if (!player || typeof player !== "object") return;
+
+      const sourceRecord = badgesPlayers[playerId];
+      const sourceAchievements = sourceRecord?.badges?.achievements;
+      const currentBadges = player.badges && typeof player.badges === "object" ? player.badges : {};
+      const nextBadges = { ...currentBadges };
+
+      // achievements não pertence mais ao profilePlayers: remova qualquer cópia antiga.
+      delete nextBadges.achievements;
+
+      if (typeof sourceAchievements !== "undefined" && sourceAchievements !== null) {
+        nextBadges.achievements = sourceAchievements;
+      }
+
+      player.badges = nextBadges;
+      // Compatibilidade antiga também não deve competir com a nova fonte.
+      if (Object.prototype.hasOwnProperty.call(player, "achievements")) delete player.achievements;
+    });
+
+    return players;
   }
 
   const escapeHtml = S.escapeHtml;
@@ -525,7 +556,7 @@
 
 
 	function getPlayerAchievementBadgeEntries(player) {
-		const entries = normalizeBadgeEntries(player?.badges?.achievements ?? player?.achievements);
+		const entries = normalizeBadgeEntries(player?.badges?.achievements);
 		if (entries.length) return entries;
 		const fallbackId = getFallbackDefaultId("achievement", "achievements_id_none");
 		return fallbackId ? [{ id: fallbackId, fallback: true }] : [];
@@ -1616,8 +1647,9 @@
     setPageState("loading", "Abrindo registro", "Buscando o aventureiro " + slug + " no Codex.");
 
     try {
-      const [playersJson, extensionsJson, serverPanelJson, websitePanelJson, clansJson] = await Promise.all([
+      const [playersJson, badgesPlayersJson, extensionsJson, serverPanelJson, websitePanelJson, clansJson] = await Promise.all([
         fetchJsonSafe(PLAYER_DATA_URL),
+        fetchJsonSafe(BADGES_PLAYER_DATA_URL),
         fetchJsonSafe(EXTENSIONS_DATA_URL),
         fetchJsonSafe(SERVER_PANEL_DATA_URL),
         fetchJsonSafe(WEBSITE_PANEL_DATA_URL),
@@ -1629,10 +1661,11 @@
       extensionsData = attachServerPanelData(extensionsJson || {}, serverPanelJson || {});
       websitePanelData = websitePanelJson && typeof websitePanelJson === "object" ? websitePanelJson : null;
       clansData = normalizeClans(clansJson || {});
-      profilePlayersDataSource = playersJson || {};
+      badgesPlayersDataSource = badgesPlayersJson && typeof badgesPlayersJson === "object" ? badgesPlayersJson : {};
+      profilePlayersDataSource = applyBadgesPlayerAchievements(playersJson || {}, badgesPlayersDataSource);
       applyExtensionDataConfig();
 
-      const players = normalize(playersJson).filter(function(player) {
+      const players = normalize(profilePlayersDataSource).filter(function(player) {
         if (!player || typeof player !== "object") return false;
         if (player.public_profile === false) return false;
         if (player.profile && player.profile.public_profile === false) return false;
