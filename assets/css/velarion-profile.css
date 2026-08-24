@@ -9,6 +9,17 @@
      velarion-card.js
      velarion-profile.js
    ====================================================================== */
+/* ======================================================================
+   ARQUITETURA MODULAR DO PERFIL
+   Este arquivo contém somente o shell/coordenador visual do perfil.
+   Documento do Aventureiro -> velarion-profile-document.css
+   Progresso                -> velarion-profile-progression.css
+   Registro Público         -> velarion-profile-public-record.css
+
+   Regras visuais antigas desses três módulos foram removidas daqui para
+   impedir cascata duplicada e versões antigas competindo com os módulos.
+   ====================================================================== */
+
 
 .vl-profile-identity--official-card {
   align-content: start;
@@ -268,27 +279,9 @@
   justify-self: end;
 }
 
-.vl-profile-verify {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 950;
-  border: 1px solid rgba(96,255,193,.38);
-  background: linear-gradient(135deg, rgba(41,225,157,.22), rgba(9,14,27,.78));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 0 24px rgba(69,255,190,.16);
-}
 
-.vl-profile-verify.is-muted {
-  color: rgba(240,244,255,.68);
-  border-color: rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  box-shadow: none;
-}
+
+
 
 .vl-profile-panel {
   position: relative;
@@ -370,71 +363,19 @@
   min-height: 166px;
 }
 
-.vl-profile-tier-card,
-.vl-profile-panel--tier .level-info-card,
-.vl-profile-panel--tier .level-info,
-.vl-profile-panel--tier .rank-info-card {
-  width: 100%;
-}
 
-.vl-profile-tier-card {
-  display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 18px;
-  padding: 18px;
-  border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--vp-accent, #8b6cff) 22%, rgba(255,255,255,.12));
-  background: radial-gradient(circle at 100% 20%, color-mix(in srgb, var(--vp-accent, #8b6cff) 10%, transparent), transparent 38%), rgba(255,255,255,.045);
-}
 
-.vl-profile-tier-medal {
-  width: 82px;
-  height: 82px;
-  display: grid;
-  place-items: center;
-  gap: 0;
-  border-radius: 24px;
-  border: 1px solid color-mix(in srgb, var(--vp-accent, #8b6cff) 38%, rgba(255,255,255,.16));
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,.20), transparent 35%),
-    linear-gradient(145deg, rgba(255,255,255,.09), rgba(0,0,0,.22));
-  box-shadow: 0 0 22px color-mix(in srgb, var(--vp-accent, #8b6cff) 16%, transparent);
-}
 
-.vl-profile-tier-medal span {
-  align-self: end;
-  color: rgba(255,255,255,.62);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .12em;
-}
 
-.vl-profile-tier-medal strong {
-  align-self: start;
-  color: #fff;
-  font-size: 28px;
-  font-weight: 1000;
-  letter-spacing: -.04em;
-}
 
-.vl-profile-tier-main strong {
-  display: block;
-  margin-bottom: 12px;
-  color: #fff;
-  font-size: 17px;
-  font-weight: 950;
-}
 
-.vl-profile-tier-main small {
-  display: block;
-  margin-top: 9px;
-  color: rgba(238,243,255,.62);
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-}
+
+
+
+
+
+
+
 
 .vl-profile-progress {
   height: 9px;
@@ -526,14 +467,7 @@
   min-height: 92px;
 }
 
-.vl-profile-panel .role-info,
-.vl-profile-panel .rank-info,
-.vl-profile-panel .clan-info,
-.vl-profile-panel .achievement-gallery,
-.vl-profile-panel .achievements-gallery,
-.vl-profile-panel .badges-gallery {
-  max-width: 100%;
-}
+
 
 /* Ajustes para HTML legado retornado pelos helpers atuais do main.js */
 .vl-profile-panel .info-label {
@@ -597,37 +531,14 @@
     padding-inline: 12px;
   }
 
-  .vl-profile-info-grid,
-  .vl-profile-tier-card {
-    grid-template-columns: 1fr;
-  }
+  
 
-  .vl-profile-tier-medal {
-    width: 78px;
-    height: 78px;
-  }
+  
 }
 
 
-/* v12: suporte visual para os campos novos dos JSONs de badges */
-.level-info-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-.level-info-meta span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 5px 8px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--rank-color, #8b6cff) 28%, rgba(255,255,255,.12));
-  background: color-mix(in srgb, var(--rank-color, #8b6cff) 10%, rgba(255,255,255,.04));
-  color: rgba(245,247,255,.76);
-  font-size: 11px;
-  font-weight: 800;
-}
+
+
 .achievement-meta,
 .achievement-desc {
   display: block;
@@ -1794,24 +1705,11 @@
 
 
 
-/* Dependência de cascata compartilhada: esta regra de Cargo/Rank permanece
-   no core na posição original porque o override global de tipografia secundária
-   aparece mais adiante em velarion-profile.css. */
-.vl-distinctive-identity small,
-.vl-distinctive-fields small {
-  color: rgba(223,228,244,.62);
-  font-size: 9px;
-  font-weight: 950;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
 
-/* Dependência de cascata do popover do Documento: estas regras permanecem
-   no core na posição relativa anterior ao override global de <small>. */
-.vl-profile-verified-popover__title small { display:block; color:color-mix(in srgb,var(--vpop-color) 72%,#fff 28%); font-size:8px; line-height:1; font-weight:1000; letter-spacing:.13em; text-transform:uppercase; }
-.vl-profile-verified-popover__meta small,
-.vl-profile-verified-popover__meta strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.vl-profile-verified-popover__meta small { color:rgba(234,240,255,.45); font-size:7px; line-height:1; font-weight:950; letter-spacing:.09em; text-transform:uppercase; }
+
+
+
+
 
 .vl-achievements-zone {
   margin-top: 16px;
@@ -2315,35 +2213,9 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
 
 
 
-/* ============================================================
-   VELARION PREVIEW V11 — CORES CORRIGIDAS
-   BASE: V8 corrigida.
-   IMPORTANTE: somente cor/borda/brilho/fundo visual.
-   Nenhuma regra estrutural de display, grid, flex, position,
-   width, height, padding, margin, gap, transform ou overflow.
-   ============================================================ */
 
-/* Cabeçalhos principais: branco/cinza uniforme */
-.vl-profile-panel--overview > .vl-profile-section-head > span,
-.vl-profile-panel--progress-v2 > .vl-profile-section-head > span,
-.vl-profile-panel--systems-v2 > .vl-profile-section-head > span,
-.vl-profile-panel--clan > .vl-profile-section-head > span,
-.vl-profile-panel--badges-v3 > .vl-profile-section-head > span{
-  color:#f5f6f8 !important;
-  border-color:rgba(255,255,255,.24) !important;
-  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.028)) !important;
-  box-shadow:inset 0 1px rgba(255,255,255,.08),0 0 14px rgba(255,255,255,.04) !important;
-  text-shadow:none !important;
-}
 
-.vl-profile-panel--overview > .vl-profile-section-head > i,
-.vl-profile-panel--progress-v2 > .vl-profile-section-head > i,
-.vl-profile-panel--systems-v2 > .vl-profile-section-head > i,
-.vl-profile-panel--clan > .vl-profile-section-head > i,
-.vl-profile-panel--badges-v3 > .vl-profile-section-head > i{
-  background:linear-gradient(90deg,rgba(255,255,255,.34),rgba(255,255,255,.08),transparent) !important;
-  box-shadow:none !important;
-}
+
 
 /* Registro principal:
    preserva integralmente a estrutura original da V8;
@@ -2542,15 +2414,9 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
   border-color:rgba(255,255,255,.17) !important;
 }
 
-.vl-profile-panel--badges-v3 .vl-distinctive-card{
-  box-shadow:
-    inset 0 1px rgba(255,255,255,.04),
-    0 9px 22px rgba(0,0,0,.16) !important;
-}
 
-.vl-profile-panel--badges-v3 .vl-distinctive-card__details{
-  box-shadow:inset 0 1px rgba(255,255,255,.035) !important;
-}
+
+
 
 /* ---------- Conquistas ---------- */
 .vl-profile-panel--badges-v3 .vl-achievements-card{
@@ -3288,21 +3154,12 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
 
 
 
-/* ============================================================
-   VELARION PROFILE V19.2 — LEVELRANK DATA-DRIVEN
-   Cores/ícone vêm de badges_levelranks.website.
-   ============================================================ */
 
 
 
 
 
 
-/* ============================================================
-   VELARION PROFILE V19.3 — LEVELRANK / PALETA CONTIDA
-   Mantém as cores oficiais do rank como identidade/acento,
-   mas impede que gradients muito claros dominem o fundo.
-   ============================================================ */
 
 
 
@@ -3321,14 +3178,7 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
 
 
 
-/* ============================================================
-   VELARION PROFILE V19.5 — SISTEMAS PÚBLICOS V1 / MODELO B
-   Horizontal, modular e alimentado por badges_raritys.
-   ============================================================ */
 
-.vl-profile-panel--systems-public-v1 {
-  overflow: hidden;
-}
 
 
 
@@ -3396,66 +3246,10 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
 
 
 
-/* V19.6 — Sistemas Públicos: ficha pública de invocação; sem escala. */
-.vl-profile-panel--systems-public-v2{overflow:hidden}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ============================================================
-   V19.7 — PERSONAGEM REAL DO CARD NO SISTEMAS PÚBLICOS
-   Origem: theme.card_embed.character_image
-   Suporte nativo a imagem e WebM.
-   ============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* V19.8 — Sistemas Públicos: ficha anime/gacha do jogador. */
-.vl-profile-panel--systems-public-v3{overflow:hidden}
 
 
 
@@ -5989,13 +5783,7 @@ mask-image:radial-gradient(circle at 50% 72%,#000 0 49%,rgba(0,0,0,.75) 58%,tran
   --vl-luminous-line: rgba(231,184,77,.56);
 }
 
-/* O antigo cabeçalho de categoria não existe mais visualmente. */
-.vl-profile-showcase__page .vl-profile-section-head--adventurer,
-.vl-profile-showcase__page .vl-profile-section-head--public,
-.vl-profile-showcase__page .vl-profile-section-head--clan,
-.vl-profile-showcase__page .vl-profile-section-head--achievements {
-  display: none !important;
-}
+
 
 /* Barra persistente acima das quatro páginas. */
 .vl-luminous-categories {

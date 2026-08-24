@@ -9,7 +9,10 @@
 
   <link rel="stylesheet" href="../assets/css/style.css?v=20.54" />
   <link rel="stylesheet" href="../assets/css/velarion-card.css?v=20.54" />
-  <link rel="stylesheet" href="../assets/css/velarion-profile.css?v=20.55" />
+  <link rel="stylesheet" href="../assets/css/velarion-profile.css?v=20.57-modular" />
+  <link rel="stylesheet" id="velarion-profile-document-css" href="../assets/css/velarion-profile-document.css?v=20.57-modular" />
+  <link rel="stylesheet" id="velarion-profile-progression-css" href="../assets/css/velarion-profile-progression.css?v=20.57-modular" />
+  <link rel="stylesheet" id="velarion-profile-public-record-css" href="../assets/css/velarion-profile-public-record.css?v=20.57-modular" />
   <link id="velarion-card-fx-css" rel="stylesheet" href="../assets/css/velarion-card-fx.css?v=20.54" />
 
   <style>
@@ -60,7 +63,13 @@
   <script src="../assets/js/velarion-shared.js?v=shared-v1"></script>
   <script src="../assets/js/velarion-card.js?v=20.54" defer></script>
   <script id="velarion-card-fx-js" src="../assets/js/velarion-card-fx.js?v=20.54" defer></script>
-  <script src="../assets/js/velarion-profile.js?v=20.55" defer></script>
-  <script src="../assets/js/velarion-profile-page.js?v=20.56-badgesPlayers" defer></script>
+
+  <!-- Componentes do perfil: carregados explicitamente para evitar fallback/cascata antiga. -->
+  <script id="velarion-profile-core-js" src="../assets/js/velarion-profile-core.js?v=20.57-modular" defer></script>
+  <script id="velarion-profile-document-js" src="../assets/js/velarion-profile-document.js?v=20.57-modular" defer></script>
+  <script id="velarion-profile-progression-js" src="../assets/js/velarion-profile-progression.js?v=20.57-modular" defer></script>
+  <script id="velarion-profile-public-record-js" src="../assets/js/velarion-profile-public-record.js?v=20.57-modular" defer></script>
+  <script src="../assets/js/velarion-profile.js?v=20.57-modular" defer></script>
+  <script src="../assets/js/velarion-profile-page.js?v=20.57-modular" defer></script>
 </body>
 </html>
