@@ -20,36 +20,302 @@
     return C.cleanValue(player?.badges?.rarity_id || player?.badges?.rarity || player?.rarity_id);
   }
 
+  function cleanSystemValue(value) {
+    const C = core();
+    if (value === null || value === undefined || value === false) return "";
+    if (typeof value !== "string" && typeof value !== "number") return "";
+    return C.stripMinecraftCodes(C.cleanValue(value));
+  }
+
+  function fallbackText(...values) {
+    for (const value of values) {
+      const text = cleanSystemValue(value);
+      if (text) return text;
+    }
+    return "";
+  }
+
+  function normalizeProfileBadgeEntries(raw) {
+    const C = core();
+    const output = [];
+    const seen = new Set();
+
+    const push = (id, data) => {
+      const cleanId = C.cleanValue(id);
+      if (!cleanId || seen.has(cleanId)) return;
+      seen.add(cleanId);
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        output.push(Object.assign({}, data, { id: cleanId }));
+      } else {
+        output.push({ id: cleanId });
+      }
+    };
+
+    const visit = (value) => {
+      if (value === null || value === undefined || value === false) return;
+      if (typeof value === "string" || typeof value === "number") {
+        push(value, null);
+        return;
+      }
+      if (Array.isArray(value)) {
+        value.forEach(visit);
+        return;
+      }
+      if (typeof value !== "object") return;
+
+      const explicitId = value.id || value.badge_id || value.role_id || value.rank_id || value.value;
+      if (explicitId) {
+        push(explicitId, value);
+        return;
+      }
+
+      Object.entries(value).forEach(([key, child]) => {
+        if (/^(?:role|rank)_id_/i.test(key)) {
+          push(key, child);
+        } else if (child && typeof child === "object" && !Array.isArray(child)) {
+          const childId = child.id || child.badge_id || child.role_id || child.rank_id;
+          if (childId) push(childId, child);
+        }
+      });
+    };
+
+    visit(raw);
+    return output;
+  }
+
+  function getPlayerSystemEntries(type, player) {
+    if (type === "role") {
+      return normalizeProfileBadgeEntries(
+        player?.badges?.role ??
+        player?.badges?.roles ??
+        player?.role?.badge_id ??
+        player?.role
+      );
+    }
+    return normalizeProfileBadgeEntries(
+      player?.badges?.rank ??
+      player?.badges?.ranks ??
+      player?.rank?.badge_id
+    );
+  }
+
   function getRoleLabel(player) {
-    return core().stripMinecraftCodes(player?.badges?.role || player?.rank?.role || player?.clan?.rank || player?.role || "Sem cargo");
+    const entry = getPlayerSystemEntries("role", player)[0];
+    return fallbackText(
+      entry?.label,
+      entry?.name,
+      entry?.title,
+      typeof player?.badges?.role === "string" ? player.badges.role : "",
+      typeof player?.rank?.role === "string" ? player.rank.role : "",
+      typeof player?.clan?.rank === "string" ? player.clan.rank : "",
+      entry?.id ? String(entry.id).replace(/^role_id_/i, "").replace(/[_-]+/g, " ") : "",
+      "Sem cargo"
+    );
   }
 
   function getRankLabel(player) {
-    return core().stripMinecraftCodes(player?.badges?.rank || player?.rank?.name || player?.rank?.role || "Sem rank");
+    const entry = getPlayerSystemEntries("rank", player)[0];
+    return fallbackText(
+      entry?.label,
+      entry?.name,
+      entry?.title,
+      typeof player?.badges?.rank === "string" ? player.badges.rank : "",
+      typeof player?.rank?.name === "string" ? player.rank.name : "",
+      entry?.id ? String(entry.id).replace(/^rank_id_/i, "").replace(/[_-]+/g, " ") : "",
+      "Sem rank"
+    );
   }
 
-  function fallbackRole(player) {
-    const C = core();
-    return `<div class="vl-public-module-badge-card"><strong>${C.escapeHtml(getRoleLabel(player))}</strong><span>Cargo principal</span></div>`;
+  function safeSystemColor(value, fallback) {
+    const raw = String(value || "").trim();
+    return /^#[0-9a-f]{3,8}$/i.test(raw) ? raw : fallback;
   }
 
-  function fallbackRank(player) {
-    const C = core();
-    return `<div class="vl-public-module-badge-card"><strong>${C.escapeHtml(getRankLabel(player))}</strong><span>Rank atual</span></div>`;
+  function formatSystemDate(value) {
+    const raw = cleanSystemValue(value);
+    if (!raw) return "—";
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return raw;
+    try { return date.toLocaleString("pt-BR"); }
+    catch (_) { return raw; }
   }
 
-  function buildPublicHelpers(ctx) {
+  function getSystemDefinition(type, id, extensions) {
     const C = core();
-    return {
-      buildRoleInfoEmblemHtml: C.pick(ctx, "buildRoleInfoEmblemHtml", fallbackRole),
-      buildRankInfoEmblemHtml: C.pick(ctx, "buildRankInfoEmblemHtml", fallbackRank)
-    };
+    const cleanId = C.cleanValue(id);
+    if (!cleanId) return null;
+    const source = type === "role"
+      ? (extensions?.badges_roles || extensions?.badges_role || {})
+      : (extensions?.badges_ranks || extensions?.badges_rank || {});
+    const direct = source && typeof source === "object" ? source[cleanId] : null;
+    if (!direct || typeof direct !== "object") return null;
+    return C.mergeBadge(direct) || direct;
+  }
+
+  function resolveSystemCardData(type, player, extensions) {
+    const C = core();
+    const isRole = type === "role";
+    const entry = getPlayerSystemEntries(type, player)[0] || null;
+    const definition = entry ? getSystemDefinition(type, entry.id, extensions) : null;
+    const website = definition?.website && typeof definition.website === "object" ? definition.website : {};
+    const hierarchy = definition?.hierarchy && typeof definition.hierarchy === "object" ? definition.hierarchy : {};
+
+    const rawId = fallbackText(entry?.id, definition?.id);
+    const humanizedId = rawId
+      ? rawId.replace(isRole ? /^role_id_/i : /^rank_id_/i, "").replace(/[_-]+/g, " ")
+      : "";
+
+    const title = fallbackText(
+      definition?.label,
+      definition?.name,
+      definition?.title,
+      website?.label,
+      website?.title,
+      entry?.label,
+      entry?.name,
+      entry?.title,
+      humanizedId,
+      isRole ? getRoleLabel(player) : getRankLabel(player),
+      isRole ? "Sem cargo" : "Sem rank"
+    );
+
+    const id = rawId || "—";
+    const group = fallbackText(
+      hierarchy?.group,
+      definition?.category,
+      definition?.group,
+      website?.group,
+      isRole ? "role" : "rank"
+    ) || (isRole ? "role" : "rank");
+
+    const description = fallbackText(
+      definition?.description,
+      definition?.desc,
+      website?.description,
+      website?.desc,
+      entry?.description,
+      entry?.desc,
+      isRole ? "Cargo do perfil." : "Rank do perfil."
+    );
+
+    const date = formatSystemDate(
+      entry?.unlocked_at ??
+      entry?.assigned_at ??
+      entry?.created_at ??
+      definition?.unlocked_at ??
+      definition?.assigned_at ??
+      definition?.created_at
+    );
+
+    const mediaRaw = fallbackText(
+      definition?.icon,
+      definition?.emblem,
+      definition?.image,
+      website?.icon,
+      website?.emblem,
+      website?.image
+    );
+    const image = C.getMediaSource ? C.getMediaSource(mediaRaw) : mediaRaw;
+
+    const primary = safeSystemColor(fallbackText(
+      definition?.color,
+      website?.color,
+      definition?.primary_color,
+      website?.primary_color
+    ), isRole ? "#8168ff" : "#39c7ff");
+    const secondary = safeSystemColor(fallbackText(
+      definition?.color2,
+      website?.color2,
+      definition?.secondary_color,
+      website?.secondary_color,
+      definition?.color,
+      website?.color
+    ), isRole ? "#55d7ff" : "#9e78ff");
+    const highlight = safeSystemColor(fallbackText(
+      definition?.glow,
+      website?.glow,
+      definition?.highlight_color,
+      website?.highlight_color,
+      definition?.color2,
+      website?.color2
+    ), isRole ? "#d7c8ff" : "#c9f7ff");
+
+    return { title, id, group, description, date, image, primary, secondary, highlight };
+  }
+
+  function buildSystemHologram(type, player, extensions) {
+    const C = core();
+    const esc = (value) => C.escapeHtml(String(value ?? ""));
+    const data = resolveSystemCardData(type, player, extensions);
+    const isRole = type === "role";
+    const section = isRole ? "Cargo" : "Rank";
+    const eyebrow = isRole ? "Função atual" : "Classificação atual";
+    const code = isRole ? "ROLE ACCESS" : "RANK MATRIX";
+    const sigil = isRole ? "✦" : "◆";
+
+    const facts = isRole
+      ? [
+          ["Grupo", data.group, "⌂"],
+          ["Descrição", data.description, "▤"],
+          ["ID", data.id, "⌘"],
+          ["Data", data.date, "◷"]
+        ]
+      : [
+          ["Classe", data.group, "◇"],
+          ["Descrição", data.description, "▤"],
+          ["ID", data.id, "⌘"],
+          ["Data", data.date, "◷"]
+        ];
+
+    return `
+      <section class="vl-system-zero vl-system-zero--${isRole ? "role" : "rank"}"
+               style="--sz-primary:${esc(data.primary)};--sz-secondary:${esc(data.secondary)};--sz-highlight:${esc(data.highlight)}"
+               aria-label="${esc(section)}: ${esc(data.title)}">
+        <div class="vl-system-zero__grid" aria-hidden="true"></div>
+        <div class="vl-system-zero__beam" aria-hidden="true"></div>
+        <header class="vl-system-zero__header">
+          <div class="vl-system-zero__brand">
+            <span class="vl-system-zero__brand-mark"><i></i></span>
+            <div><small>Sistema</small><strong>${esc(section)}</strong></div>
+          </div>
+          <span class="vl-system-zero__code">VL // ${esc(code)}</span>
+        </header>
+
+        <div class="vl-system-zero__hero">
+          <div class="vl-system-zero__seal-wrap" aria-hidden="true">
+            <span class="vl-system-zero__orbit vl-system-zero__orbit--a"></span>
+            <span class="vl-system-zero__orbit vl-system-zero__orbit--b"></span>
+            <span class="vl-system-zero__orbit vl-system-zero__orbit--c"></span>
+            <div class="vl-system-zero__seal">
+              ${data.image
+                ? `<img src="${esc(data.image)}" alt="" loading="eager" decoding="async">`
+                : `<span>${sigil}</span>`}
+            </div>
+          </div>
+          <div class="vl-system-zero__identity">
+            <small>${esc(eyebrow)}</small>
+            <strong>${esc(data.title)}</strong>
+            <span>${esc(isRole ? "Cargo principal" : "Rank atual")}</span>
+          </div>
+        </div>
+
+        <div class="vl-system-zero__facts">
+          ${facts.map(([label, value, icon]) => `
+            <div class="vl-system-zero__fact">
+              <span class="vl-system-zero__fact-icon" aria-hidden="true">${icon}</span>
+              <div><small>${esc(label)}</small><strong>${esc(value || "—")}</strong></div>
+            </div>`).join("")}
+        </div>
+
+        <footer class="vl-system-zero__footer" aria-hidden="true">
+          <span></span><b>${isRole ? "AUTHORITY NODE" : "PROGRESSION NODE"}</b><span></span>
+        </footer>
+      </section>`;
   }
 
   function render(player, context) {
     const C = core();
     const ctx = context || {};
-    const h = buildPublicHelpers(ctx);
     const extensions = ctx?.extensionsData || {};
     const source = extensions.badges_raritys || extensions.badges_rarities || {};
     const rarityId = getRarityId(player);
@@ -250,14 +516,14 @@
               <article class="vl-public-systems-switcher__page is-active"
                        data-vl-public-subpage data-vl-public-subpage-label="Cargo" aria-hidden="false">
                 <div class="vl-public-systems-switcher__content">
-                  ${h.buildRoleInfoEmblemHtml(player)}
+                  ${buildSystemHologram("role", player, extensions)}
                 </div>
               </article>
 
               <article class="vl-public-systems-switcher__page"
                        data-vl-public-subpage data-vl-public-subpage-label="Rank" aria-hidden="true" inert>
                 <div class="vl-public-systems-switcher__content">
-                  ${h.buildRankInfoEmblemHtml(player)}
+                  ${buildSystemHologram("rank", player, extensions)}
                 </div>
               </article>
             </div>
