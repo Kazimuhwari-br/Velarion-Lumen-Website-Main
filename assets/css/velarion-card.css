@@ -124,7 +124,7 @@
       );
       background:
         radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--card-glow, #ff84cf) 14%, transparent), transparent 40%),
-        #090b16;
+        var(--character-slot-background, #090b16);
     }
 
     .vl-card__art-bg {
@@ -4147,3 +4147,18 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
 }
 
 /* CARD COLOR PALETTE v5 END */
+
+
+/* ======================================================================
+   Character Slots — base visual/runtime hooks
+   O seletor visual será ligado ao HTML do perfil em uma etapa posterior.
+   ====================================================================== */
+.vl-card[data-character-slot-id] .vl-card__art-bg,
+.vl-card[data-character-slot-id] .vl-card__character {
+  transition: opacity .22s ease, filter .22s ease, transform .55s var(--ease);
+}
+
+.vl-card[data-character-slot-switching="true"] .vl-card__art-bg,
+.vl-card[data-character-slot-switching="true"] .vl-card__character {
+  opacity: 0;
+}

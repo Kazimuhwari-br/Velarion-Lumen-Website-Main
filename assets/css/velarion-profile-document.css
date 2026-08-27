@@ -1330,3 +1330,704 @@
   width: 100%;
   min-height: 214px;
 }
+
+
+/* Character Slots — estado base para troca sem flash visual. */
+.vl-profile-public-id-card[data-character-slot-id] {
+  --vp-character-slot-background: transparent;
+}
+.vl-profile-public-id-card[data-character-slot-switching="true"] .vl-profile-public-id-card__frame-image {
+  opacity: 0;
+}
+.vl-profile-public-id-card__frame-image {
+  transition: opacity .22s ease;
+}
+
+/* ======================================================================
+   Character Slots — Documento do Aventureiro / Rebuild v5
+   Reconstrução do acabamento, sem alterar layout, conteúdo ou proporções.
+   Objetivos:
+   - card_color continua sendo a fonte cromática;
+   - superfície mais clara e limpa, sem preto/cinza lamacento;
+   - moldura externa técnica com poucos elementos e leitura nítida;
+   - branco-pastel usado como highlight, nunca como substituto da paleta;
+   - glow curto e controlado.
+   ====================================================================== */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+  --vp-doc-accent: var(--id-accent, #8b6cff);
+  --vp-doc-highlight: color-mix(in srgb, var(--vp-doc-accent) 38%, white 62%);
+  --vp-doc-highlight-soft: color-mix(in srgb, var(--vp-doc-accent) 18%, white 82%);
+  --vp-doc-highlight-faint: color-mix(in srgb, var(--vp-doc-accent) 14%, transparent);
+  --vp-doc-surface-a: color-mix(in srgb, var(--id-bg, #73685d) 42%, #58647d 58%);
+  --vp-doc-surface-b: color-mix(in srgb, var(--id-bg, #73685d) 28%, #344058 72%);
+  --vp-doc-surface-c: color-mix(in srgb, var(--id-bg, #73685d) 18%, #222d43 82%);
+  --vp-doc-grid: color-mix(in srgb, var(--vp-doc-highlight-soft) 24%, transparent);
+
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--vp-doc-highlight) 60%, rgba(255,255,255,.24)) !important;
+  border-radius: 16px !important;
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(255,255,255,.16), transparent 31%),
+    radial-gradient(ellipse at 78% 16%, color-mix(in srgb, var(--vp-doc-highlight) 12%, transparent), transparent 38%),
+    linear-gradient(112deg, rgba(255,255,255,.075), transparent 24% 71%, rgba(255,255,255,.035)),
+    linear-gradient(135deg, var(--vp-doc-surface-a), var(--vp-doc-surface-b) 52%, var(--vp-doc-surface-c)) !important;
+  background-blend-mode: screen, screen, normal, normal !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 0 0 1px rgba(255,255,255,.025),
+    0 12px 28px rgba(2,8,18,.20),
+    0 0 10px color-mix(in srgb, var(--vp-doc-accent) 7%, transparent) !important;
+}
+
+/* Gradiente/rainbow: a paleta entra como película luminosa, sem multiply. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(255,255,255,.17), transparent 31%),
+    linear-gradient(112deg, rgba(255,255,255,.07), transparent 25% 70%, rgba(255,255,255,.03)),
+    var(--vp-document-palette-gradient),
+    linear-gradient(135deg, var(--vp-doc-surface-a), var(--vp-doc-surface-b) 52%, var(--vp-doc-surface-c)) !important;
+  background-blend-mode: screen, normal, soft-light, normal !important;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(255,255,255,.17), transparent 31%),
+    linear-gradient(112deg, rgba(255,255,255,.07), transparent 25% 70%, rgba(255,255,255,.03)),
+    var(--vp-document-palette-loop-gradient),
+    linear-gradient(135deg, var(--vp-doc-surface-a), var(--vp-doc-surface-b) 52%, var(--vp-doc-surface-c)) !important;
+  background-size: 100% 100%, 100% 100%, 300% 100%, 100% 100% !important;
+  background-blend-mode: screen, normal, soft-light, normal !important;
+}
+
+/* Grade técnica interna redesenhada: fina, regular e pouco contrastada. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  z-index: 0;
+  pointer-events: none;
+  border: 0;
+  border-radius: 10px;
+  background:
+    linear-gradient(var(--vp-doc-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--vp-doc-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: .22 !important;
+  filter: none !important;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 56%, rgba(0,0,0,.34) 74%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0 56%, rgba(0,0,0,.34) 74%, transparent 100%);
+}
+
+/* Uma única faixa estrutural à direita; sem várias diagonais sobrepostas. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 13%;
+  bottom: 0;
+  width: 1px;
+  z-index: 1;
+  pointer-events: none;
+  border: 0;
+  background: linear-gradient(180deg, transparent 4%, var(--vp-doc-highlight-soft) 20%, var(--vp-doc-highlight-soft) 80%, transparent 96%);
+  box-shadow: 28px 0 0 color-mix(in srgb, var(--vp-doc-highlight-soft) 28%, transparent);
+  opacity: .26 !important;
+  transform: skewX(-14deg);
+  filter: none !important;
+}
+
+/* Reflexo curto: não cria névoa sobre a paleta. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
+  opacity: .24 !important;
+  filter: none !important;
+  mix-blend-mode: screen;
+  overflow: visible;
+}
+
+/* Moldura externa reconstruída: um contorno poligonal só, com cantos cortados. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  z-index: 8;
+  pointer-events: none;
+  padding: 1px;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px), calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px), 0 13px);
+  background: linear-gradient(90deg,
+    var(--vp-doc-highlight-soft),
+    var(--vp-doc-highlight) 32%,
+    color-mix(in srgb, var(--vp-doc-accent) 48%, white 52%) 68%,
+    var(--vp-doc-highlight-soft));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .82;
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--vp-doc-accent) 14%, transparent));
+}
+
+/* Apenas dois encaixes centrais discretos, superior e inferior. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 86px;
+  height: calc(100% + 20px);
+  z-index: 8;
+  pointer-events: none;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(var(--vp-doc-highlight-soft), var(--vp-doc-highlight-soft)) top center / 52px 1px no-repeat,
+    linear-gradient(var(--vp-doc-highlight-soft), var(--vp-doc-highlight-soft)) bottom center / 52px 1px no-repeat,
+    linear-gradient(135deg, transparent 47%, var(--vp-doc-highlight-soft) 48% 52%, transparent 53%) top left / 18px 7px no-repeat,
+    linear-gradient(225deg, transparent 47%, var(--vp-doc-highlight-soft) 48% 52%, transparent 53%) top right / 18px 7px no-repeat,
+    linear-gradient(45deg, transparent 47%, var(--vp-doc-highlight-soft) 48% 52%, transparent 53%) bottom left / 18px 7px no-repeat,
+    linear-gradient(315deg, transparent 47%, var(--vp-doc-highlight-soft) 48% 52%, transparent 53%) bottom right / 18px 7px no-repeat;
+  opacity: .64;
+  filter: none;
+}
+
+/* Remove os filetes laterais da v4: eram os principais responsáveis pela poluição. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__top::before,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__top::after,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__footer::before,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__footer::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Componentes internos: highlights claros derivados da paleta, sem neon pesado. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__photo,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__chips em {
+  border-color: color-mix(in srgb, var(--vp-doc-highlight-soft) 58%, rgba(255,255,255,.18)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.11), 0 0 5px color-mix(in srgb, var(--vp-doc-accent) 7%, transparent) !important;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__footer > i {
+  background: linear-gradient(90deg, var(--vp-doc-highlight), color-mix(in srgb, var(--vp-doc-highlight-soft) 52%, transparent), transparent) !important;
+  opacity: .66;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__name,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__subtitle,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__footer {
+  text-shadow: 0 1px 5px rgba(6,10,20,.28);
+}
+
+@media (max-width: 680px) {
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+    border-radius: 14px !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.17), 0 9px 22px rgba(2,8,18,.20) !important;
+  }
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+    inset: -4px;
+  }
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+    top: -7px;
+    width: 70px;
+    height: calc(100% + 14px);
+  }
+}
+
+/* ======================================================================
+   Documento do Aventureiro / Frame Rebuild v6
+   Moldura reconstruída a partir do mockup aprovado.
+   - sem imagem de moldura;
+   - sem alterar layout/conteúdo;
+   - geometria integrada em uma única silhueta CSS;
+   - card_color preservado como fonte cromática;
+   - highlights branco-pastel e superfície limpa.
+   ====================================================================== */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+  --vp-doc-frame-a: color-mix(in srgb, var(--vp-doc-accent) 56%, white 44%);
+  --vp-doc-frame-b: color-mix(in srgb, var(--vp-doc-accent) 31%, white 69%);
+  --vp-doc-frame-c: color-mix(in srgb, var(--vp-doc-accent) 18%, white 82%);
+  --vp-doc-frame-dim: color-mix(in srgb, var(--vp-doc-accent) 22%, rgba(255,255,255,.30));
+  --vp-doc-glass: color-mix(in srgb, var(--id-bg, #73685d) 26%, rgba(43,55,78,.88) 74%);
+
+  /* A borda do próprio bloco deixa de competir com a moldura externa. */
+  border-color: color-mix(in srgb, var(--vp-doc-frame-c) 68%, transparent) !important;
+  border-radius: 13px !important;
+  background:
+    radial-gradient(ellipse at 10% 4%, rgba(255,255,255,.14), transparent 28%),
+    radial-gradient(ellipse at 82% 18%, color-mix(in srgb, var(--vp-doc-accent) 10%, transparent), transparent 40%),
+    linear-gradient(108deg, rgba(255,255,255,.055), transparent 27% 72%, rgba(255,255,255,.028)),
+    linear-gradient(136deg,
+      color-mix(in srgb, var(--vp-doc-glass) 78%, var(--vp-doc-accent) 22%),
+      color-mix(in srgb, var(--vp-doc-glass) 92%, var(--vp-doc-accent) 8%) 48%,
+      color-mix(in srgb, var(--vp-doc-glass) 84%, var(--vp-doc-accent) 16%)) !important;
+  background-blend-mode: screen, screen, normal, normal !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 0 0 1px rgba(255,255,255,.022),
+    0 13px 28px rgba(3,8,20,.18),
+    0 0 8px color-mix(in srgb, var(--vp-doc-accent) 6%, transparent) !important;
+}
+
+/* Mantém gradient/rainbow visíveis, sem lavar o fundo nem usar multiply. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
+  background:
+    radial-gradient(ellipse at 10% 4%, rgba(255,255,255,.15), transparent 28%),
+    linear-gradient(108deg, rgba(255,255,255,.05), transparent 27% 72%, rgba(255,255,255,.025)),
+    var(--vp-document-palette-gradient),
+    linear-gradient(136deg, rgba(57,68,91,.86), rgba(35,47,70,.90) 52%, rgba(30,42,63,.90)) !important;
+  background-blend-mode: screen, normal, soft-light, normal !important;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
+  background:
+    radial-gradient(ellipse at 10% 4%, rgba(255,255,255,.15), transparent 28%),
+    linear-gradient(108deg, rgba(255,255,255,.05), transparent 27% 72%, rgba(255,255,255,.025)),
+    var(--vp-document-palette-loop-gradient),
+    linear-gradient(136deg, rgba(57,68,91,.86), rgba(35,47,70,.90) 52%, rgba(30,42,63,.90)) !important;
+  background-size: 100% 100%, 100% 100%, 300% 100%, 100% 100% !important;
+  background-blend-mode: screen, normal, soft-light, normal !important;
+}
+
+/* Grade interna fica subordinada à moldura, sem escurecer a superfície. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::before {
+  inset: 10px !important;
+  border-radius: 8px !important;
+  background:
+    linear-gradient(color-mix(in srgb, var(--vp-doc-frame-c) 13%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--vp-doc-frame-c) 13%, transparent) 1px, transparent 1px) !important;
+  background-size: 28px 28px !important;
+  opacity: .20 !important;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 54%, rgba(0,0,0,.28) 73%, transparent 100%) !important;
+  mask-image: linear-gradient(90deg, #000 0 54%, rgba(0,0,0,.28) 73%, transparent 100%) !important;
+}
+
+/* Remove a antiga faixa diagonal: a nova moldura já fornece hierarquia suficiente. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::after {
+  content: none !important;
+  display: none !important;
+}
+
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
+  inset: 0;
+  overflow: visible !important;
+  opacity: 1 !important;
+  border-radius: inherit;
+  background:
+    linear-gradient(100deg, transparent 0 47%, rgba(255,255,255,.045) 51%, transparent 56%),
+    radial-gradient(circle at 79% 74%, color-mix(in srgb, var(--vp-doc-accent) 8%, transparent), transparent 30%) !important;
+  filter: none !important;
+  mix-blend-mode: screen;
+}
+
+/*
+   Silhueta externa única.
+   O polígono cria:
+   - 4 cantos cortados;
+   - pequena aba central superior;
+   - pequena aba central inferior;
+   - ressalto técnico central à direita.
+   Isso substitui as linhas soltas das versões anteriores.
+*/
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+  content: "";
+  position: absolute;
+  inset: -6px -8px;
+  z-index: 8;
+  pointer-events: none;
+  padding: 1.5px;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(
+    17px 4px,
+    42% 4px,
+    calc(42% + 9px) 0,
+    calc(58% - 9px) 0,
+    58% 4px,
+    calc(100% - 20px) 4px,
+    calc(100% - 6px) 18px,
+    calc(100% - 6px) 40%,
+    100% 43%,
+    100% 57%,
+    calc(100% - 6px) 60%,
+    calc(100% - 6px) calc(100% - 18px),
+    calc(100% - 20px) calc(100% - 4px),
+    58% calc(100% - 4px),
+    calc(58% - 9px) 100%,
+    calc(42% + 9px) 100%,
+    42% calc(100% - 4px),
+    17px calc(100% - 4px),
+    4px calc(100% - 17px),
+    4px 17px
+  );
+  background:
+    linear-gradient(90deg,
+      var(--vp-doc-frame-b) 0%,
+      var(--vp-doc-frame-a) 18%,
+      var(--vp-doc-frame-c) 48%,
+      color-mix(in srgb, var(--vp-doc-accent) 46%, white 54%) 73%,
+      var(--vp-doc-frame-b) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .92;
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--vp-doc-accent) 15%, transparent));
+}
+
+/* Microdetalhes técnicos integrados: apenas pontos e linhas curtas. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+  content: "";
+  position: absolute;
+  inset: -6px -8px;
+  z-index: 9;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, var(--vp-doc-frame-c) 0 1px, transparent 1.35px) left 5px top 31% / 4px 7px repeat-y,
+    radial-gradient(circle, var(--vp-doc-frame-b) 0 1px, transparent 1.35px) right 1px top 45% / 4px 7px repeat-y,
+    linear-gradient(90deg, var(--vp-doc-frame-c), transparent) left 17px top 8px / 54px 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--vp-doc-frame-b)) right 20px bottom 8px / 58px 1px no-repeat;
+  opacity: .52;
+  filter: none;
+}
+
+/* Linhas internas e chips seguem a mesma linguagem, sem glow pesado. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__photo,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__chips em {
+  border-color: color-mix(in srgb, var(--vp-doc-frame-b) 58%, rgba(255,255,255,.16)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 4px color-mix(in srgb, var(--vp-doc-accent) 6%, transparent) !important;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__footer > i {
+  height: 1px !important;
+  background: linear-gradient(90deg,
+    var(--vp-doc-frame-c),
+    var(--vp-doc-frame-b) 42%,
+    color-mix(in srgb, var(--vp-doc-accent) 20%, transparent) 74%,
+    transparent) !important;
+  opacity: .72 !important;
+  box-shadow: none !important;
+}
+
+/* A arte do personagem não recebe véu escuro extra. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__frame-image::after {
+  background:
+    linear-gradient(90deg, rgba(14,20,36,.24) 0%, rgba(14,20,36,.05) 34%, transparent 66%),
+    radial-gradient(circle at 67% 43%, color-mix(in srgb, var(--vp-doc-accent) 7%, transparent), transparent 62%) !important;
+}
+.vl-profile-record-grid--document-only .vl-profile-public-id-card__frame-image img {
+  filter: saturate(1) contrast(1.02) brightness(.98) drop-shadow(0 12px 22px rgba(0,0,0,.20)) !important;
+}
+
+/* Mobile: mesma geometria, só com recortes menores. */
+@media (max-width: 680px) {
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+    border-radius: 11px !important;
+  }
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+    inset: -4px -5px;
+    padding: 1px;
+    clip-path: polygon(
+      12px 3px,
+      43% 3px,
+      calc(43% + 7px) 0,
+      calc(57% - 7px) 0,
+      57% 3px,
+      calc(100% - 14px) 3px,
+      calc(100% - 4px) 13px,
+      calc(100% - 4px) 41%,
+      100% 44%,
+      100% 56%,
+      calc(100% - 4px) 59%,
+      calc(100% - 4px) calc(100% - 13px),
+      calc(100% - 14px) calc(100% - 3px),
+      57% calc(100% - 3px),
+      calc(57% - 7px) 100%,
+      calc(43% + 7px) 100%,
+      43% calc(100% - 3px),
+      12px calc(100% - 3px),
+      3px calc(100% - 12px),
+      3px 12px
+    );
+  }
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+    inset: -4px -5px;
+    opacity: .40;
+  }
+}
+
+/* ======================================================================
+   Documento do Aventureiro / Geometry Rebuild v7
+   Reconstrói SOMENTE a geometria da moldura.
+   - preserva conteúdo, posições, textos, personagem e card_color da v6;
+   - elimina completamente linhas/pontilhados externos flutuantes;
+   - a própria caixa passa a ter a silhueta técnica;
+   - contorno externo e filete interno seguem a mesma geometria;
+   - nenhum elemento informacional é ocultado/removido.
+   ====================================================================== */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+  --vp-doc-shape: polygon(
+    16px 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 39%,
+    calc(100% - 5px) 42%,
+    calc(100% - 5px) 58%,
+    100% 61%,
+    100% calc(100% - 16px),
+    calc(100% - 16px) 100%,
+    58% 100%,
+    calc(58% - 8px) calc(100% - 3px),
+    calc(42% + 8px) calc(100% - 3px),
+    42% 100%,
+    16px 100%,
+    0 calc(100% - 16px),
+    0 16px
+  );
+
+  --vp-doc-inner-shape: polygon(
+    12px 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 40%,
+    calc(100% - 4px) 43%,
+    calc(100% - 4px) 57%,
+    100% 60%,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    57.5% 100%,
+    calc(57.5% - 6px) calc(100% - 2px),
+    calc(42.5% + 6px) calc(100% - 2px),
+    42.5% 100%,
+    12px 100%,
+    0 calc(100% - 12px),
+    0 12px
+  );
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  clip-path: var(--vp-doc-shape);
+  -webkit-clip-path: var(--vp-doc-shape);
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+/* Grade continua interna, mas agora respeita a nova silhueta. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::before {
+  inset: 7px !important;
+  z-index: 0 !important;
+  border-radius: 0 !important;
+  clip-path: var(--vp-doc-inner-shape);
+  -webkit-clip-path: var(--vp-doc-inner-shape);
+  opacity: .17 !important;
+}
+
+/* Contorno principal: integrado à própria caixa, sem linhas externas. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type]::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  padding: 1.25px;
+  clip-path: var(--vp-doc-shape);
+  -webkit-clip-path: var(--vp-doc-shape);
+  background: linear-gradient(100deg,
+    var(--vp-doc-frame-b) 0%,
+    var(--vp-doc-frame-a) 18%,
+    var(--vp-doc-frame-c) 48%,
+    color-mix(in srgb, var(--vp-doc-accent) 46%, white 54%) 72%,
+    var(--vp-doc-frame-b) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .90;
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--vp-doc-accent) 13%, transparent));
+}
+
+/* Shine volta a ser apenas camada de acabamento interna. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
+  inset: 0 !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  clip-path: var(--vp-doc-shape);
+  -webkit-clip-path: var(--vp-doc-shape);
+}
+
+/* Filete interno coincidente: mesma linguagem, ligeiramente recuado. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 4px;
+  z-index: 8;
+  pointer-events: none;
+  padding: 1px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  clip-path: var(--vp-doc-inner-shape) !important;
+  -webkit-clip-path: var(--vp-doc-inner-shape) !important;
+  background: linear-gradient(100deg,
+    color-mix(in srgb, var(--vp-doc-frame-c) 76%, transparent),
+    color-mix(in srgb, var(--vp-doc-frame-b) 70%, transparent) 34%,
+    rgba(255,255,255,.42) 58%,
+    color-mix(in srgb, var(--vp-doc-frame-b) 62%, transparent) 82%,
+    color-mix(in srgb, var(--vp-doc-frame-c) 70%, transparent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  opacity: .46 !important;
+  filter: none !important;
+}
+
+/*
+   Microdetalhes integrados: ficam DENTRO da moldura.
+   Sem filetes longos, sem pontilhado externo e sem linhas flutuando.
+*/
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background:
+    /* pequeno acento superior central */
+    linear-gradient(90deg, transparent, var(--vp-doc-frame-c) 24% 76%, transparent)
+      top 3px center / 72px 1px no-repeat,
+    /* pequeno acento inferior central */
+    linear-gradient(90deg, transparent, var(--vp-doc-frame-b) 24% 76%, transparent)
+      bottom 3px center / 72px 1px no-repeat,
+    /* detalhe técnico curto na lateral direita */
+    linear-gradient(var(--vp-doc-frame-c), var(--vp-doc-frame-c))
+      right 2px center / 1px 26px no-repeat,
+    /* poucos pontos internos no canto superior esquerdo */
+    radial-gradient(circle, color-mix(in srgb, var(--vp-doc-frame-c) 72%, transparent) 0 1px, transparent 1.35px)
+      left 11px top 10px / 7px 4px repeat-x;
+  opacity: .50 !important;
+  filter: none !important;
+}
+
+/* Neutraliza de forma explícita qualquer geometria externa herdada de versões antigas. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__top::before,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__top::after,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__footer::before,
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > .vl-profile-public-id-card__footer::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Conteúdo informacional fica acima das camadas decorativas e permanece intacto. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] > *:not(.vl-profile-public-id-card__shine):not(.vl-profile-public-id-card__frame-image) {
+  position: relative;
+  z-index: 4;
+}
+/* A arte do personagem precisa continuar sendo uma camada absoluta.
+   A v7 a transformava acidentalmente em position:relative pelo seletor acima,
+   fazendo a mídia sair da área visual do documento. */
+.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__frame-image {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 52% !important;
+  z-index: 2;
+}
+
+@media (max-width: 680px) {
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] {
+    --vp-doc-shape: polygon(
+      11px 0,
+      calc(100% - 11px) 0,
+      100% 11px,
+      100% 40%,
+      calc(100% - 4px) 43%,
+      calc(100% - 4px) 57%,
+      100% 60%,
+      100% calc(100% - 11px),
+      calc(100% - 11px) 100%,
+      58% 100%,
+      calc(58% - 6px) calc(100% - 2px),
+      calc(42% + 6px) calc(100% - 2px),
+      42% 100%,
+      11px 100%,
+      0 calc(100% - 11px),
+      0 11px
+    );
+    --vp-doc-inner-shape: polygon(
+      8px 0,
+      calc(100% - 8px) 0,
+      100% 8px,
+      100% 41%,
+      calc(100% - 3px) 44%,
+      calc(100% - 3px) 56%,
+      100% 59%,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      57% 100%,
+      calc(57% - 4px) calc(100% - 2px),
+      calc(43% + 4px) calc(100% - 2px),
+      43% 100%,
+      8px 100%,
+      0 calc(100% - 8px),
+      0 8px
+    );
+  }
+
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::before {
+    inset: 3px;
+  }
+
+  .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine::after {
+    background:
+      linear-gradient(90deg, transparent, var(--vp-doc-frame-c) 24% 76%, transparent)
+        top 2px center / 54px 1px no-repeat,
+      linear-gradient(90deg, transparent, var(--vp-doc-frame-b) 24% 76%, transparent)
+        bottom 2px center / 54px 1px no-repeat,
+      linear-gradient(var(--vp-doc-frame-c), var(--vp-doc-frame-c))
+        right 1px center / 1px 20px no-repeat;
+  }
+}
+
+/* =========================================================
+   POPOVER TEXT LAYOUT FIX v9
+   Keeps labels and values on separate rows inside verified/
+   clan information popovers. This is intentionally scoped to
+   floating profile popovers and does not alter document layout.
+   ========================================================= */
+.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta small {
+  display: block;
+  width: 100%;
+  margin: 0;
+  color: rgba(236,241,255,.56);
+  font-size: 8px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: .035em;
+  white-space: normal;
+}
+
+.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta strong {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  color: rgba(255,255,255,.92);
+  font-size: 10px;
+  line-height: 1.28;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Clan popovers reuse the verified-popover structure. Keep the
+   compact grid, but never concatenate labels such as Sigla + VLS. */
+.vl-profile-clan-popover.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta > div {
+  gap: 4px;
+}
+
+.vl-profile-clan-popover.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta--wide {
+  grid-column: 1 / -1;
+}

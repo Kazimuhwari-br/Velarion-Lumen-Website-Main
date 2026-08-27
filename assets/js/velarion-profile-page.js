@@ -21,6 +21,8 @@
   let clansData = {};
   let profilePlayersDataSource = {};
   let badgesPlayersDataSource = {};
+  let currentProfilePlayer = null;
+  let currentCharacterSlotId = "id_1";
 
   let DEFAULT_PLAYER_AVATAR = null;
   let DEFAULT_PLAYER_CHARACTER = null;
@@ -1538,12 +1540,55 @@
     const target = prettyPath.replace(/\/$/, "");
 
     if (current !== target || window.location.search || window.location.hash) {
-      try { window.history.replaceState(null, "", prettyPath); } catch (error) {}
+      try {
+        const nextUrl = new URL(prettyPath, window.location.origin);
+        if (currentCharacterSlotId && currentCharacterSlotId !== "id_1") nextUrl.searchParams.set("slot", currentCharacterSlotId);
+        window.history.replaceState(null, "", nextUrl.pathname + nextUrl.search);
+      } catch (error) {}
     }
+  }
+
+  const CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+
+  function getCharacterSlotIds(player) {
+    const core = window.VelarionProfileCore;
+    if (core && typeof core.getCharacterSlotIds === "function") {
+      const ids = core.getCharacterSlotIds(player);
+      return CHARACTER_SLOT_IDS.filter((id) => Array.isArray(ids) && ids.includes(id));
+    }
+    const raw = player?.theme?.card_embed?.character_slots;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return ["id_1"];
+    return CHARACTER_SLOT_IDS.filter((id) => {
+      const value = raw[id];
+      return Boolean(value && value !== false && typeof value === "object" && !Array.isArray(value));
+    });
+  }
+
+  function normalizeCharacterSlotId(value, player) {
+    const requested = CHARACTER_SLOT_IDS.includes(String(value || "").trim()) ? String(value || "").trim() : "id_1";
+    const ids = getCharacterSlotIds(player);
+    if (!ids.length) return "id_1";
+    if (ids.includes(requested)) return requested;
+    return ids.includes("id_1") ? "id_1" : ids[0];
+  }
+
+  function getRequestedCharacterSlotId() {
+    try { return new URLSearchParams(window.location.search).get("slot") || "id_1"; }
+    catch (error) { return "id_1"; }
+  }
+
+  function updateCharacterSlotUrl(slotId) {
+    try {
+      const url = new URL(window.location.href);
+      if (slotId === "id_1") url.searchParams.delete("slot");
+      else url.searchParams.set("slot", slotId);
+      window.history.replaceState(null, "", url);
+    } catch (error) {}
   }
 
   function getProfileRenderContext() {
     return {
+      characterSlotId: currentCharacterSlotId,
       escapeHtml,
       minecraftToHtml,
       stripMinecraftCodes,
@@ -1607,6 +1652,8 @@
   }
 
   function renderProfile(player) {
+    currentProfilePlayer = player;
+    currentCharacterSlotId = normalizeCharacterSlotId(currentCharacterSlotId, player);
     const root = document.getElementById("profileRoot");
     if (!root) return;
 
@@ -1681,12 +1728,22 @@
       if (window.VelarionProfile?.componentsReady) {
         await window.VelarionProfile.componentsReady;
       }
+      currentCharacterSlotId = normalizeCharacterSlotId(getRequestedCharacterSlotId(), player);
       renderProfile(player);
     } catch (error) {
       console.error("[VelarionProfilePage]", error);
       setPageState("error", "Falha ao abrir o perfil", error?.message || "Não foi possível carregar este registro agora.");
     }
   }
+
+  document.addEventListener("velarion:character-slot-change", function(event) {
+    if (!currentProfilePlayer) return;
+    const next = normalizeCharacterSlotId(event?.detail?.characterSlotId, currentProfilePlayer);
+    if (next === currentCharacterSlotId) return;
+    currentCharacterSlotId = next;
+    updateCharacterSlotUrl(next);
+    renderProfile(currentProfilePlayer);
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bootProfilePage, { once: true });

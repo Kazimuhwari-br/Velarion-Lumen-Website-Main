@@ -131,6 +131,59 @@
     return /^#[0-9a-f]{3,8}$/i.test(raw) ? raw : fallback;
   }
 
+
+
+  function normalizeRarityLabel(value) {
+    const C = core();
+    const raw = C.cleanValue(value);
+    if (!raw) return "—";
+    return raw
+      .replace(/^raritys?_id_/i, "")
+      .replace(/^rarity_id_/i, "")
+      .replace(/[_-]+/g, " ")
+      .trim()
+      .toUpperCase() || "—";
+  }
+
+  function safeRarityGradient(value, fallback) {
+    const raw = String(value || "").trim();
+    if (!raw) return fallback;
+    if (!/^(?:linear|radial|conic)-gradient\(/i.test(raw)) return fallback;
+    if (/[;{}<>]/.test(raw)) return fallback;
+    return raw;
+  }
+
+  function resolveRarityVisualData(rarityData, rarityStats) {
+    const website = rarityData?.website && typeof rarityData.website === "object" ? rarityData.website : {};
+    const profileEffects = rarityData?.profile_effects && typeof rarityData.profile_effects === "object" ? rarityData.profile_effects : {};
+
+    const color = safeSystemColor(website.color, "#D9A7FF");
+    const color2 = safeSystemColor(website.color2, "#FFF1FF");
+    const glow = safeSystemColor(website.glow, color);
+    const intensityRaw = Number(website.intensity ?? profileEffects.intensity ?? 0.72);
+    const intensity = Number.isFinite(intensityRaw) ? Math.max(0, Math.min(1, intensityRaw)) : 0.72;
+    const fallbackGradient = `linear-gradient(135deg, ${color} 0%, ${color2} 58%, ${glow} 100%)`;
+    const gradient = safeRarityGradient(website.gradient, fallbackGradient);
+
+    const fallbackBadge = normalizeRarityLabel(rarityStats?.id || rarityData?.id || "—");
+    const badgeText = fallbackText(website.badge_text, rarityData?.label, fallbackBadge) || fallbackBadge;
+    const shortLabel = fallbackText(website.short_label, rarityData?.tier, rarityData?.name, "Rarity") || "Rarity";
+
+    return {
+      color,
+      color2,
+      glow,
+      gradient,
+      intensity,
+      badgeText,
+      shortLabel,
+      aura: website.aura !== false && profileEffects.background_aura !== false,
+      shimmer: website.shimmer === true,
+      particles: website.particles === true,
+      panel: profileEffects.rarity_panel !== false
+    };
+  }
+
   function formatSystemDate(value) {
     const raw = cleanSystemValue(value);
     if (!raw) return "—";
@@ -345,6 +398,7 @@
     const stats = player?.stats && typeof player.stats === "object" ? player.stats : {};
     const combat = stats?.combat && typeof stats.combat === "object" ? stats.combat : {};
     const rarityStats = stats?.rarity && typeof stats.rarity === "object" ? stats.rarity : {};
+    const rarityVisual = resolveRarityVisualData(rarityData, rarityStats);
 
     const publicInfoUsername =
       C.cleanValue(player?.profile?.display_username) ||
@@ -387,27 +441,43 @@
       return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
     };
 
-    const normalizeRarityLabel = (value) => {
-      const raw = C.cleanValue(value);
-      if (!raw) return "—";
-      return raw
-        .replace(/^raritys?_id_/i, "")
-        .replace(/^rarity_id_/i, "")
-        .replace(/[_-]+/g, " ")
-        .trim()
-        .toUpperCase() || "—";
-    };
-
-    const characterMediaRaw = player?.theme?.card_embed?.character_image;
+    const characterSlot = C.resolveCharacterSlot(player, ctx.characterSlotId || "id_1");
+    const slotData = characterSlot.data || {};
+    const characterMediaRaw = Object.prototype.hasOwnProperty.call(slotData, "character_image")
+      ? slotData.character_image
+      : player?.theme?.card_embed?.character_image;
     const configuredCharacterImage = C.getMediaSource(characterMediaRaw);
     const characterFallbackKey = C.cleanValue(player?.profile?.gender) || C.cleanValue(player?.gender) || "default";
     const fallbackCharacterImage = C.getMediaSource(C.getFallbackMedia(ctx, "character", "", characterFallbackKey));
     const characterImage = configuredCharacterImage || fallbackCharacterImage;
     const characterIsWebM = C.isWebMMedia(characterImage);
     const fallbackCharacterIsWebM = C.isWebMMedia(fallbackCharacterImage);
+    const characterSlotBackground = C.cleanValue(slotData.background_color || "");
+
+    // O Registro Público usa exatamente a mesma configuração card_color do
+    // velarion-card. O slot ativo tem prioridade e o formato legado continua
+    // aceito pelo normalizador compartilhado.
+    const rawCardColor = Object.prototype.hasOwnProperty.call(slotData, "card_color")
+      ? slotData.card_color
+      : player?.theme?.card_embed?.card_color;
+    const cardColorConfig = C.normalizeCardColorConfig(rawCardColor, "#8b6cff");
+    const cardColor = cardColorConfig.primary || "#8b6cff";
+    const cardColor2 = `color-mix(in srgb, ${cardColor} 34%, #ffffff 66%)`;
+    const cardPaletteGradient = C.buildPaletteGradient(cardColorConfig.colors, "135deg");
+    const cardPaletteLoopGradient = C.buildPaletteLoopGradient(cardColorConfig.colors, "90deg");
+    const pastelizePalette = (colors, angle = "135deg", loop = false) => {
+      const list = (Array.isArray(colors) && colors.length ? colors : [cardColor])
+        .filter(Boolean)
+        .map((color) => `color-mix(in srgb, ${color} 44%, #ffffff 56%)`);
+      if (!list.length) list.push(`color-mix(in srgb, ${cardColor} 44%, #ffffff 56%)`);
+      if (loop && list.length > 1) list.push(list[0]);
+      return `linear-gradient(${angle}, ${list.join(", ")})`;
+    };
+    const cardPastelGradient = pastelizePalette(cardColorConfig.colors, "135deg", false);
+    const cardPastelLoopGradient = pastelizePalette(cardColorConfig.colors, "90deg", true);
 
     return `
-      <div class="vl-public-stars-only ${characterImage ? "has-character" : "no-character"}" data-vl-public-stars="${esc(stars)}" data-vl-public-max-stars="${esc(maxStars)}">
+      <div class="vl-public-stars-only ${characterImage ? "has-character" : "no-character"}" data-vl-public-stars="${esc(stars)}" data-vl-public-max-stars="${esc(maxStars)}" data-character-slot-id="${esc(characterSlot.id || "id_1")}" data-character-slot-count="${esc(characterSlot.ids.length || 1)}" data-card-color-type="${esc(cardColorConfig.type || "none")}" data-card-color-speed="${esc(cardColorConfig.speed || 10)}" data-card-color-palette="${esc((cardColorConfig.colors || [cardColor]).join(","))}" style="--vl-public-character-slot-background:${esc(characterSlotBackground || "transparent")};--vp-accent:${esc(cardColor)};--vp-accent2:${esc(cardColor2)};--vp-glow:${esc(cardColor)};--vp-card-color-speed:${esc(cardColorConfig.speed || 10)}s;--vp-card-palette-gradient:${esc(cardPaletteGradient)};--vp-card-palette-loop-gradient:${esc(cardPaletteLoopGradient)};--vp-card-pastel-gradient:${esc(cardPastelGradient)};--vp-card-pastel-loop-gradient:${esc(cardPastelLoopGradient)};">
 
         <div class="vl-public-stars-only__left-zone">
           <div class="vl-public-stars-only__visual" aria-hidden="true">
@@ -452,6 +522,7 @@
               <div class="vl-adventurer-document__top">
                 <span class="vl-adventurer-document__sigil" aria-hidden="true"><i></i></span>
                 <div class="vl-adventurer-document__title vl-adventurer-document__title--username">
+                  <small>Username</small>
                   <strong>${esc(publicInfoUsername)}</strong>
                 </div>
               </div>
@@ -479,11 +550,14 @@
                 <small>Resumo</small>
               </div>
 
-              <section class="vl-public-quickstats__rarity vl-public-quickstats__rarity--hero" aria-label="Rarity">
+              <section class="vl-public-quickstats__rarity vl-public-quickstats__rarity--hero${rarityVisual.aura ? " has-rarity-aura" : ""}${rarityVisual.shimmer ? " has-rarity-shimmer" : ""}${rarityVisual.particles ? " has-rarity-particles" : ""}"
+                       aria-label="Rarity"
+                       data-rarity-panel="${rarityVisual.panel ? "1" : "0"}"
+                       style="--rarity-color:${esc(rarityVisual.color)};--rarity-color-2:${esc(rarityVisual.color2)};--rarity-glow:${esc(rarityVisual.glow)};--rarity-gradient:${esc(rarityVisual.gradient)};--rarity-intensity:${esc(rarityVisual.intensity)};">
                 <span class="vl-public-quickstats__rarity-mark vl-public-quickstats__rarity-mark--hero" aria-hidden="true"><i></i></span>
                 <div class="vl-public-quickstats__rarity-copy vl-public-quickstats__rarity-copy--hero">
-                  <strong>${esc(normalizeRarityLabel(rarityStats.id))}</strong>
-                  <small>Rarity</small>
+                  <strong>${esc(rarityVisual.badgeText)}</strong>
+                  <small>${esc(rarityVisual.shortLabel)}</small>
                 </div>
               </section>
 
@@ -634,10 +708,96 @@
     element.onerror = () => element.remove();
   }
 
+  const publicCardColorRuntime = {
+    nodes: new Set(),
+    raf: 0,
+    startedAt: performance.now()
+  };
+
+  function getPublicRuntimePalette(node) {
+    const C = core();
+    return String(node?.dataset?.cardColorPalette || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter((value) => C.isValidHexColor(value));
+  }
+
+  function applyDynamicPublicColor(node, color) {
+    const C = core();
+    if (!node || !C.isValidHexColor(color)) return;
+    node.style.setProperty("--vp-accent", color);
+    node.style.setProperty("--vp-glow", color);
+    node.style.setProperty("--vp-accent2", `color-mix(in srgb, ${color} 34%, #ffffff 66%)`);
+  }
+
+  function updateAnimatedPublicColors(now) {
+    const C = core();
+    let active = false;
+
+    publicCardColorRuntime.nodes.forEach((node) => {
+      if (!node || !node.isConnected) {
+        publicCardColorRuntime.nodes.delete(node);
+        return;
+      }
+
+      const type = C.normalizeCardColorType(node.dataset.cardColorType);
+      const colors = getPublicRuntimePalette(node);
+      if (colors.length < 2 || !["rotate", "pulse"].includes(type)) return;
+
+      active = true;
+      const speed = C.normalizeCardColorSpeed(node.dataset.cardColorSpeed, 10);
+      const elapsedSeconds = (now - publicCardColorRuntime.startedAt) / 1000;
+      const cycle = ((elapsedSeconds % speed) / speed) * colors.length;
+      const baseIndex = Math.floor(cycle) % colors.length;
+      const nextIndex = (baseIndex + 1) % colors.length;
+      const localProgress = cycle - Math.floor(cycle);
+
+      if (type === "rotate") {
+        const lastIndex = Number(node.dataset.publicCardColorRuntimeIndex ?? -1);
+        if (lastIndex !== baseIndex) {
+          node.dataset.publicCardColorRuntimeIndex = String(baseIndex);
+          applyDynamicPublicColor(node, colors[baseIndex]);
+        }
+        return;
+      }
+
+      const eased = localProgress * localProgress * (3 - 2 * localProgress);
+      applyDynamicPublicColor(node, C.interpolateHexColor(colors[baseIndex], colors[nextIndex], eased));
+    });
+
+    if (active || publicCardColorRuntime.nodes.size) {
+      publicCardColorRuntime.raf = requestAnimationFrame(updateAnimatedPublicColors);
+    } else {
+      publicCardColorRuntime.raf = 0;
+    }
+  }
+
+  function setupPublicCardColorEffects(root) {
+    const C = core();
+    const scope = root || document;
+    scope.querySelectorAll?.('.vl-public-stars-only[data-card-color-type]').forEach((node) => {
+      if (node.dataset.vlPublicCardColorBound === "true") return;
+      node.dataset.vlPublicCardColorBound = "true";
+
+      const colors = getPublicRuntimePalette(node);
+      const type = C.normalizeCardColorType(node.dataset.cardColorType);
+      if (colors.length) applyDynamicPublicColor(node, colors[0]);
+      if (colors.length > 1 && ["rotate", "pulse"].includes(type)) {
+        publicCardColorRuntime.nodes.add(node);
+      }
+    });
+
+    if (publicCardColorRuntime.nodes.size && !publicCardColorRuntime.raf) {
+      publicCardColorRuntime.startedAt = performance.now();
+      publicCardColorRuntime.raf = requestAnimationFrame(updateAnimatedPublicColors);
+    }
+  }
+
   function hydrate(root) {
     ensurePublicSystemsSubNavigation();
     const scope = root || document;
     scope.querySelectorAll?.('[data-vl-fallback-pending="1"]').forEach(applyCharacterMediaFallback);
+    setupPublicCardColorEffects(scope);
   }
 
   window.VelarionProfilePublicRecord = {

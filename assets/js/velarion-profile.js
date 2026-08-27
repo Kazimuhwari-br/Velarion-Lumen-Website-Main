@@ -1282,11 +1282,47 @@
     };
   }
 
+  const PROFILE_CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+
+  function getProfileCharacterSlotIds(player) {
+    const core = window.VelarionProfileCore;
+    if (core && typeof core.getCharacterSlotIds === "function") {
+      const ids = core.getCharacterSlotIds(player);
+      return PROFILE_CHARACTER_SLOT_IDS.filter((id) => Array.isArray(ids) && ids.includes(id));
+    }
+    const raw = player?.theme?.card_embed?.character_slots;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return ["id_1"];
+    return PROFILE_CHARACTER_SLOT_IDS.filter((id) => {
+      const value = raw[id];
+      return Boolean(value && value !== false && typeof value === "object" && !Array.isArray(value));
+    });
+  }
+
+  function normalizeProfileCharacterSlotId(value, player) {
+    const requested = PROFILE_CHARACTER_SLOT_IDS.includes(String(value || "").trim()) ? String(value || "").trim() : "id_1";
+    const ids = getProfileCharacterSlotIds(player);
+    if (!ids.length) return "id_1";
+    if (ids.includes(requested)) return requested;
+    return ids.includes("id_1") ? "id_1" : ids[0];
+  }
+
+  function renderProfileCharacterSlotSelector(player, ctx) {
+    const ids = getProfileCharacterSlotIds(player);
+    if (ids.length <= 1) return "";
+    const active = normalizeProfileCharacterSlotId(ctx?.characterSlotId, player);
+    const buttons = ids.map((id) => {
+      const index = PROFILE_CHARACTER_SLOT_IDS.indexOf(id) + 1;
+      const selected = id === active;
+      return `<button class="vl-profile-character-slot${selected ? " is-active" : ""}" type="button" data-vl-character-slot="${id}" aria-pressed="${selected ? "true" : "false"}" aria-label="Exibir versão ${index} do personagem"><span>${String(index).padStart(2, "0")}</span><small>${id}</small></button>`;
+    }).join("");
+    return `<div class="vl-profile-character-slots" data-vl-character-slots aria-label="Versões do personagem"><div class="vl-profile-character-slots__label"><span>VERSÃO DO PERSONAGEM</span><small>${active}</small></div><div class="vl-profile-character-slots__buttons">${buttons}</div></div>`;
+  }
+
   function renderOfficialProfileCard(player, ctx, displayNamePlain) {
     const renderer = window.VelarionLumenCard; // renderer oficial externo; não duplicar aqui
     if (renderer && typeof renderer.renderPlayerCard === "function") {
       try {
-        const html = renderer.renderPlayerCard(player, 0, buildProfileCardContext(ctx));
+        const html = renderer.renderPlayerCard(player, 0, buildProfileCardContext(ctx), { characterSlotId: ctx?.characterSlotId || "id_1" });
         if (html) {
           setTimeout(function() {
             const profileCardPort = document.querySelector(".vl-profile-card-port");
@@ -1448,6 +1484,19 @@
     });
   }
 
+  let profileCharacterSlotNavigationReady = false;
+  function ensureProfileCharacterSlotNavigation() {
+    if (profileCharacterSlotNavigationReady) return;
+    profileCharacterSlotNavigationReady = true;
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-vl-character-slot]");
+      if (!button) return;
+      event.preventDefault();
+      const slotId = String(button.dataset.vlCharacterSlot || "id_1");
+      document.dispatchEvent(new CustomEvent("velarion:character-slot-change", { detail: { characterSlotId: slotId } }));
+    });
+  }
+
   function render(player, ctx) {
     const context = ctx || {};
     const C = window.VelarionProfileCore;
@@ -1478,6 +1527,7 @@
 
     scheduleProfileComponentRefresh();
     ensureProfileShowcaseNavigation();
+    ensureProfileCharacterSlotNavigation();
     hydrateWebsiteSocialPanel(player, context, h);
     ensureAchievementMedalInteraction();
     prepareAchievementMedalCards();
@@ -1539,6 +1589,7 @@
               <div class="vl-profile-layout">
                 <aside class="vl-profile-identity vl-profile-identity--official-card">
                   ${renderOfficialProfileCard(player, context, displayNamePlain)}
+                  ${renderProfileCharacterSlotSelector(player, context)}
                 </aside>
 
                 <section class="vl-profile-content vl-profile-content--dossier" aria-label="Informações completas do perfil">

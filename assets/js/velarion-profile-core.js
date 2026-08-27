@@ -24,6 +24,62 @@
   const badgeVisible = isBadgeVisible;
   const getCountryFlagFromCode = countryCodeToFlag;
 
+
+  // ===== Character Slots =====
+
+  const CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+
+  function getCharacterSlots(player) {
+    const cardEmbed = player?.theme?.card_embed;
+    if (!cardEmbed || typeof cardEmbed !== "object" || Array.isArray(cardEmbed)) return {};
+
+    const raw = cardEmbed.character_slots;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      // Compatibilidade com perfis antigos: o próprio card_embed funciona
+      // como um slot virtual id_1 quando character_slots ainda não existe.
+      return { id_1: cardEmbed };
+    }
+
+    const output = {};
+    CHARACTER_SLOT_IDS.forEach((id) => {
+      const value = raw[id];
+      if (!value || value === false || typeof value !== "object" || Array.isArray(value)) return;
+      output[id] = value;
+    });
+    return output;
+  }
+
+  function getCharacterSlotIds(player) {
+    const slots = getCharacterSlots(player);
+    return CHARACTER_SLOT_IDS.filter((id) => Boolean(slots[id]));
+  }
+
+  function resolveCharacterSlot(player, requestedId = "id_1") {
+    const slots = getCharacterSlots(player);
+    const ids = CHARACTER_SLOT_IDS.filter((id) => Boolean(slots[id]));
+    if (!ids.length) return { id: "", data: null, ids: [] };
+
+    const requested = CHARACTER_SLOT_IDS.includes(cleanValue(requestedId))
+      ? cleanValue(requestedId)
+      : "id_1";
+
+    // id_1 é sempre o padrão. O primeiro slot válido só é usado como proteção
+    // para dados malformados em que id_1 tenha sido removido/definido como false.
+    const id = slots[requested] ? requested : (slots.id_1 ? "id_1" : ids[0]);
+    return { id, data: slots[id], ids };
+  }
+
+  function getCharacterSlotValue(player, key, requestedId = "id_1", fallbackToCardEmbed = true) {
+    const resolved = resolveCharacterSlot(player, requestedId);
+    if (resolved.data && Object.prototype.hasOwnProperty.call(resolved.data, key)) {
+      return resolved.data[key];
+    }
+    if (!fallbackToCardEmbed) return undefined;
+    const cardEmbed = player?.theme?.card_embed;
+    if (!cardEmbed || typeof cardEmbed !== "object" || Array.isArray(cardEmbed)) return undefined;
+    return cardEmbed[key];
+  }
+
   function getDisplayNameFallback(player) {
     return getByPath(player, [
       "profile.display_nickname", "profile.nickname", "account.nickname", "account.name",
@@ -132,6 +188,11 @@
     getPlayerPoints,
     getFallbacks,
     getFallbackMedia,
+    CHARACTER_SLOT_IDS,
+    getCharacterSlots,
+    getCharacterSlotIds,
+    resolveCharacterSlot,
+    getCharacterSlotValue,
     pick
   };
 })(window);

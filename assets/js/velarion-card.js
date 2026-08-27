@@ -81,6 +81,38 @@
       return getCleanText(value.url || value.src || value.image || value.path || "");
     }
 
+    const CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+
+    function resolveCharacterSlot(cardEmbed, requestedId = "id_1") {
+      const embed = cardEmbed && typeof cardEmbed === "object" && !Array.isArray(cardEmbed) ? cardEmbed : {};
+      const raw = embed.character_slots;
+
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+        return { id: "id_1", data: embed, ids: ["id_1"], legacy: true };
+      }
+
+      const slots = {};
+      CHARACTER_SLOT_IDS.forEach((id) => {
+        const value = raw[id];
+        if (!value || value === false || typeof value !== "object" || Array.isArray(value)) return;
+        slots[id] = value;
+      });
+
+      const ids = CHARACTER_SLOT_IDS.filter((id) => Boolean(slots[id]));
+      if (!ids.length) return { id: "", data: {}, ids: [], legacy: false };
+
+      const cleanRequested = CHARACTER_SLOT_IDS.includes(getCleanText(requestedId))
+        ? getCleanText(requestedId)
+        : "id_1";
+      const id = slots[cleanRequested] ? cleanRequested : (slots.id_1 ? "id_1" : ids[0]);
+      return { id, data: slots[id], ids, legacy: false };
+    }
+
+    function slotValue(slotData, cardEmbed, key) {
+      if (slotData && Object.prototype.hasOwnProperty.call(slotData, key)) return slotData[key];
+      return cardEmbed?.[key];
+    }
+
     function isWebMMedia(value) {
       const source = getMediaSource(value);
       if (!source) return false;
@@ -1155,10 +1187,12 @@
     }
 
 
-    function normalizeCardProfile(id, data, position) {
+    function normalizeCardProfile(id, data, position, requestedCharacterSlotId = "id_1") {
       const profile = data.profile ?? {};
       const status = data.status ?? {};
       const cardEmbed = data.theme?.card_embed ?? {};
+      const characterSlot = resolveCharacterSlot(cardEmbed, requestedCharacterSlotId);
+      const slotData = characterSlot.data || {};
       const securityOverlay = cardEmbed.security_overlay ?? {};
 
       const cardEnabled = getBooleanByKeys(cardEmbed, ["enabled"], true);
@@ -1214,7 +1248,7 @@
       const fallbackCardColor = isValidHexColor(levelRankWebsite.color)
         ? levelRankWebsite.color
         : "#ff84cf";
-      const cardColorConfig = normalizeCardColorConfig(cardEmbed.card_color, fallbackCardColor);
+      const cardColorConfig = normalizeCardColorConfig(slotValue(slotData, cardEmbed, "card_color"), fallbackCardColor);
       const cardColor = cardColorConfig.primary;
 
       return {
@@ -1269,9 +1303,16 @@
         online: Boolean(status.online),
 
         cardEnabled,
-        characterImage: cardEnabled ? (getMediaSource(cardEmbed.character_image) || getFallbackMedia("character", data?.profile?.gender || "default") || "") : "",
-        bannerBottomImage: cardEnabled && showBanner ? (cardEmbed.banner_bottom_image || getFallbackMedia("banner") || "") : "",
-        bannerFrameImage: cardEnabled && showBanner ? (cardEmbed.banner_frame_image || "") : "",
+        characterSlotId: characterSlot.id || "id_1",
+        characterSlotIds: characterSlot.ids,
+        characterSlotCount: characterSlot.ids.length || 1,
+        hasMultipleCharacterSlots: characterSlot.ids.length > 1,
+        backgroundColor: getCleanText(slotValue(slotData, cardEmbed, "background_color")),
+        bannerBackgroundImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_background_image")) || "") : "",
+        characterImage: cardEnabled ? (getMediaSource(slotValue(slotData, cardEmbed, "character_image")) || getFallbackMedia("character", data?.profile?.gender || "default") || "") : "",
+        bannerBottomImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_bottom_image")) || getFallbackMedia("banner") || "") : "",
+        bannerFrameImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_frame_image")) || "") : "",
+        profileFrameImage: cardEnabled ? (getMediaSource(slotValue(slotData, cardEmbed, "profile_frame_image")) || "") : "",
         avatarLock,
         clan,
 
@@ -1356,6 +1397,9 @@
           data-status="${status}"
           data-card-embed-enabled="${profile.cardEnabled ? "true" : "false"}"
           data-theme-enabled="${profile.cardEnabled ? "true" : "false"}"
+          data-character-slot-id="${escapeHTML(profile.characterSlotId || "id_1")}"
+          data-character-slot-count="${escapeHTML(profile.characterSlotCount || 1)}"
+          data-character-slot-multiple="${profile.hasMultipleCharacterSlots ? "true" : "false"}"
           data-card-color-type="${escapeHTML(profile.cardColorType || "none")}"
           data-card-color-speed="${escapeHTML(profile.cardColorSpeed || 10)}"
           data-card-color-palette="${escapeHTML((profile.cardColors || [profile.cardColor]).join(","))}"
@@ -1384,6 +1428,7 @@
           data-avatar-lock-id="${escapeHTML(profile.avatarLock?.requestedId || profile.avatarLock?.id || "warns_id_paid")}"
           data-show-banner="${profile.showBanner ? "true" : "false"}"
           style="
+            --character-slot-background: ${escapeHTML(profile.backgroundColor || "transparent")};
             --card-color: ${escapeHTML(profile.cardColor)};
             --card-color2: ${escapeHTML(profile.cardColor2)};
             --card-glow: ${escapeHTML(profile.cardGlow)};
@@ -1626,11 +1671,12 @@
     }
 
 
-  function renderPlayerCard(player, index, dataContext) {
+  function renderPlayerCard(player, index, dataContext, options) {
     if (dataContext) setData(dataContext);
     const data = asObject(player);
+    const opts = asObject(options);
     const id = String(data._id || data.id || data.profile_id || data.profile?.id || `ID_${Number(index || 0)}`);
-    const normalized = normalizeCardProfile(id, data, Number(index || 0) + 1);
+    const normalized = normalizeCardProfile(id, data, Number(index || 0) + 1, opts.characterSlotId || "id_1");
     const cardHTML = createProfileCard(normalized);
     if (!cardHTML) return "";
     return `<div class="vl-card-slot" data-vl-card-slot><div class="vl-card-scale" data-vl-card-scale>${cardHTML}</div></div>`;
@@ -1770,6 +1816,8 @@
     hydrate,
     fitAllCardTexts,
     normalizeCardColorConfig,
+    resolveCharacterSlot,
+    CHARACTER_SLOT_IDS,
     setupCardColorEffects
   };
 })(window, document);

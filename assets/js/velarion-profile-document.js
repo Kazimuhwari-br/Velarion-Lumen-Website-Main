@@ -281,10 +281,19 @@
     const verifiedBadgeSourceHtml = buildVerifiedCardBadgeHtml(player);
     const verifiedBadgeHtml = useVerifiedCompactIcon(player, ctx, verifiedBadgeSourceHtml);
     const verifiedInfoHtml = buildVerifiedInfoPopover(player, ctx, verifiedBadgeSourceHtml);
-    const cardColorConfig = C.normalizeCardColorConfig(player?.theme?.card_embed?.card_color, player?.theme?.profile?.accent || "#8b6cff");
+    const characterSlot = C.resolveCharacterSlot(player, ctx.characterSlotId || "id_1");
+    const slotData = characterSlot.data || {};
+    const cardColorConfig = C.normalizeCardColorConfig(
+      Object.prototype.hasOwnProperty.call(slotData, "card_color") ? slotData.card_color : player?.theme?.card_embed?.card_color,
+      player?.theme?.profile?.accent || "#8b6cff"
+    );
     const primaryCardColor = cardColorConfig.primary;
     const avatar = getAvatar(player) || DEFAULT_AVATAR;
-    const profileFrameImage = C.getMediaSource(player?.theme?.card_embed?.profile_frame_image);
+    const profileFrameImage = C.getMediaSource(
+      Object.prototype.hasOwnProperty.call(slotData, "profile_frame_image")
+        ? slotData.profile_frame_image
+        : player?.theme?.card_embed?.profile_frame_image
+    );
     const displayNamePlain = C.stripMinecraftCodes(getDisplayName(player)) || "Jogador";
     const username = getUsername(player) || displayNamePlain;
     const cardTitle = getCardTitle(player);
@@ -296,8 +305,13 @@
     const playerId = C.formatProfileIdDisplay(player?._id || player?.id || player?.profile_id || player?.profile?.id || "ID");
     const documentAccent = C.normalizeHexColor(primaryCardColor || "#8b6cff");
     const documentBackground = C.normalizeHexColor(primaryCardColor || "#8b6cff");
-    const documentPaletteGradient = C.buildPaletteGradient(cardColorConfig.colors, "135deg");
-    const documentPaletteLoopGradient = C.buildPaletteLoopGradient(cardColorConfig.colors, "90deg");
+    // Documento: preserva a identidade do card_color, mas clareia a paleta
+    // para um acabamento pastel/luminoso menos carregado que o card oficial.
+    const documentPastelPalette = (cardColorConfig.colors.length ? cardColorConfig.colors : [documentAccent])
+      .map((color) => C.interpolateHexColor(C.normalizeHexColor(color, documentAccent), "#ffffff", 0.34));
+    const documentPaletteGradient = C.buildPaletteGradient(documentPastelPalette, "135deg");
+    const documentPaletteLoopGradient = C.buildPaletteLoopGradient(documentPastelPalette, "90deg");
+    const characterSlotBackground = C.cleanValue(slotData.background_color || "");
     const onlineLabel = getOnlineLabel(player);
     const onlineToken = getOnlineToken(player);
 
@@ -309,7 +323,9 @@
           data-vp-card-color-type="${C.escapeHtml(cardColorConfig.type || "none")}"
           data-vp-card-color-speed="${C.escapeHtml(cardColorConfig.speed || 10)}"
           data-vp-card-color-palette="${C.escapeHtml(cardColorConfig.colors.join(","))}"
-          style="--vp-document-accent:${C.escapeHtml(documentAccent)};--vp-document-color:${C.escapeHtml(documentBackground)};--vp-document-color-speed:${C.escapeHtml(cardColorConfig.speed || 10)}s;--vp-document-palette-gradient:${C.escapeHtml(documentPaletteGradient)};--vp-document-palette-loop-gradient:${C.escapeHtml(documentPaletteLoopGradient)};"
+          data-character-slot-id="${C.escapeHtml(characterSlot.id || "id_1")}"
+          data-character-slot-count="${C.escapeHtml(characterSlot.ids.length || 1)}"
+          style="--vp-character-slot-background:${C.escapeHtml(characterSlotBackground || "transparent")};--vp-document-accent:${C.escapeHtml(documentAccent)};--vp-document-color:${C.escapeHtml(documentBackground)};--vp-document-color-speed:${C.escapeHtml(cardColorConfig.speed || 10)}s;--vp-document-palette-gradient:${C.escapeHtml(documentPaletteGradient)};--vp-document-palette-loop-gradient:${C.escapeHtml(documentPaletteLoopGradient)};"
         >
           <div class="vl-profile-public-id-card__shine" aria-hidden="true"></div>
           ${profileFrameImage ? `

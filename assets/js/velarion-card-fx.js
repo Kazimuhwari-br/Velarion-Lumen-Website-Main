@@ -1,4 +1,4 @@
-﻿/* ======================================================================
+/* ======================================================================
    Velarion Card FX — efeitos externos para o card oficial no perfil
 
    Regras:
@@ -472,6 +472,15 @@
   }
 
   document.addEventListener("visibilitychange", onVisibilityChange, { passive: true });
+
+  // Quando o seletor de Character Slot for ligado ao HTML, o runtime do card
+  // poderá emitir este evento para atualizar imediatamente aura/paleta/medidas.
+  document.addEventListener("velarion:character-slot-applied", function(event) {
+    const target = event?.target instanceof Element ? event.target : null;
+    const port = target?.closest?.(PORT_SELECTOR) || target?.querySelector?.(PORT_SELECTOR);
+    if (port) refresh(port);
+    else refresh(document);
+  });
 
   if (reducedMotionQuery.addEventListener) {
     reducedMotionQuery.addEventListener("change", () => refresh(document));
