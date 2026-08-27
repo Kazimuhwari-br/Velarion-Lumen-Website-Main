@@ -1308,7 +1308,7 @@
 
   function renderProfileCharacterSlotSelector(player, ctx) {
     const ids = getProfileCharacterSlotIds(player);
-    if (ids.length <= 1) return "";
+    if (!ids.length) return "";
     const active = normalizeProfileCharacterSlotId(ctx?.characterSlotId, player);
     const buttons = ids.map((id) => {
       const index = PROFILE_CHARACTER_SLOT_IDS.indexOf(id) + 1;
