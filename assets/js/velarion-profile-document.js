@@ -268,6 +268,18 @@
     return `<img src="${C.escapeHtml(media)}" alt="" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.remove();">`;
   }
 
+  function resolveFallbackMediaValue(ctx, kind, value, fallbackKey = "default") {
+    const C = core();
+    const raw = C.getMediaSource(value);
+    if (!raw) return C.getMediaSource(C.getFallbackMedia(ctx, kind, "", fallbackKey));
+
+    const match = /^fallbacks_id_(.+)$/i.exec(C.cleanValue(raw));
+    if (!match) return raw;
+
+    return C.getMediaSource(C.getFallbackMedia(ctx, kind, "", match[1])) ||
+      C.getMediaSource(C.getFallbackMedia(ctx, kind, "", fallbackKey));
+  }
+
   function render(player, context) {
     const C = core();
     const ctx = context || {};
@@ -289,10 +301,13 @@
     );
     const primaryCardColor = cardColorConfig.primary;
     const avatar = getAvatar(player) || DEFAULT_AVATAR;
-    const profileFrameImage = C.getMediaSource(
+    const profileFrameImage = resolveFallbackMediaValue(
+      ctx,
+      "profile_frame",
       Object.prototype.hasOwnProperty.call(slotData, "profile_frame_image")
         ? slotData.profile_frame_image
-        : player?.theme?.card_embed?.profile_frame_image
+        : player?.theme?.card_embed?.profile_frame_image,
+      "default"
     );
     const displayNamePlain = C.stripMinecraftCodes(getDisplayName(player)) || "Jogador";
     const username = getUsername(player) || displayNamePlain;

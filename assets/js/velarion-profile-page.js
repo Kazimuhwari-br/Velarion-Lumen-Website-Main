@@ -1644,6 +1644,47 @@
     `;
   }
 
+  function getProfileBackgroundColor(player) {
+    const core = window.VelarionProfileCore;
+    let value;
+
+    if (core && typeof core.getCharacterSlotValue === "function") {
+      value = core.getCharacterSlotValue(player, "background_color", currentCharacterSlotId, true);
+    } else {
+      const cardEmbed = player?.theme?.card_embed;
+      const slots = cardEmbed?.character_slots;
+      const slot = slots && typeof slots === "object" && !Array.isArray(slots) ? slots[currentCharacterSlotId] : null;
+      value = slot && typeof slot === "object" && !Array.isArray(slot) && Object.prototype.hasOwnProperty.call(slot, "background_color")
+        ? slot.background_color
+        : cardEmbed?.background_color;
+    }
+
+    const color = cleanValue(value);
+    if (!color) return "";
+
+    try {
+      if (window.CSS && typeof window.CSS.supports === "function" && !window.CSS.supports("color", color)) return "";
+    } catch (error) {}
+
+    return color;
+  }
+
+  function applyProfilePageBackground(player) {
+    const root = document.getElementById("profileRoot");
+    const color = getProfileBackgroundColor(player);
+    const targets = [root, document.body, document.documentElement].filter(Boolean);
+
+    targets.forEach((target) => {
+      if (color) {
+        target.style.setProperty("--vl-profile-page-background-color", color);
+        target.classList.add("vl-has-profile-background-color");
+      } else {
+        target.style.removeProperty("--vl-profile-page-background-color");
+        target.classList.remove("vl-has-profile-background-color");
+      }
+    });
+  }
+
   function updatePageMetadata(player) {
     const display = stripMinecraftCodes(getDisplayName(player)) || getUsername(player) || "Aventureiro";
     document.title = display + " | Velarion Lumen";
@@ -1664,8 +1705,31 @@
       throw new Error("VelarionProfile não foi carregado.");
     }
 
+    applyProfilePageBackground(player);
+
+    // V31 — preserve the current standalone viewport zoom across a full
+    // profile re-render (especially character-slot switches). Without this,
+    // the replacement .vl-profile-stage starts at zoom:1 and visibly jumps
+    // for a few seconds until the viewport fit runs again.
+    const previousStage = root.querySelector(".vl-profile-stage");
+    const previousViewportZoom = previousStage
+      ? String(previousStage.style.getPropertyValue("--vl-profile-viewport-zoom") || "").trim()
+      : "";
+
+    // V32 — on the very first profile render, keep the freshly-created stage
+    // invisible while its final viewport zoom is calculated. This prevents the
+    // user from seeing the stage at zoom:1 for a frame and then at the fitted
+    // zoom (the last remaining "pulse" when opening profile.html).
+    const isInitialViewportFit = !previousViewportZoom && document.body.classList.contains("vl-standalone-profile-page");
+    if (isInitialViewportFit) root.classList.add("vl-profile-initial-fitting");
+
     root.innerHTML = window.VelarionProfile.render(player, getProfileRenderContext());
     root.dataset.state = "ready";
+
+    const renderedStage = root.querySelector(".vl-profile-stage");
+    if (renderedStage && previousViewportZoom) {
+      renderedStage.style.setProperty("--vl-profile-viewport-zoom", previousViewportZoom);
+    }
 
     if (typeof window.VelarionLumenCard.hydrate === "function") {
       window.VelarionLumenCard.hydrate(root);
@@ -1682,6 +1746,58 @@
     setupAchievementGalleries(root);
     updatePageMetadata(player);
     exposePrettyProfileUrl(player);
+    // First render: calculate the final zoom before revealing the stage.
+    // Slot re-renders keep the already-stable zoom (V31). Resize/orientation/
+    // fullscreen events may still recalculate later because the viewport truly changed.
+    if (!previousViewportZoom) {
+      fitStandaloneProfileToViewport();
+      requestAnimationFrame(function() {
+        // One hidden verification pass catches any synchronous layout settling
+        // without ever exposing the intermediate size to the user.
+        fitStandaloneProfileToViewport();
+        root.classList.remove("vl-profile-initial-fitting");
+      });
+    }
+  }
+
+  let viewportFitFrame = 0;
+
+  function fitStandaloneProfileToViewport() {
+    if (!document.body.classList.contains("vl-standalone-profile-page")) return;
+    const root = document.getElementById("profileRoot");
+    const stage = root?.querySelector(".vl-profile-stage");
+    if (!root || !stage) return;
+
+    // IMPORTANT: use CSS zoom instead of transform:scale().
+    // A transform cria um novo containing block e faz os pseudo-elementos
+    // position:fixed do fundo passarem a ficar presos ao retângulo do stage.
+    // Isso era a origem do "quadrado" visual da V29.
+    stage.style.setProperty("--vl-profile-viewport-zoom", "1");
+
+    const viewportWidth = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1);
+    const viewportHeight = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 1);
+    const naturalWidth = Math.max(stage.scrollWidth, stage.offsetWidth, 1);
+    const naturalHeight = Math.max(stage.scrollHeight, stage.offsetHeight, 1);
+
+    const safeWidth = Math.max(1, viewportWidth - 4);
+    const safeHeight = Math.max(1, viewportHeight - 4);
+    const scale = Math.min(1, safeWidth / naturalWidth, safeHeight / naturalHeight);
+    const normalized = Number.isFinite(scale) ? Math.max(0.55, scale) : 1;
+
+    stage.style.setProperty("--vl-profile-viewport-zoom", normalized.toFixed(5));
+    root.style.height = "100dvh";
+    root.style.minHeight = "0";
+    root.style.overflow = "hidden";
+  }
+
+  function scheduleStandaloneViewportFit() {
+    // Um único cálculo estável. Não observa mutações/classes/estilos do stage:
+    // esses observers formavam um feedback loop (mede -> altera style -> observa
+    // -> mede novamente), responsável pelo "pulsar" ao abrir/clicar na V29.
+    cancelAnimationFrame(viewportFitFrame);
+    viewportFitFrame = requestAnimationFrame(function() {
+      viewportFitFrame = requestAnimationFrame(fitStandaloneProfileToViewport);
+    });
   }
 
   async function bootProfilePage() {
@@ -1744,6 +1860,10 @@
     updateCharacterSlotUrl(next);
     renderProfile(currentProfilePlayer);
   });
+
+  window.addEventListener("resize", scheduleStandaloneViewportFit, { passive: true });
+  window.addEventListener("orientationchange", scheduleStandaloneViewportFit, { passive: true });
+  document.addEventListener("fullscreenchange", scheduleStandaloneViewportFit);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bootProfilePage, { once: true });

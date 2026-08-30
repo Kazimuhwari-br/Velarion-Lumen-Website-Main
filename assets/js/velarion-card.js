@@ -10,6 +10,7 @@
 
   const S = window.VelarionShared || {};
   const PREVIEW_MODE = false;
+  const BUILD_VERSION = "20.61-character-media-layout-slot-fallbacks";
 
   function getCurrentScriptUrl() {
     const script = document.currentScript || document.querySelector('script[src*="velarion-card.js"]');
@@ -35,6 +36,13 @@
   let nickname_colors = {};
   let clanPlayers = {};
   let profilePlayers = {};
+  let character_media_layout = {};
+
+  const CHARACTER_MEDIA_LAYOUT_FIREBASE_URL =
+    "https://kazimuhwaribedrock-extensions-default-rtdb.firebaseio.com/website_panel/character_media_layout.json";
+
+  let characterMediaLayoutFirebaseLoaded = false;
+  let characterMediaLayoutFirebasePromise = null;
 
   function asObject(value) {
     return value && typeof value === "object" ? value : {};
@@ -43,6 +51,7 @@
   function setData(data) {
     const source = asObject(data);
     const extensions = asObject(source.extensionsData || source.extensions || source.information_panel);
+    const website_panel = asObject(source.website_panel || extensions.website_panel);
 
     badges_verified = asObject(source.badges_verified || extensions.badges_verified || badges_verified);
     badges_levelranks = asObject(source.badges_levelranks || extensions.badges_levelranks || badges_levelranks);
@@ -67,6 +76,12 @@
     );
     clanPlayers = asObject(source.clanPlayers || source.clansData || source.clans || clanPlayers);
     profilePlayers = asObject(source.profilePlayers || source.playersData || profilePlayers);
+    character_media_layout = asObject(
+      source.character_media_layout ||
+      website_panel.character_media_layout ||
+      extensions.character_media_layout ||
+      character_media_layout
+    );
   }
 
     const escapeHTML = S.escapeHtml;
@@ -119,7 +134,291 @@
       return /^data:video\/webm(?:;|,)/i.test(source) || /\.webm(?:$|[?#])/i.test(source);
     }
 
-    function renderCharacterMedia(source, locked = false) {
+    function normalizeCharacterCssLength(value) {
+      if (value === null || value === undefined || value === "") return "";
+      const raw = typeof value === "number" ? `${value}px` : getCleanText(value);
+      return /^-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|%|rem|em|vw|vh|vmin|vmax)?$/i.test(raw)
+        ? raw
+        : "";
+    }
+
+    function normalizeCharacterScale(value) {
+      if (value === null || value === undefined || value === "") return null;
+      const number = Number(value);
+      if (!Number.isFinite(number)) return null;
+      return Math.min(5, Math.max(0.1, number));
+    }
+
+    function normalizeCharacterMediaModeLayout(value) {
+      if (value === false) return {};
+      const config = asObject(value);
+      if (config.enabled === false) return {};
+
+      const size = normalizeCharacterCssLength(config.size);
+      const width = normalizeCharacterCssLength(config.width) || size;
+      const height = normalizeCharacterCssLength(config.height) || size;
+      const left = normalizeCharacterCssLength(config.left);
+      const bottom = normalizeCharacterCssLength(config.bottom);
+      const translateX = normalizeCharacterCssLength(config.translate_x ?? config.translateX);
+      const translateY = normalizeCharacterCssLength(config.translate_y ?? config.translateY);
+      const scale = normalizeCharacterScale(config.scale);
+
+      return {
+        width,
+        height,
+        left,
+        bottom,
+        translateX,
+        translateY,
+        scale
+      };
+    }
+
+    function getCharacterMediaLayoutFallbackEntry() {
+      const entry = getFallbackEntry("character_media_layout");
+      return entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
+    }
+
+    function resolveCharacterMediaLayoutFallback(value) {
+      const entry = getCharacterMediaLayoutFallbackEntry();
+
+      // O fallback inteiro pode ser desligado.
+      if (entry.enabled === false) {
+        return { image: false, video: false };
+      }
+
+      const website = entry.website && typeof entry.website === "object" && !Array.isArray(entry.website)
+        ? entry.website
+        : {};
+
+      // Compatibilidade: se algum ID_N antigo ainda guardar diretamente
+      // { image, video }, aceita sem quebrar.
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        if (Object.prototype.hasOwnProperty.call(value, "image") ||
+            Object.prototype.hasOwnProperty.call(value, "video")) {
+          return value;
+        }
+
+        // Compatibilidade com o schema antigo completo.
+        const legacyCharacter = value?.velarion_card_sync?.character_image;
+        if (legacyCharacter && typeof legacyCharacter === "object") {
+          const legacyDefault = legacyCharacter.default;
+          if (legacyDefault && typeof legacyDefault === "object") {
+            return legacyDefault;
+          }
+        }
+      }
+
+      const raw = getCleanText(value);
+      const match = /^fallbacks_id_(.+)$/i.exec(raw);
+      const key = match ? getCleanText(match[1]) : "";
+
+      // Mesmo princípio do fallback de Character Image:
+      // chave pedida -> default -> undefined -> missing.
+      const candidates = [];
+
+      if (key) {
+        candidates.push(
+          website[key],
+          website[`fallbacks_id_${key}`]
+        );
+      }
+
+      candidates.push(
+        website.default,
+        website.undefined,
+        website.missing
+      );
+
+      for (const candidate of candidates) {
+        if (candidate === false) {
+          return { image: false, video: false };
+        }
+
+        if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+          return candidate;
+        }
+      }
+
+      // Nenhuma definição encontrada: CSS/renderer original assume.
+      return { image: false, video: false };
+    }
+
+    function getCharacterMediaLayout(playerId, characterSlotId = "id_1") {
+      const playerKey = getCleanText(playerId);
+      const slotKey = getCleanText(characterSlotId) || "id_1";
+      const playerRawConfig = character_media_layout?.[playerKey];
+
+      // Compatibilidade opcional:
+      // se o ID_N inteiro ainda for "fallbacks_id_X", resolve o fallback
+      // como layout direto para o slot solicitado.
+      if (typeof playerRawConfig === "string") {
+        const resolvedPlayerFallback = resolveCharacterMediaLayoutFallback(playerRawConfig);
+        return {
+          image: resolvedPlayerFallback?.image === false ? false : asObject(resolvedPlayerFallback?.image),
+          video: resolvedPlayerFallback?.video === false ? false : asObject(resolvedPlayerFallback?.video)
+        };
+      }
+
+      if (playerRawConfig === false) {
+        return { image: false, video: false };
+      }
+
+      const playerConfig = asObject(playerRawConfig);
+      const syncConfig = asObject(playerConfig.velarion_card_sync);
+      const characterConfig = asObject(syncConfig.character_image);
+      const defaultConfig = asObject(characterConfig.default);
+      const slots = asObject(characterConfig.slots);
+
+      const rawSlotConfig = slots[slotKey];
+
+      // false = sem override manual neste slot.
+      if (rawSlotConfig === false || rawSlotConfig === null || rawSlotConfig === undefined) {
+        return { image: false, video: false };
+      }
+
+      // NOVO:
+      // "id_2": "fallbacks_id_female"
+      // resolve diretamente para:
+      // badges_fallbacks.character_media_layout.website.female
+      if (typeof rawSlotConfig === "string") {
+        const resolvedSlotFallback = resolveCharacterMediaLayoutFallback(rawSlotConfig);
+
+        if (!resolvedSlotFallback) {
+          return { image: false, video: false };
+        }
+
+        return {
+          image: resolvedSlotFallback?.image === false ? false : asObject(resolvedSlotFallback?.image),
+          video: resolvedSlotFallback?.video === false ? false : asObject(resolvedSlotFallback?.video)
+        };
+      }
+
+      // Objeto normal do slot: mantém o comportamento existente.
+      const slotConfig = asObject(rawSlotConfig);
+
+      function resolveMode(mode) {
+        // false em image/video desativa somente o override daquele modo.
+        if (slotConfig[mode] === false) return false;
+
+        return {
+          ...asObject(defaultConfig[mode]),
+          ...asObject(characterConfig[mode]),
+          ...asObject(slotConfig[mode])
+        };
+      }
+
+      return {
+        image: resolveMode("image"),
+        video: resolveMode("video")
+      };
+    }
+
+    function applyCharacterMediaLayoutToElement(element, playerId, characterSlotId) {
+      if (!element) return;
+
+      const layout = getCharacterMediaLayout(playerId, characterSlotId);
+      const isVideo = element.tagName === "VIDEO" || element.classList.contains("vl-card__character--webm");
+      const rawModeLayout = isVideo ? layout.video : layout.image;
+
+      const variableNames = [
+        "--character-media-width",
+        "--character-media-height",
+        "--character-media-left",
+        "--character-media-bottom",
+        "--character-media-translate-x",
+        "--character-media-translate-y",
+        "--character-media-scale"
+      ];
+
+      // false = remove todos os overrides e deixa o CSS original assumir.
+      if (rawModeLayout === false) {
+        variableNames.forEach((name) => element.style.removeProperty(name));
+        return;
+      }
+
+      const modeLayout = normalizeCharacterMediaModeLayout(rawModeLayout);
+      const values = {
+        "--character-media-width": modeLayout.width,
+        "--character-media-height": modeLayout.height,
+        "--character-media-left": modeLayout.left,
+        "--character-media-bottom": modeLayout.bottom,
+        "--character-media-translate-x": modeLayout.translateX,
+        "--character-media-translate-y": modeLayout.translateY,
+        "--character-media-scale": modeLayout.scale
+      };
+
+      variableNames.forEach((name) => {
+        const value = values[name];
+        if (value === null || value === undefined || value === "") {
+          element.style.removeProperty(name);
+        } else {
+          element.style.setProperty(name, String(value));
+        }
+      });
+    }
+
+    function applyCharacterMediaLayoutToRenderedCards(root = document) {
+      root.querySelectorAll?.(".vl-card[data-player-id][data-character-slot-id]").forEach((card) => {
+        const playerId = getCleanText(card.dataset.playerId);
+        const characterSlotId = getCleanText(card.dataset.characterSlotId) || "id_1";
+        const media = card.querySelector(".vl-card__character");
+        applyCharacterMediaLayoutToElement(media, playerId, characterSlotId);
+      });
+    }
+
+    async function loadCharacterMediaLayoutFromFirebase(force = false) {
+      if (characterMediaLayoutFirebaseLoaded && !force) return character_media_layout;
+      if (characterMediaLayoutFirebasePromise && !force) return characterMediaLayoutFirebasePromise;
+
+      characterMediaLayoutFirebasePromise = fetch(CHARACTER_MEDIA_LAYOUT_FIREBASE_URL, {
+        method: "GET",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error(`Firebase character_media_layout HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          character_media_layout = asObject(data);
+          characterMediaLayoutFirebaseLoaded = true;
+          applyCharacterMediaLayoutToRenderedCards(document);
+
+          window.dispatchEvent(new CustomEvent("velarion:character-media-layout-loaded", {
+            detail: { source: "firebase", count: Object.keys(character_media_layout).length }
+          }));
+
+          return character_media_layout;
+        })
+        .catch((error) => {
+          console.warn("[VelarionCard] Falha ao carregar character_media_layout do Firebase:", error);
+          return character_media_layout;
+        })
+        .finally(() => {
+          characterMediaLayoutFirebasePromise = null;
+        });
+
+      return characterMediaLayoutFirebasePromise;
+    }
+
+    function buildCharacterMediaStyle(layout) {
+      const config = asObject(layout);
+      const declarations = [];
+
+      if (config.width) declarations.push(`--character-media-width:${config.width}`);
+      if (config.height) declarations.push(`--character-media-height:${config.height}`);
+      if (config.left) declarations.push(`--character-media-left:${config.left}`);
+      if (config.bottom) declarations.push(`--character-media-bottom:${config.bottom}`);
+      if (config.translateX) declarations.push(`--character-media-translate-x:${config.translateX}`);
+      if (config.translateY) declarations.push(`--character-media-translate-y:${config.translateY}`);
+      if (config.scale !== null && config.scale !== undefined) declarations.push(`--character-media-scale:${config.scale}`);
+
+      return declarations.join(";");
+    }
+
+    function renderCharacterMedia(source, locked = false, mediaLayout = {}) {
       const media = getMediaSource(source);
       if (!media) return "";
 
@@ -127,14 +426,18 @@
         ? "vl-card__character vl-card__character--locked"
         : "vl-card__character";
 
-      if (isWebMMedia(media)) {
-        /* WebM costuma ter uma área transparente maior que a arte equivalente
-           em PNG/GIF. Aplica um zoom leve somente ao vídeo, mantendo a base
-           do personagem ancorada e sem alterar as versões de imagem. */
-        return `<video class="${className} vl-card__character--webm" src="${escapeHTML(media)}" autoplay loop muted playsinline preload="auto" aria-hidden="true" tabindex="-1" style="background:transparent;object-position:center bottom;left:50%;right:auto;transform:translate(-50%, 7.5%) scale(1.18);transform-origin:50% 100%;max-width:none;" onerror="this.remove();"></video>`;
+      const isVideo = isWebMMedia(media);
+      const modeLayout = normalizeCharacterMediaModeLayout(
+        isVideo ? mediaLayout.video : mediaLayout.image
+      );
+      const customStyle = buildCharacterMediaStyle(modeLayout);
+      const styleAttr = customStyle ? ` style="${escapeHTML(customStyle)}"` : "";
+
+      if (isVideo) {
+        return `<video class="${className} vl-card__character--webm" src="${escapeHTML(media)}" autoplay loop muted playsinline preload="auto" aria-hidden="true" tabindex="-1"${styleAttr} onerror="this.remove();"></video>`;
       }
 
-      return `<img class="${className}" src="${escapeHTML(media)}" alt="" loading="eager">`;
+      return `<img class="${className}" src="${escapeHTML(media)}" alt="" loading="eager"${styleAttr}>`;
     }
 
 
@@ -360,8 +663,19 @@
     function getFallbackMedia(kind, key = "default") {
       const entry = getFallbackEntry(kind);
       const website = entry?.website && typeof entry.website === "object" ? entry.website : {};
-      const value = website[key] || website.default || website.undefined || website.missing || badges_fallbacks?.defaults?.[kind];
+      const cleanKey = getCleanText(key).replace(/^fallbacks_id_/i, "") || "default";
+      const value = website[cleanKey] || website.default || website.undefined || website.missing || badges_fallbacks?.defaults?.[kind];
       return getCleanText(value);
+    }
+
+    function resolveFallbackMediaValue(kind, value, fallbackKey = "default") {
+      const raw = getMediaSource(value);
+      if (!raw) return getFallbackMedia(kind, fallbackKey);
+
+      const match = /^fallbacks_id_(.+)$/i.exec(raw);
+      if (!match) return raw;
+
+      return getFallbackMedia(kind, match[1]) || getFallbackMedia(kind, fallbackKey);
     }
 
     function getNicknameFallbackColor() {
@@ -1309,10 +1623,11 @@
         hasMultipleCharacterSlots: characterSlot.ids.length > 1,
         backgroundColor: getCleanText(slotValue(slotData, cardEmbed, "background_color")),
         bannerBackgroundImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_background_image")) || "") : "",
-        characterImage: cardEnabled ? (getMediaSource(slotValue(slotData, cardEmbed, "character_image")) || getFallbackMedia("character", data?.profile?.gender || "default") || "") : "",
+        characterImage: cardEnabled ? (resolveFallbackMediaValue("character", slotValue(slotData, cardEmbed, "character_image"), data?.profile?.gender || "default") || "") : "",
+        characterMediaLayout: getCharacterMediaLayout(id, characterSlot.id || "id_1"),
         bannerBottomImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_bottom_image")) || getFallbackMedia("banner") || "") : "",
         bannerFrameImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_frame_image")) || "") : "",
-        profileFrameImage: cardEnabled ? (getMediaSource(slotValue(slotData, cardEmbed, "profile_frame_image")) || "") : "",
+        profileFrameImage: cardEnabled ? (resolveFallbackMediaValue("profile_frame", slotValue(slotData, cardEmbed, "profile_frame_image"), "default") || "") : "",
         avatarLock,
         clan,
 
@@ -1365,10 +1680,10 @@
         : renderSecretBanner(profile);
 
       const characterHTML = profile.showAvatar
-        ? renderCharacterMedia(profile.characterImage, false)
+        ? renderCharacterMedia(profile.characterImage, false, profile.characterMediaLayout)
         : `
           ${profile.characterImage
-            ? renderCharacterMedia(profile.characterImage, true)
+            ? renderCharacterMedia(profile.characterImage, true, profile.characterMediaLayout)
             : renderSecretAvatar(profile)
           }
           ${renderLockedAvatarOverlay(profile)}
@@ -1808,7 +2123,12 @@
     });
   }
 
+  // Carrega o layout remoto sem bloquear a renderização inicial.
+  // Quando terminar, os cards existentes recebem os overrides do Firebase.
+  loadCharacterMediaLayoutFromFirebase(false);
+
   window.VelarionLumenCard = {
+    version: BUILD_VERSION,
     setData,
     renderPlayerCard,
     normalizeCardProfile,
@@ -1816,6 +2136,10 @@
     hydrate,
     fitAllCardTexts,
     normalizeCardColorConfig,
+    resolveCharacterMediaLayoutFallback,
+    getCharacterMediaLayout,
+    loadCharacterMediaLayoutFromFirebase,
+    applyCharacterMediaLayoutToRenderedCards,
     resolveCharacterSlot,
     CHARACTER_SLOT_IDS,
     setupCardColorEffects

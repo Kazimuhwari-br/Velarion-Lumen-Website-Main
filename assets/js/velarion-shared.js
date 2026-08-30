@@ -7,7 +7,18 @@
 (function(window) {
   "use strict";
 
-  if (window.VelarionShared) return;
+  const existingShared = window.VelarionShared;
+  const existingSharedIsCompatible = !!(
+    existingShared &&
+    typeof existingShared.cleanValue === "function" &&
+    typeof existingShared.escapeHtml === "function" &&
+    typeof existingShared.getMediaSource === "function"
+  );
+
+  // Só preserva uma instância já carregada quando ela realmente possui
+  // a API mínima exigida pelo Card/Profile atuais. Uma versão antiga ou
+  // parcial não pode impedir este arquivo de registrar a versão correta.
+  if (existingSharedIsCompatible) return;
 
   // ===== String / Sanitização =====
 

@@ -143,15 +143,20 @@
 
     .vl-card__character {
       position: absolute;
-      left: 50%;
-      bottom: var(--character-bottom);
+      left: var(--character-media-left, 50%);
+      bottom: var(--character-media-bottom, var(--character-bottom));
       z-index: 2;
-      width: var(--character-size);
-      height: var(--character-size);
+      width: var(--character-media-width, var(--character-size));
+      height: var(--character-media-height, var(--character-size));
       object-fit: contain;
       object-position: center bottom;
       display: block;
-      transform: translateX(-50%) scale(1);
+      transform:
+        translate(
+          var(--character-media-translate-x, -50%),
+          var(--character-media-translate-y, 0%)
+        )
+        scale(var(--character-media-scale, 1));
       filter:
         saturate(1.1)
         contrast(1.08)
@@ -161,12 +166,36 @@
     }
 
     .vl-card:hover .vl-card__character {
-      transform: translateX(-50%) scale(1.04);
+      transform:
+        translate(
+          var(--character-media-translate-x, -50%),
+          var(--character-media-translate-y, 0%)
+        )
+        scale(calc(var(--character-media-scale, 1) * 1.04));
       filter:
         saturate(1.16)
         contrast(1.1)
         brightness(1.04)
         drop-shadow(0 24px 40px rgba(0,0,0,.52));
+    }
+
+    /* WebM: preserva como fallback o ajuste antigo que antes ficava inline no JS. */
+    .vl-card__character--webm {
+      --character-media-translate-y: 7.5%;
+      --character-media-scale: 1.18;
+      background: transparent;
+      right: auto;
+      transform-origin: 50% 100%;
+      max-width: none;
+    }
+
+    .vl-card:hover .vl-card__character--webm {
+      transform:
+        translate(
+          var(--character-media-translate-x, -50%),
+          var(--character-media-translate-y, 7.5%)
+        )
+        scale(var(--character-media-scale, 1.18));
     }
 
     .vl-card__art::after {

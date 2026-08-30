@@ -8,17 +8,51 @@
   <title>Perfil | Velarion Lumen</title>
 
   <link rel="stylesheet" href="../assets/css/style.css?v=20.54" />
-  <link rel="stylesheet" href="../assets/css/velarion-card.css?v=20.54" />
-  <link rel="stylesheet" href="../assets/css/velarion-profile.css?v=20.57-modular" />
+  <link rel="stylesheet" href="../assets/css/velarion-card.css?v=20.57-character-media-layout" />
+  <link rel="stylesheet" href="../assets/css/velarion-profile.css?v=20.62-background-color-direct" />
   <link rel="stylesheet" id="velarion-profile-document-css" href="../assets/css/velarion-profile-document.css?v=20.57-modular" />
   <link rel="stylesheet" id="velarion-profile-progression-css" href="../assets/css/velarion-profile-progression.css?v=20.57-modular" />
-  <link rel="stylesheet" id="velarion-profile-public-record-css" href="../assets/css/velarion-profile-public-record.css?v=20.57-modular" />
+  <link rel="stylesheet" id="velarion-profile-public-record-css" href="../assets/css/velarion-profile-public-record.css?v=20.60-v23" />
+  <link rel="stylesheet" id="velarion-profile-username-css" href="../assets/css/velarion-profile-username.css?v=20.60-v23" />
+  <link rel="stylesheet" id="velarion-profile-stats-css" href="../assets/css/velarion-profile-stats.css?v=20.60-v23" />
+  <link rel="stylesheet" id="velarion-profile-cargo-css" href="../assets/css/velarion-profile-cargo.css?v=20.60-v23" />
+  <link rel="stylesheet" id="velarion-profile-rank-css" href="../assets/css/velarion-profile-rank.css?v=20.60-v23" />
   <link id="velarion-card-fx-css" rel="stylesheet" href="../assets/css/velarion-card-fx.css?v=20.54" />
 
   <style>
-    html, body { min-height: 100%; background: #070a18; }
-    body.vl-standalone-profile-page { margin: 0; overflow: hidden; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      margin: 0;
+      overflow: hidden !important;
+      overscroll-behavior: none;
+      background: #070a18;
+    }
+    body.vl-standalone-profile-page {
+      position: fixed;
+      inset: 0;
+      margin: 0;
+      overflow: hidden !important;
+    }
+    body.vl-standalone-profile-page #profileRoot.detail-view.active {
+      width: 100%;
+      height: 100dvh;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+    body.vl-standalone-profile-page .vl-profile-stage {
+      /* V30: zoom mantém a geometria responsiva sem transformar o stage em
+         containing block dos efeitos position:fixed do background. */
+      zoom: var(--vl-profile-viewport-zoom, 1);
+    }
     body.vl-standalone-profile-page .detail-view { opacity: 1; }
+    /* V32: during the first viewport measurement the stage keeps its space,
+       but is not painted. This removes the initial zoom flash/pulse entirely. */
+    body.vl-standalone-profile-page #profileRoot.vl-profile-initial-fitting .vl-profile-stage {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
     .vl-profile-page-state {
       width: min(560px, calc(100% - 40px));
       min-height: 220px;
@@ -61,15 +95,19 @@
 
   <!-- Ordem intencional: shared -> card -> FX -> profile -> página standalone. -->
   <script src="../assets/js/velarion-shared.js?v=shared-v1"></script>
-  <script src="../assets/js/velarion-card.js?v=20.54" defer></script>
+  <script src="../assets/js/velarion-card.js?v=20.57-character-media-layout" defer></script>
   <script id="velarion-card-fx-js" src="../assets/js/velarion-card-fx.js?v=20.54" defer></script>
 
   <!-- Componentes do perfil: carregados explicitamente para evitar fallback/cascata antiga. -->
   <script id="velarion-profile-core-js" src="../assets/js/velarion-profile-core.js?v=20.57-modular" defer></script>
   <script id="velarion-profile-document-js" src="../assets/js/velarion-profile-document.js?v=20.57-modular" defer></script>
   <script id="velarion-profile-progression-js" src="../assets/js/velarion-profile-progression.js?v=20.57-modular" defer></script>
-  <script id="velarion-profile-public-record-js" src="../assets/js/velarion-profile-public-record.js?v=20.57-modular" defer></script>
+  <script id="velarion-profile-username-js" src="../assets/js/velarion-profile-username.js?v=20.60-v23" defer></script>
+  <script id="velarion-profile-stats-js" src="../assets/js/velarion-profile-stats.js?v=20.60-v23" defer></script>
+  <script id="velarion-profile-cargo-js" src="../assets/js/velarion-profile-cargo.js?v=20.60-v23" defer></script>
+  <script id="velarion-profile-rank-js" src="../assets/js/velarion-profile-rank.js?v=20.60-v23" defer></script>
+  <script id="velarion-profile-public-record-js" src="../assets/js/velarion-profile-public-record.js?v=20.60-v23" defer></script>
   <script src="../assets/js/velarion-profile.js?v=20.57-modular" defer></script>
-  <script src="../assets/js/velarion-profile-page.js?v=20.57-modular" defer></script>
+  <script src="../assets/js/velarion-profile-page.js?v=20.63-v32-initial-fit" defer></script>
 </body>
 </html>

@@ -147,31 +147,78 @@
       key: "core",
       jsId: "velarion-profile-core-js",
       js: "velarion-profile-core.js",
-      global: "VelarionProfileCore"
+      global: "VelarionProfileCore",
+      jsOrder: 10
     },
     {
       key: "document",
       cssId: "velarion-profile-document-css",
       css: "velarion-profile-document.css",
+      cssOrder: 20,
       jsId: "velarion-profile-document-js",
       js: "velarion-profile-document.js",
-      global: "VelarionProfileDocument"
+      global: "VelarionProfileDocument",
+      jsOrder: 20
     },
     {
       key: "progression",
       cssId: "velarion-profile-progression-css",
       css: "velarion-profile-progression.css",
+      cssOrder: 30,
       jsId: "velarion-profile-progression-js",
       js: "velarion-profile-progression.js",
-      global: "VelarionProfileProgression"
+      global: "VelarionProfileProgression",
+      jsOrder: 30
+    },
+    {
+      key: "username",
+      cssId: "velarion-profile-username-css",
+      css: "velarion-profile-username.css",
+      cssOrder: 40,
+      jsId: "velarion-profile-username-js",
+      js: "velarion-profile-username.js",
+      global: "VelarionProfileUsername",
+      jsOrder: 40
+    },
+    {
+      key: "stats",
+      cssId: "velarion-profile-stats-css",
+      css: "velarion-profile-stats.css",
+      cssOrder: 50,
+      jsId: "velarion-profile-stats-js",
+      js: "velarion-profile-stats.js",
+      global: "VelarionProfileStats",
+      jsOrder: 50
+    },
+    {
+      key: "cargo",
+      cssId: "velarion-profile-cargo-css",
+      css: "velarion-profile-cargo.css",
+      cssOrder: 60,
+      jsId: "velarion-profile-cargo-js",
+      js: "velarion-profile-cargo.js",
+      global: "VelarionProfileCargo",
+      jsOrder: 60
+    },
+    {
+      key: "rank",
+      cssId: "velarion-profile-rank-css",
+      css: "velarion-profile-rank.css",
+      cssOrder: 70,
+      jsId: "velarion-profile-rank-js",
+      js: "velarion-profile-rank.js",
+      global: "VelarionProfileRank",
+      jsOrder: 70
     },
     {
       key: "public-record",
       cssId: "velarion-profile-public-record-css",
       css: "velarion-profile-public-record.css",
+      cssOrder: 90,
       jsId: "velarion-profile-public-record-js",
       js: "velarion-profile-public-record.js",
-      global: "VelarionProfilePublicRecord"
+      global: "VelarionProfilePublicRecord",
+      jsOrder: 90
     }
   ];
 
@@ -202,7 +249,11 @@
   function ensureProfileComponentStyles() {
     let anchor = findProfileStylesheetAnchor();
 
-    PROFILE_COMPONENT_ASSETS.filter((asset) => asset.css).forEach((asset) => {
+    PROFILE_COMPONENT_ASSETS
+      .filter((asset) => asset.css)
+      .slice()
+      .sort((a, b) => (a.cssOrder || 0) - (b.cssOrder || 0))
+      .forEach((asset) => {
       let link = document.getElementById(asset.cssId);
       if (!link) {
         link = document.createElement("link");
@@ -264,6 +315,8 @@
     if (!profileComponentsReadyPromise) {
       profileComponentsReadyPromise = PROFILE_COMPONENT_ASSETS
         .filter((asset) => asset.js)
+        .slice()
+        .sort((a, b) => (a.jsOrder || 0) - (b.jsOrder || 0))
         .reduce(
           (chain, asset) => chain.then(() => ensureProfileComponentScript(asset)),
           Promise.resolve()
@@ -471,16 +524,6 @@
     if (!achievements.length) {
       return `
         <section class="vl-achievements-card vl-achievements-card--source" data-achievement-count="0">
-          <header class="vl-achievements-card__header">
-            <div class="vl-achievements-header-help" tabindex="0" aria-describedby="vl-achievements-tooltip">
-              <span aria-hidden="true">◆</span>
-              <strong>Conquistas</strong>
-              <span id="vl-achievements-tooltip" class="vl-achievements-header-tooltip" role="tooltip">
-                Conquistas especiais desbloqueadas e registradas neste perfil.
-              </span>
-            </div>
-            <span class="vl-achievements-card__total">0 totais</span>
-          </header>
           <div class="vl-achievements-empty">Nenhuma conquista exibida.</div>
         </section>`;
     }
@@ -528,17 +571,6 @@
 
     return `
       <section class="vl-achievements-card vl-achievements-card--source" data-achievement-count="${achievements.length}">
-        <header class="vl-achievements-card__header">
-          <div class="vl-achievements-header-help" tabindex="0" aria-describedby="vl-achievements-tooltip">
-            <span aria-hidden="true">◆</span>
-            <strong>Conquistas</strong>
-            <span id="vl-achievements-tooltip" class="vl-achievements-header-tooltip" role="tooltip">
-              Conquistas especiais desbloqueadas e registradas neste perfil.
-            </span>
-          </div>
-          <span class="vl-achievements-card__total">${achievements.length} ${achievements.length === 1 ? "total" : "totais"}</span>
-        </header>
-
         <div class="achievement-gallery-list" aria-label="Medalhas de conquistas">
           ${medals}
         </div>
@@ -1306,16 +1338,37 @@
     return ids.includes("id_1") ? "id_1" : ids[0];
   }
 
+  function getProfileCharacterSlotName(player, id) {
+    const core = window.VelarionProfileCore;
+    if (core && typeof core.getCharacterSlotName === "function") {
+      return core.getCharacterSlotName(player, id);
+    }
+    const fallbackNames = {
+      id_1: "Personagem Principal",
+      id_2: "Personagem Secundário",
+      id_3: "Personagem Alternativo 1",
+      id_4: "Personagem Alternativo 2"
+    };
+    const raw = player?.theme?.card_embed?.character_slots;
+    const slot = raw && typeof raw === "object" && !Array.isArray(raw) ? raw[id] : null;
+    const configured = slot && typeof slot === "object" && !Array.isArray(slot)
+      ? String(slot.name_slot || "").trim()
+      : (id === "id_1" ? String(player?.theme?.card_embed?.name_slot || "").trim() : "");
+    return configured || fallbackNames[id] || id;
+  }
+
   function renderProfileCharacterSlotSelector(player, ctx) {
     const ids = getProfileCharacterSlotIds(player);
-    if (!ids.length) return "";
     const active = normalizeProfileCharacterSlotId(ctx?.characterSlotId, player);
-    const buttons = ids.map((id) => {
+    const activeName = getProfileCharacterSlotName(player, active);
+    const hasAlternatives = ids.length > 1;
+    const buttons = hasAlternatives ? ids.map((id) => {
       const index = PROFILE_CHARACTER_SLOT_IDS.indexOf(id) + 1;
       const selected = id === active;
-      return `<button class="vl-profile-character-slot${selected ? " is-active" : ""}" type="button" data-vl-character-slot="${id}" aria-pressed="${selected ? "true" : "false"}" aria-label="Exibir versão ${index} do personagem"><span>${String(index).padStart(2, "0")}</span><small>${id}</small></button>`;
-    }).join("");
-    return `<div class="vl-profile-character-slots" data-vl-character-slots aria-label="Versões do personagem"><div class="vl-profile-character-slots__label"><span>VERSÃO DO PERSONAGEM</span><small>${active}</small></div><div class="vl-profile-character-slots__buttons">${buttons}</div></div>`;
+      const name = getProfileCharacterSlotName(player, id);
+      return `<button class="vl-profile-character-slot${selected ? " is-active" : ""}" type="button" data-vl-character-slot="${id}" aria-pressed="${selected ? "true" : "false"}" aria-label="Exibir ${escapeHtml(name)}"><span>${String(index).padStart(2, "0")}</span><small title="${escapeHtml(name)}">${escapeHtml(name)}</small></button>`;
+    }).join("") : "";
+    return `<div class="vl-profile-character-slots${hasAlternatives ? " has-alternatives" : " is-single"}" data-vl-character-slots aria-label="Versões do personagem"><div class="vl-profile-character-slots__label"><span>VERSÃO DO PERSONAGEM</span><small>${escapeHtml(activeName)}</small></div>${hasAlternatives ? `<div class="vl-profile-character-slots__buttons">${buttons}</div>` : ""}</div>`;
   }
 
   function renderOfficialProfileCard(player, ctx, displayNamePlain) {
@@ -1387,8 +1440,11 @@
     const currentPage = pages[normalized];
     const label = currentPage?.dataset.pageLabel || `Página ${normalized + 1}`;
 
+    const counterText = `${String(normalized + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
     const counter = showcase.querySelector(".vl-profile-showcase__counter");
-    if (counter) counter.textContent = `${String(normalized + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+    if (counter) counter.textContent = counterText;
+    const contextCounter = showcase.querySelector(".vl-profile-page-context__view-counter");
+    if (contextCounter) contextCounter.textContent = counterText;
 
     const live = showcase.querySelector(".vl-profile-showcase__live");
     if (live) live.textContent = `${label}. Página ${normalized + 1} de ${total}.`;
@@ -1524,6 +1580,9 @@
     const documentHtml = documentRenderer.render(player, context);
     const progressionHtml = progressionRenderer.render(player, context);
     const publicRecordHtml = publicRecordRenderer.render(player, context);
+    const characterSlotIds = getProfileCharacterSlotIds(player);
+    const hasCharacterSlotAlternatives = characterSlotIds.length > 1;
+    const characterSlotSelectorHtml = renderProfileCharacterSlotSelector(player, context);
 
     scheduleProfileComponentRefresh();
     ensureProfileShowcaseNavigation();
@@ -1536,11 +1595,18 @@
       <div class="detail-stage vl-profile-stage" style="--vp-accent:${color};">
         <div class="vl-profile-orbit" aria-hidden="true"></div>
         <div class="vl-profile-showcase" data-vl-profile-showcase data-page-index="0" data-direction="none">
-          <button class="vl-profile-showcase__nav vl-profile-showcase__nav--prev" type="button" data-vl-profile-nav="-1" aria-label="Página anterior">
-            <span aria-hidden="true">‹</span>
-          </button>
-
-          <nav class="vl-luminous-categories" aria-label="Categorias do perfil">
+          <header class="vl-profile-page-context" aria-label="Contexto do perfil">
+            <div class="vl-profile-page-context__copy">
+              <span class="vl-profile-page-context__eyebrow">PERFIL DO JOGADOR</span>
+              <strong class="vl-profile-page-context__name">${escapeHtml(displayNamePlain)}</strong>
+              <small class="vl-profile-page-context__meta">${escapeHtml(String(player?.id || player?.player_id || player?.profile_id || "Perfil público"))} · Perfil público</small>
+            </div>
+            <div class="vl-profile-page-context__right">
+              <div class="vl-profile-page-context__view" aria-hidden="true">
+                <span>VIEW</span>
+                <b class="vl-profile-page-context__view-counter">01 / 04</b>
+              </div>
+              <nav class="vl-luminous-categories" aria-label="Categorias do perfil">
             <div class="vl-luminous-categories__emblem" aria-hidden="true">
               <span></span>
             </div>
@@ -1583,14 +1649,26 @@
 
             <span class="vl-luminous-categories__ornament" aria-hidden="true"></span>
           </nav>
+            </div>
+          </header>
+
+          <button class="vl-profile-showcase__nav vl-profile-showcase__nav--prev" type="button" data-vl-profile-nav="-1" aria-label="Página anterior">
+            <span aria-hidden="true">‹</span>
+          </button>
+
+
 
           <div class="vl-profile-showcase__viewport">
             <article class="vl-profile-showcase__page vl-profile-showcase__page--main is-active" data-page="main" data-page-label="Identidade" aria-hidden="false">
               <div class="vl-profile-layout">
-                <aside class="vl-profile-identity vl-profile-identity--official-card">
-                  ${renderOfficialProfileCard(player, context, displayNamePlain)}
-                  ${renderProfileCharacterSlotSelector(player, context)}
+                <aside class="vl-profile-identity vl-profile-identity--official-card${hasCharacterSlotAlternatives ? " has-character-slots" : " single-character-slot"}">
+                  <div class="vl-profile-component-zone vl-profile-component-zone--card">
+                    ${renderOfficialProfileCard(player, context, displayNamePlain)}
+                  </div>
+                  ${characterSlotSelectorHtml}
                 </aside>
+
+                <span class="vl-profile-layout-divider" aria-hidden="true"></span>
 
                 <section class="vl-profile-content vl-profile-content--dossier" aria-label="Informações completas do perfil">
                   <section class="vl-profile-panel vl-profile-panel--overview vl-profile-panel--record" style="order:${orderOverview}">
@@ -1608,13 +1686,8 @@
               </div>
             </article>
 
-            <article class="vl-profile-showcase__page vl-profile-showcase__page--systems" data-page="systems" data-page-label="Registro Público" aria-hidden="true" inert>
-              <section class="vl-profile-content vl-profile-content--dossier vl-profile-showcase__page-content" aria-label="Registro Público">
-                <section class="vl-profile-panel vl-profile-panel--systems-v2 vl-profile-panel--systems-stars-only" style="order:${orderSystems}">
-                  <div class="vl-profile-section-head vl-profile-section-head--public"><span>Registro Público</span><i></i></div>
-                  ${publicRecordHtml}
-                </section>
-              </section>
+            <article class="vl-profile-showcase__page vl-profile-showcase__page--systems vl-profile-showcase__page--systems-free" data-page="systems" data-page-label="Registro Público" aria-hidden="true" inert>
+              ${publicRecordHtml}
             </article>
 
             <article class="vl-profile-showcase__page vl-profile-showcase__page--clan vl-profile-showcase__page--social" data-page="clan" data-page-label="Conexões" aria-hidden="true" inert>

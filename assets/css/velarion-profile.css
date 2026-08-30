@@ -1,3 +1,35 @@
+/* ==========================================================================
+   VELARION PROFILE — SHELL / PÁGINA PRINCIPAL
+
+   CONTRATO MODULAR
+   ----------------
+   Este arquivo deve cuidar somente da página completa: showcase, navegação,
+   wrappers, painéis gerais e integração entre componentes.
+
+   Os componentes internos devem ser editados nos próprios arquivos:
+
+   - Username / Registro:
+     velarion-profile-username.css
+
+   - Dados Públicos / Stats:
+     velarion-profile-stats.css
+
+   - Cargo:
+     velarion-profile-cargo.css
+
+   - Rank:
+     velarion-profile-rank.css
+
+   - Composição do Registro Público:
+     velarion-profile-public-record.css
+
+   A página principal carrega esses arquivos automaticamente através de
+   velarion-profile.js.
+
+   O card-preview-menu.html NÃO depende deste CSS e carrega somente os
+   componentes escolhidos em card-preview-components.js.
+   ========================================================================== */
+
 /* ======================================================================
    Velarion Profile — integração com velarion-card
 
@@ -96,6 +128,19 @@
     radial-gradient(circle at 78% 18%, rgba(61, 238, 203, .15), transparent 34%),
     radial-gradient(circle at 50% 100%, rgba(255, 95, 205, .12), transparent 38%),
     linear-gradient(135deg, #070a18, #11142a 48%, #07101e);
+  background-attachment: fixed;
+}
+
+/* Quando o slot/personagem possui background_color, essa cor passa a ser
+   o FUNDO REAL da página. Mantemos somente iluminação/depth discretos por
+   cima dela; não misturamos a cor a ponto de ela desaparecer. */
+.detail-view.active.vl-has-profile-background-color {
+  background-color: var(--vl-profile-page-background-color);
+  background-image:
+    radial-gradient(circle at 18% 14%, rgba(255,255,255,.10), transparent 34%),
+    radial-gradient(circle at 78% 18%, rgba(255,255,255,.055), transparent 38%),
+    radial-gradient(circle at 50% 100%, rgba(0,0,0,.10), transparent 42%),
+    linear-gradient(135deg, rgba(4,7,18,.10), rgba(4,7,18,.18) 48%, rgba(4,7,18,.24));
   background-attachment: fixed;
 }
 
@@ -7651,4 +7696,731 @@ a.vl-social-clan-card:focus-visible {
 
 @media (max-width: 430px) {
   .vl-profile-character-slots { width: min(100%, 316px); }
+}
+
+/* ======================================================================
+   V20.55 — PROFILE PAGE SHELL / SVG-APPROVED STRUCTURE
+   Reorganiza somente a página que hospeda os módulos existentes.
+   NÃO redesenha velarion-card, velarion-card-fx, profile-document,
+   profile-progression ou profile-public-record.
+   ====================================================================== */
+
+.vl-profile-stage {
+  width: min(100%, 1540px);
+  padding-top: 42px;
+}
+
+.vl-profile-orbit {
+  opacity: .34;
+  filter: blur(34px);
+}
+
+.vl-profile-page-context {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 28px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid rgba(166,180,205,.15);
+}
+
+.vl-profile-page-context::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: min(270px, 32vw);
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb,var(--vl-card-color-1,var(--vp-accent,#8b6cff)) 42%,#fff 58%),
+    color-mix(in srgb,var(--vl-card-color-2,var(--vp-accent,#8b6cff)) 35%,#fff 65%),
+    color-mix(in srgb,var(--vl-card-color-3,var(--vp-accent,#8b6cff)) 32%,#fff 68%),
+    transparent);
+  opacity: .78;
+}
+
+.vl-profile-page-context__copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.vl-profile-page-context__eyebrow {
+  color: color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,rgba(244,247,255,.88));
+  font-size: .61rem;
+  font-weight: 950;
+  letter-spacing: .18em;
+}
+
+.vl-profile-page-context__name {
+  max-width: min(820px, 72vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(248,249,253,.96);
+  font-size: clamp(1.5rem,2.4vw,2.15rem);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.vl-profile-page-context__meta {
+  color: rgba(205,213,229,.48);
+  font-size: .70rem;
+  font-weight: 700;
+  letter-spacing: .025em;
+}
+
+.vl-profile-page-context__view {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 3px;
+  color: rgba(205,213,229,.40);
+  font-size: .56rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.vl-profile-page-context__view b {
+  color: rgba(238,241,248,.76);
+  font-size: .62rem;
+  letter-spacing: .10em;
+}
+
+/* Categorias continuam com o mesmo JS e markup; apenas entram na composição. */
+.vl-profile-showcase > .vl-luminous-categories {
+  margin-bottom: 26px;
+}
+
+/* Página 01: host do card existente + divisor + host dos módulos existentes. */
+.vl-profile-showcase__page--main > .vl-profile-layout {
+  position: relative;
+  grid-template-columns: minmax(360px,390px) 1px minmax(0,1fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.vl-profile-layout-divider {
+  display: block;
+  align-self: stretch;
+  min-height: 620px;
+  width: 1px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb,var(--vp-accent,#8b6cff) 32%,rgba(255,255,255,.12)),
+    rgba(255,255,255,.075) 15%,
+    rgba(255,255,255,.075) 85%,
+    transparent);
+  opacity: .72;
+}
+
+.vl-profile-component-zone--card {
+  position: relative;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+}
+
+/* Só geometria EXTERNA: o card e FX continuam intocados. */
+.vl-profile-component-zone--card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -8px;
+  top: -8px;
+  width: 88px;
+  height: 70px;
+  border-left: 1px solid color-mix(in srgb,var(--vp-accent,#8b6cff) 30%,rgba(255,255,255,.22));
+  border-top: 1px solid color-mix(in srgb,var(--vp-accent,#8b6cff) 30%,rgba(255,255,255,.22));
+  clip-path: polygon(14px 0,100% 0,100% 1px,15px 1px,1px 15px,1px 100%,0 100%,0 14px);
+  opacity: .68;
+  pointer-events: none;
+}
+
+.vl-profile-content--dossier {
+  min-width: 0;
+}
+
+/* A moldura é do shell. O conteúdo interno de Document/Progression não muda. */
+.vl-profile-showcase__page--main .vl-profile-panel--record {
+  position: relative;
+  padding: 18px;
+  border-radius: 0 !important;
+  clip-path: polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
+  border-color: rgba(166,180,205,.16) !important;
+  background:
+    linear-gradient(115deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 5%,transparent),transparent 34%),
+    linear-gradient(180deg,rgba(19,25,38,.86),rgba(11,16,26,.90)) !important;
+  box-shadow: 0 20px 46px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+.vl-profile-showcase__page--main .vl-profile-panel--record::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 118px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,#fff 66%),
+    transparent);
+  opacity: .72;
+  pointer-events: none;
+}
+
+/* Slots: mantém o JS atual, muda só a geometria para a versão aprovada. */
+.vl-profile-character-slots {
+  width: min(100%,360px);
+  margin-top: 18px;
+  padding: 0;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.vl-profile-character-slots__label {
+  padding: 0 1px 7px;
+  border-bottom: 1px solid rgba(255,255,255,.075);
+}
+
+.vl-profile-character-slots__buttons {
+  gap: 8px;
+}
+
+.vl-profile-character-slot {
+  position: relative;
+  min-height: 50px;
+  border-radius: 0;
+  clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+  background: rgba(19,25,37,.82);
+  border-color: rgba(166,180,205,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.vl-profile-character-slot.is-active {
+  background: linear-gradient(135deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 9%,rgba(20,27,40,.92)),rgba(16,22,34,.94));
+  border-color: color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,rgba(255,255,255,.18));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.045);
+}
+
+/* O contador antigo continua para compatibilidade, mas o novo cabeçalho o exibe. */
+.vl-profile-showcase__meta {
+  display: none;
+}
+
+/* Setas permanecem do showcase; acabamento mais geométrico e menos neon. */
+.vl-profile-showcase > .vl-profile-showcase__nav,
+.vl-profile-showcase > .vl-profile-showcase__nav--prev,
+.vl-profile-showcase > .vl-profile-showcase__nav--next {
+  height: 92px;
+  border-radius: 0 !important;
+  clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+  background: linear-gradient(180deg,rgba(18,24,36,.96),rgba(10,14,23,.98)) !important;
+  border-color: rgba(166,180,205,.20) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+@media (max-width: 1080px) {
+  .vl-profile-showcase__page--main > .vl-profile-layout {
+    grid-template-columns: minmax(330px,370px) minmax(0,1fr);
+    gap: 26px;
+  }
+  .vl-profile-layout-divider { display: none; }
+}
+
+@media (max-width: 820px) {
+  .vl-profile-page-context { align-items: flex-start; }
+  .vl-profile-page-context__view { padding-top: 5px; }
+  .vl-profile-showcase__page--main > .vl-profile-layout {
+    grid-template-columns: 1fr;
+  }
+  .vl-profile-identity--official-card { justify-items: center; }
+  .vl-profile-content--dossier { width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .vl-profile-stage { padding-top: 28px; }
+  .vl-profile-page-context { margin-bottom: 20px; }
+  .vl-profile-page-context__name { max-width: 68vw; font-size: 1.35rem; }
+  .vl-profile-page-context__meta { font-size: .62rem; }
+  .vl-profile-showcase > .vl-luminous-categories { margin-bottom: 20px; }
+  .vl-profile-showcase__page--main .vl-profile-panel--record { padding: 12px; }
+}
+
+/* ======================================================================
+   V20.55 — PROFILE PAGE SHELL / SVG-APPROVED STRUCTURE
+   Reorganiza somente a página que hospeda os módulos existentes.
+   NÃO redesenha velarion-card, velarion-card-fx, profile-document,
+   profile-progression ou profile-public-record.
+   ====================================================================== */
+.vl-profile-stage{width:min(100%,1540px);padding-top:42px}.vl-profile-orbit{opacity:.34;filter:blur(34px)}
+.vl-profile-page-context{position:relative;z-index:3;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:0 0 28px;padding:0 0 18px;border-bottom:1px solid rgba(166,180,205,.15)}
+.vl-profile-page-context::after{content:"";position:absolute;left:0;bottom:-1px;width:min(270px,32vw);height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,#fff 66%),color-mix(in srgb,var(--vp-accent,#8b6cff) 22%,#fff 78%),transparent);opacity:.78}
+.vl-profile-page-context__copy{min-width:0;display:grid;gap:5px}.vl-profile-page-context__eyebrow{color:color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,rgba(244,247,255,.88));font-size:.61rem;font-weight:950;letter-spacing:.18em}.vl-profile-page-context__name{max-width:min(820px,72vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(248,249,253,.96);font-size:clamp(1.5rem,2.4vw,2.15rem);line-height:1.08;letter-spacing:-.035em}.vl-profile-page-context__meta{color:rgba(205,213,229,.48);font-size:.70rem;font-weight:700;letter-spacing:.025em}.vl-profile-page-context__view{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding-bottom:3px;color:rgba(205,213,229,.40);font-size:.56rem;font-weight:900;letter-spacing:.13em}.vl-profile-page-context__view b{color:rgba(238,241,248,.76);font-size:.62rem;letter-spacing:.10em}
+.vl-profile-showcase>.vl-luminous-categories{margin-bottom:26px}
+.vl-profile-showcase__page--main>.vl-profile-layout{position:relative;grid-template-columns:minmax(360px,390px) 1px minmax(0,1fr);gap:34px;align-items:start}.vl-profile-layout-divider{display:block;align-self:stretch;min-height:620px;width:1px;background:linear-gradient(180deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 32%,rgba(255,255,255,.12)),rgba(255,255,255,.075) 15%,rgba(255,255,255,.075) 85%,transparent);opacity:.72}
+.vl-profile-component-zone--card{position:relative;width:100%;display:grid;justify-items:center}.vl-profile-component-zone--card::before{content:"";position:absolute;z-index:-1;left:-8px;top:-8px;width:88px;height:70px;border-left:1px solid color-mix(in srgb,var(--vp-accent,#8b6cff) 30%,rgba(255,255,255,.22));border-top:1px solid color-mix(in srgb,var(--vp-accent,#8b6cff) 30%,rgba(255,255,255,.22));opacity:.68;pointer-events:none}.vl-profile-content--dossier{min-width:0}
+.vl-profile-showcase__page--main .vl-profile-panel--record{position:relative;padding:18px;border-radius:0!important;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);border-color:rgba(166,180,205,.16)!important;background:linear-gradient(115deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 5%,transparent),transparent 34%),linear-gradient(180deg,rgba(19,25,38,.86),rgba(11,16,26,.90))!important;box-shadow:0 20px 46px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.035)!important}.vl-profile-showcase__page--main .vl-profile-panel--record::before{content:"";position:absolute;left:0;top:0;width:118px;height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,#fff 66%),transparent);opacity:.72;pointer-events:none}
+.vl-profile-character-slots{width:min(100%,360px);margin-top:18px;padding:0;gap:10px;border:0;border-radius:0;background:none;box-shadow:none;backdrop-filter:none}.vl-profile-character-slots__label{padding:0 1px 7px;border-bottom:1px solid rgba(255,255,255,.075)}.vl-profile-character-slots__buttons{gap:8px}.vl-profile-character-slot{position:relative;min-height:50px;border-radius:0;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);background:rgba(19,25,37,.82);border-color:rgba(166,180,205,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}.vl-profile-character-slot.is-active{background:linear-gradient(135deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 9%,rgba(20,27,40,.92)),rgba(16,22,34,.94));border-color:color-mix(in srgb,var(--vp-accent,#8b6cff) 34%,rgba(255,255,255,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.045)}
+.vl-profile-showcase__meta{display:none}.vl-profile-showcase>.vl-profile-showcase__nav,.vl-profile-showcase>.vl-profile-showcase__nav--prev,.vl-profile-showcase>.vl-profile-showcase__nav--next{height:92px;border-radius:0!important;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);background:linear-gradient(180deg,rgba(18,24,36,.96),rgba(10,14,23,.98))!important;border-color:rgba(166,180,205,.20)!important;box-shadow:0 12px 28px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.035)!important}
+@media(max-width:1080px){.vl-profile-showcase__page--main>.vl-profile-layout{grid-template-columns:minmax(330px,370px) minmax(0,1fr);gap:26px}.vl-profile-layout-divider{display:none}}@media(max-width:820px){.vl-profile-page-context{align-items:flex-start}.vl-profile-page-context__view{padding-top:5px}.vl-profile-showcase__page--main>.vl-profile-layout{grid-template-columns:1fr}.vl-profile-identity--official-card{justify-items:center}.vl-profile-content--dossier{width:100%}}@media(max-width:620px){.vl-profile-stage{padding-top:28px}.vl-profile-page-context{margin-bottom:20px}.vl-profile-page-context__name{max-width:68vw;font-size:1.35rem}.vl-profile-page-context__meta{font-size:.62rem}.vl-profile-showcase>.vl-luminous-categories{margin-bottom:20px}.vl-profile-showcase__page--main .vl-profile-panel--record{padding:12px}}
+
+
+/* ======================================================================
+   V20.56 — PROFILE SHELL REFINEMENT
+   - remove totalmente a moldura/cabeçalho "Perfil do Aventureiro"
+   - character_slots sobre o velarion-card
+   - categorias novas ao lado direito de "Perfil do Jogador"
+   - módulos internos permanecem intocados
+   ====================================================================== */
+
+/* Contexto + categorias passam a ser uma única faixa superior. */
+.vl-profile-page-context{
+  align-items:flex-start;
+  gap:32px;
+  margin-bottom:30px;
+}
+.vl-profile-page-context__copy{
+  flex:1 1 auto;
+  min-width:260px;
+}
+.vl-profile-page-context__right{
+  flex:0 1 760px;
+  min-width:0;
+  display:grid;
+  justify-items:end;
+  gap:10px;
+}
+.vl-profile-page-context__view{
+  padding:0 2px 0 0;
+}
+
+/* A navegação antiga deixa de ocupar uma faixa própria. O mesmo JS e os
+   mesmos data attributes continuam sendo usados, só muda a apresentação. */
+.vl-profile-page-context .vl-luminous-categories{
+  width:min(100%,760px);
+  min-height:54px;
+  margin:0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1px solid rgba(166,180,205,.14);
+  border-radius:0;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  background:rgba(12,17,27,.54);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  overflow:hidden;
+}
+.vl-profile-page-context .vl-luminous-categories__emblem,
+.vl-profile-page-context .vl-luminous-categories__ornament{
+  display:none!important;
+}
+.vl-profile-page-context .vl-luminous-category{
+  min-width:0;
+  min-height:52px;
+  padding:9px 13px;
+  border:0!important;
+  border-right:1px solid rgba(166,180,205,.09)!important;
+  border-radius:0!important;
+  clip-path:none!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  text-align:left;
+}
+.vl-profile-page-context .vl-luminous-category:last-of-type{border-right:0!important}
+.vl-profile-page-context .vl-luminous-category.is-active{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--vp-accent,#8b6cff) 10%,rgba(255,255,255,.035)),transparent)!important;
+  box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--vp-accent,#8b6cff) 48%,rgba(255,255,255,.24))!important;
+}
+.vl-profile-page-context .vl-luminous-category__number{font-size:.55rem}
+.vl-profile-page-context .vl-luminous-category__copy strong{font-size:.72rem}
+.vl-profile-page-context .vl-luminous-category__copy small{font-size:.50rem}
+
+/* Não existe mais a moldura externa de "Perfil do Aventureiro". */
+.vl-profile-showcase__page--main .vl-profile-panel--record{
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  clip-path:none!important;
+  background:none!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.vl-profile-showcase__page--main .vl-profile-panel--record::before,
+.vl-profile-showcase__page--main .vl-profile-panel--record::after,
+.vl-profile-showcase__page--main .vl-profile-panel--record > .vl-profile-section-head{
+  display:none!important;
+  content:none!important;
+}
+.vl-profile-showcase__page--main .vl-profile-record-stack{
+  margin:0!important;
+  padding:0!important;
+}
+
+/* Selector sobre o Card: não altera o card nem o card-fx. */
+.vl-profile-identity--official-card{
+  position:relative;
+  padding-top:0;
+}
+.vl-profile-identity--official-card.has-character-slots{
+  padding-top:72px;
+}
+.vl-profile-identity--official-card > .vl-profile-character-slots{
+  position:absolute;
+  z-index:20;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(100%,360px);
+  margin:0;
+}
+.vl-profile-character-slots__label{
+  padding-bottom:6px;
+}
+.vl-profile-character-slots__buttons{
+  display:flex;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.vl-profile-character-slots__buttons::-webkit-scrollbar{display:none}
+.vl-profile-character-slot{
+  flex:1 1 0;
+  min-width:70px;
+  min-height:42px;
+}
+
+/* A viewport agora começa diretamente nos componentes. */
+.vl-profile-showcase>.vl-luminous-categories{margin-bottom:0}
+
+@media(max-width:1100px){
+  .vl-profile-page-context{display:grid;grid-template-columns:1fr}
+  .vl-profile-page-context__right{width:100%;justify-items:stretch}
+  .vl-profile-page-context__view{justify-self:end}
+  .vl-profile-page-context .vl-luminous-categories{width:100%}
+}
+@media(max-width:720px){
+  .vl-profile-page-context .vl-luminous-categories{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vl-profile-page-context .vl-luminous-category:nth-of-type(2){border-right:0!important}
+  .vl-profile-page-context .vl-luminous-category:nth-of-type(-n+2){border-bottom:1px solid rgba(166,180,205,.09)!important}
+}
+
+/* ======================================================================
+   V20.57 — PROFILE CATEGORY NAV / REMOVE LEGACY EMBLEM GAP
+   A navegação compacta do cabeçalho não usa mais o brasão lateral antigo.
+   Remove o padding-left:86px herdado da V20.38, que deixava uma área vazia
+   antes de "01 · IDENTIDADE".
+   ====================================================================== */
+.vl-profile-page-context .vl-luminous-categories {
+  padding: 0 !important;
+}
+
+/* ======================================================================
+   V20.47 — REGISTRO PÚBLICO LIVRE NO SHOWCASE
+   Remove somente a moldura/estrutura externa criada pelo profile shell.
+   O velarion-profile-public-record continua inteiro e usa seu próprio CSS.
+   ====================================================================== */
+.vl-profile-showcase__page--systems-free {
+  width: 100%;
+  min-width: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.vl-profile-showcase__page--systems-free > .vl-public-stars-only {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* V19 — Character Slot names + single-slot cleanup */
+.vl-profile-character-slot small{
+  max-width:100%;
+  line-height:1.12;
+  white-space:normal;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+.vl-profile-character-slots__label small{
+  max-width:58%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:right;
+}
+
+/* V20 — mantém o cabeçalho "VERSÃO DO PERSONAGEM" mesmo com um único slot,
+   mas não mostra botão quando não existem versões alternativas. */
+.vl-profile-identity--official-card.single-character-slot{
+  padding-top:38px;
+}
+.vl-profile-identity--official-card.single-character-slot > .vl-profile-character-slots{
+  position:absolute;
+  z-index:20;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(100%,360px);
+  margin:0;
+}
+.vl-profile-character-slots.is-single{
+  gap:0;
+}
+.vl-profile-character-slots.is-single .vl-profile-character-slots__label{
+  padding-bottom:7px;
+}
+
+/* ======================================================================
+   V27 — BACKGROUND_COLOR / UI SURFACE TINTS
+   O background_color do slot ativo também influencia, de forma suave,
+   molduras e controles externos do perfil. A cor nunca substitui 100%
+   as bases escuras originais; ela é misturada em baixa proporção.
+   ====================================================================== */
+.detail-view.active.vl-has-profile-background-color {
+  --vl-profile-surface-tint: var(--vl-profile-page-background-color);
+}
+
+/* VERSÃO DO PERSONAGEM — título, moldura e botões. */
+.detail-view.active.vl-has-profile-background-color .vl-profile-character-slots__label {
+  border-bottom-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 28%, rgba(255,255,255,.11));
+}
+
+.detail-view.active.vl-has-profile-background-color .vl-profile-character-slot {
+  background:
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 15%,rgba(19,25,37,.92)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 7%,rgba(12,17,28,.96)));
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 28%, rgba(166,180,205,.20));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 7px 18px color-mix(in srgb,var(--vl-profile-surface-tint) 5%,transparent);
+}
+
+.detail-view.active.vl-has-profile-background-color .vl-profile-character-slot:hover,
+.detail-view.active.vl-has-profile-background-color .vl-profile-character-slot:focus-visible {
+  background:
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 21%,rgba(21,27,40,.92)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 10%,rgba(12,17,28,.96)));
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 40%, rgba(255,255,255,.20));
+}
+
+.detail-view.active.vl-has-profile-background-color .vl-profile-character-slot.is-active {
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 25%,rgba(20,27,40,.93)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 12%,rgba(12,17,28,.96)));
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 46%, rgba(255,255,255,.20));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 0 18px color-mix(in srgb,var(--vl-profile-surface-tint) 9%,transparent);
+}
+
+/* XP + PONTOS — mantém os acentos roxo/rosa, tingindo só a superfície. */
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-metrics-row--record .vl-profile-metric--featured {
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 20%,
+    color-mix(in srgb,var(--metric-accent) 34%,rgba(255,255,255,.13)));
+  background:
+    radial-gradient(circle at 88% 50%,
+      color-mix(in srgb,var(--metric-accent) 12%,transparent), transparent 34%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 12%,rgba(18,23,38,.94)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 6%,rgba(8,11,22,.96)));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 12px 28px rgba(0,0,0,.20),
+    0 0 22px color-mix(in srgb,var(--metric-accent) 8%,transparent);
+}
+
+/* CONEXÕES — painel principal e cabeçalho recebem somente um reflexo da cor. */
+.detail-view.active.vl-has-profile-background-color .vl-profile-panel--social-links {
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 24%, rgba(255,255,255,.10)) !important;
+  background:
+    radial-gradient(circle at 12% 10%,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 12%,transparent), transparent 30%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 13%,rgba(13,15,26,.96)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 6%,rgba(8,10,19,.98))) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 20px 42px rgba(0,0,0,.16);
+}
+
+.detail-view.active.vl-has-profile-background-color .vl-social-links-heading__eyebrow {
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 28%, rgba(231,184,77,.32));
+  background: radial-gradient(circle,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 13%,rgba(231,184,77,.10)),
+    color-mix(in srgb,var(--vl-profile-surface-tint) 5%,rgba(231,184,77,.035)));
+}
+
+.detail-view.active.vl-has-profile-background-color .vl-social-links-heading > i {
+  background: linear-gradient(90deg,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 24%,rgba(231,184,77,.30)),
+    rgba(255,255,255,.07) 38%, transparent);
+}
+
+/* CONQUISTAS — tinge só a moldura/área da coleção; as medalhas mantêm
+   integralmente suas próprias paletas e estados. */
+.detail-view.active.vl-has-profile-background-color .vl-profile-panel--achievements-only {
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 22%, rgba(255,255,255,.10)) !important;
+  background:
+    radial-gradient(circle at 14% 9%,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 10%,transparent), transparent 30%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 11%,rgba(13,16,28,.95)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 5%,rgba(8,11,21,.98))) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 20px 42px rgba(0,0,0,.16) !important;
+}
+
+/* SETAS < > — preserva a base escura, com tint sutil do background_color. */
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav,
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav--prev,
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav--next {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 14%,rgba(18,24,36,.97)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 7%,rgba(10,14,23,.99))) !important;
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 30%, rgba(166,180,205,.22)) !important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav:hover,
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav:focus-visible,
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav--prev:hover,
+.detail-view.active.vl-has-profile-background-color
+.vl-profile-showcase > .vl-profile-showcase__nav--next:hover {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 22%,rgba(20,26,39,.97)),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 11%,rgba(10,14,23,.99))) !important;
+  border-color: color-mix(in srgb,
+    var(--vl-profile-surface-tint) 44%, rgba(255,255,255,.22)) !important;
+}
+
+/* ======================================================================
+   V28 — BACKGROUND_COLOR / UI SURFACE TINTS — selector fix + visible tint
+   V27 aplicava as regras em `.detail-view.active.vl-has-profile-background-color`,
+   mas a classe dinâmica é instalada em html/body/#profileRoot. Por isso as
+   regras não atingiam os componentes. Esta camada usa body/#profileRoot e
+   reforça a mistura sem substituir 100% as superfícies originais.
+   ====================================================================== */
+body.vl-has-profile-background-color,
+#profileRoot.vl-has-profile-background-color {
+  --vl-profile-surface-tint: var(--vl-profile-page-background-color);
+}
+
+/* VERSÃO DO PERSONAGEM */
+body.vl-has-profile-background-color .vl-profile-character-slots__label,
+#profileRoot.vl-has-profile-background-color .vl-profile-character-slots__label {
+  border-bottom-color: color-mix(in srgb,var(--vl-profile-surface-tint) 52%,rgba(255,255,255,.18)) !important;
+}
+body.vl-has-profile-background-color .vl-profile-character-slot,
+#profileRoot.vl-has-profile-background-color .vl-profile-character-slot {
+  background: linear-gradient(145deg,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 48%,#17202d),
+    color-mix(in srgb,var(--vl-profile-surface-tint) 30%,#0c111c)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 62%,rgba(190,200,216,.24)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.065), 0 8px 20px rgba(0,0,0,.16) !important;
+}
+body.vl-has-profile-background-color .vl-profile-character-slot.is-active,
+#profileRoot.vl-has-profile-background-color .vl-profile-character-slot.is-active {
+  background: linear-gradient(135deg,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 60%,#192231),
+    color-mix(in srgb,var(--vl-profile-surface-tint) 38%,#0d121e)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 76%,rgba(255,255,255,.24)) !important;
+}
+
+/* XP + PONTOS */
+body.vl-has-profile-background-color .vl-profile-metrics-row--record .vl-profile-metric--featured,
+#profileRoot.vl-has-profile-background-color .vl-profile-metrics-row--record .vl-profile-metric--featured {
+  background:
+    radial-gradient(circle at 88% 50%,color-mix(in srgb,var(--metric-accent) 16%,transparent),transparent 38%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 44%,#171d2d),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 26%,#090d18)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 48%,color-mix(in srgb,var(--metric-accent) 34%,rgba(255,255,255,.14))) !important;
+}
+
+/* CONEXÕES */
+body.vl-has-profile-background-color .vl-profile-panel--social-links,
+#profileRoot.vl-has-profile-background-color .vl-profile-panel--social-links {
+  background:
+    radial-gradient(circle at 12% 10%,color-mix(in srgb,var(--vl-profile-surface-tint) 26%,transparent),transparent 34%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 42%,#111723),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 24%,#080c15)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 54%,rgba(255,255,255,.12)) !important;
+}
+body.vl-has-profile-background-color .vl-social-links-heading__eyebrow,
+#profileRoot.vl-has-profile-background-color .vl-social-links-heading__eyebrow {
+  background: color-mix(in srgb,var(--vl-profile-surface-tint) 38%,rgba(23,27,40,.86)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 62%,rgba(231,184,77,.30)) !important;
+}
+body.vl-has-profile-background-color .vl-social-links-heading > i,
+#profileRoot.vl-has-profile-background-color .vl-social-links-heading > i {
+  background: linear-gradient(90deg,color-mix(in srgb,var(--vl-profile-surface-tint) 62%,rgba(231,184,77,.28)),rgba(255,255,255,.08) 42%,transparent) !important;
+}
+
+/* CONQUISTAS */
+body.vl-has-profile-background-color .vl-profile-panel--achievements-only,
+#profileRoot.vl-has-profile-background-color .vl-profile-panel--achievements-only {
+  background:
+    radial-gradient(circle at 14% 9%,color-mix(in srgb,var(--vl-profile-surface-tint) 24%,transparent),transparent 34%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--vl-profile-surface-tint) 40%,#111724),
+      color-mix(in srgb,var(--vl-profile-surface-tint) 22%,#080c16)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 52%,rgba(255,255,255,.12)) !important;
+}
+
+/* SETAS < > */
+body.vl-has-profile-background-color .vl-profile-showcase__nav,
+body.vl-has-profile-background-color .vl-profile-showcase__nav--prev,
+body.vl-has-profile-background-color .vl-profile-showcase__nav--next,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav--prev,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav--next {
+  background: linear-gradient(180deg,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 50%,#17202d),
+    color-mix(in srgb,var(--vl-profile-surface-tint) 30%,#0a0f19)) !important;
+  border-color: color-mix(in srgb,var(--vl-profile-surface-tint) 64%,rgba(185,197,216,.24)) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.065) !important;
+}
+body.vl-has-profile-background-color .vl-profile-showcase__nav:hover,
+body.vl-has-profile-background-color .vl-profile-showcase__nav--prev:hover,
+body.vl-has-profile-background-color .vl-profile-showcase__nav--next:hover,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav:hover,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav--prev:hover,
+#profileRoot.vl-has-profile-background-color .vl-profile-showcase__nav--next:hover {
+  background: linear-gradient(180deg,
+    color-mix(in srgb,var(--vl-profile-surface-tint) 66%,#1a2331),
+    color-mix(in srgb,var(--vl-profile-surface-tint) 42%,#0b101b)) !important;
 }

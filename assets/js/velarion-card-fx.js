@@ -107,37 +107,36 @@
   function syncSize(state) {
     if (!state.card?.isConnected || !state.port?.isConnected) return;
 
-    const rect = state.card.getBoundingClientRect();
-    const portRect = state.port.getBoundingClientRect();
-    if (!rect.width || !rect.height || !portRect.width) return;
-
     /*
-      Usa a geometria visual REAL da carta, inclusive quando algum ancestral
-      aplica scale(). Além do tamanho, sincroniza o centro da carta dentro do
-      port. Assim o FX não depende mais de assumir que o card começa em y=0
-      ou que está exatamente no centro matemático do host.
+      O FX vive dentro do MESMO .vl-card-scale do card. Portanto ele deve usar
+      a geometria lógica do card (360x520, ou o tamanho real do elemento), e
+      NÃO getBoundingClientRect(), que já contém o zoom/scale dos ancestrais.
+
+      Assim card e FX recebem exatamente a mesma cadeia de transformações:
+      .vl-card-scale -> stage/profile zoom -> viewport/F11.
+      Isso evita aplicar o zoom duas vezes no FX.
     */
-    const width = Math.round(rect.width * 100) / 100;
-    const height = Math.round(rect.height * 100) / 100;
-    const centerX = Math.round((rect.left - portRect.left + rect.width / 2) * 100) / 100;
-    const centerY = Math.round((rect.top - portRect.top + rect.height / 2) * 100) / 100;
+    const width = state.card.offsetWidth || 360;
+    const height = state.card.offsetHeight || 520;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
     if (state.lastWidth !== width) {
-      state.port.style.setProperty("--vfx-card-width", `${width}px`);
-      state.port.style.setProperty("--vfx-half-card-width", `${width / 2}px`);
+      state.scaleHost.style.setProperty("--vfx-card-width", `${width}px`);
+      state.scaleHost.style.setProperty("--vfx-half-card-width", `${centerX}px`);
       state.lastWidth = width;
     }
     if (state.lastHeight !== height) {
-      state.port.style.setProperty("--vfx-card-height", `${height}px`);
-      state.port.style.setProperty("--vfx-half-card-height", `${height / 2}px`);
+      state.scaleHost.style.setProperty("--vfx-card-height", `${height}px`);
+      state.scaleHost.style.setProperty("--vfx-half-card-height", `${centerY}px`);
       state.lastHeight = height;
     }
     if (state.lastCenterX !== centerX) {
-      state.port.style.setProperty("--vfx-card-center-x", `${centerX}px`);
+      state.scaleHost.style.setProperty("--vfx-card-center-x", `${centerX}px`);
       state.lastCenterX = centerX;
     }
     if (state.lastCenterY !== centerY) {
-      state.port.style.setProperty("--vfx-card-center-y", `${centerY}px`);
+      state.scaleHost.style.setProperty("--vfx-card-center-y", `${centerY}px`);
       state.lastCenterY = centerY;
     }
   }
@@ -339,15 +338,19 @@
     const card = port.querySelector(".vl-card");
     if (!card) return null;
 
+    // Mesmo host transformado usado pelo card: mantém FX e card 1:1 em
+    // janela, F11 e qualquer zoom responsivo, sem acoplar os arquivos.
+    const scaleHost = card.closest(".vl-card-scale") || card.parentElement || port;
     const back = createBackLayer();
     const front = createFrontLayer();
 
-    port.prepend(back);
-    port.append(front);
+    scaleHost.insertBefore(back, card);
+    scaleHost.insertBefore(front, card.nextSibling);
     port.dataset.vfxReady = "true";
 
     const state = {
       port,
+      scaleHost,
       card,
       back,
       front,
@@ -397,12 +400,12 @@
     state.front?.remove();
     state.port.classList.remove("is-vfx-paused", "is-vfx-surging");
     delete state.port.dataset.vfxReady;
-    state.port.style.removeProperty("--vfx-card-width");
-    state.port.style.removeProperty("--vfx-card-height");
-    state.port.style.removeProperty("--vfx-half-card-width");
-    state.port.style.removeProperty("--vfx-half-card-height");
-    state.port.style.removeProperty("--vfx-card-center-x");
-    state.port.style.removeProperty("--vfx-card-center-y");
+    state.scaleHost?.style.removeProperty("--vfx-card-width");
+    state.scaleHost?.style.removeProperty("--vfx-card-height");
+    state.scaleHost?.style.removeProperty("--vfx-half-card-width");
+    state.scaleHost?.style.removeProperty("--vfx-half-card-height");
+    state.scaleHost?.style.removeProperty("--vfx-card-center-x");
+    state.scaleHost?.style.removeProperty("--vfx-card-center-y");
     state.port.style.removeProperty("--vfx-color");
     state.port.style.removeProperty("--vfx-color-2");
     var cleanupPcts = [7,10,14,18,19,23,24,27,30,34,40,42,46,70,72];

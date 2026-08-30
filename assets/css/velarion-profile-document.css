@@ -2031,3 +2031,65 @@
 .vl-profile-clan-popover.vl-profile-verified-popover--floating .vl-profile-verified-popover__meta--wide {
   grid-column: 1 / -1;
 }
+
+/* ============================================================
+   V21 — STATUS ONLINE/OFFLINE ESTÁVEL
+   O badge de presença fica ancorado ao canto superior direito do
+   documento e deixa de participar do cálculo das tags VLS/VERIFIED.
+   Isso impede deslocamentos quando clã/verificação/personagem mudam.
+   ============================================================ */
+.vl-profile-public-id-card__top {
+  position: relative !important;
+  padding-right: 94px !important;
+}
+
+@media (min-width: 821px) {
+  .vl-profile-public-id-card__top {
+    display: grid !important;
+    grid-template-columns: max-content minmax(8px, 1fr) max-content minmax(0, 1fr) !important;
+    align-items: center !important;
+    column-gap: 8px !important;
+  }
+
+  .vl-profile-public-id-card__top > span {
+    grid-column: 1 !important;
+  }
+
+  .vl-profile-public-id-card__identity-tags {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    margin: 0 !important;
+  }
+}
+
+.vl-profile-public-id-card__top > em {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0 !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  z-index: 30 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 820px) {
+  .vl-profile-public-id-card__top {
+    padding-right: 88px !important;
+  }
+
+  .vl-profile-public-id-card__top > em {
+    right: 0 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .vl-profile-public-id-card__top {
+    padding-right: 78px !important;
+  }
+
+  .vl-profile-public-id-card__top > em {
+    min-height: 23px !important;
+    padding-inline: 8px !important;
+    font-size: 8px !important;
+  }
+}

@@ -28,6 +28,12 @@
   // ===== Character Slots =====
 
   const CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+  const CHARACTER_SLOT_DEFAULT_NAMES = Object.freeze({
+    id_1: "Personagem Principal",
+    id_2: "Personagem Secundário",
+    id_3: "Personagem Alternativo 1",
+    id_4: "Personagem Alternativo 2"
+  });
 
   function getCharacterSlots(player) {
     const cardEmbed = player?.theme?.card_embed;
@@ -52,6 +58,18 @@
   function getCharacterSlotIds(player) {
     const slots = getCharacterSlots(player);
     return CHARACTER_SLOT_IDS.filter((id) => Boolean(slots[id]));
+  }
+
+  function getCharacterSlotName(player, requestedId = "id_1") {
+    const id = CHARACTER_SLOT_IDS.includes(cleanValue(requestedId))
+      ? cleanValue(requestedId)
+      : "id_1";
+    const slots = getCharacterSlots(player);
+    const slot = slots[id];
+    const configuredName = slot && typeof slot === "object" && !Array.isArray(slot)
+      ? cleanValue(slot.name_slot)
+      : "";
+    return configuredName || CHARACTER_SLOT_DEFAULT_NAMES[id] || id;
   }
 
   function resolveCharacterSlot(player, requestedId = "id_1") {
@@ -189,8 +207,10 @@
     getFallbacks,
     getFallbackMedia,
     CHARACTER_SLOT_IDS,
+    CHARACTER_SLOT_DEFAULT_NAMES,
     getCharacterSlots,
     getCharacterSlotIds,
+    getCharacterSlotName,
     resolveCharacterSlot,
     getCharacterSlotValue,
     pick

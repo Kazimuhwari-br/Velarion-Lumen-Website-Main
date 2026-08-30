@@ -1,4 +1,4 @@
-﻿/* ======================================================================
+/* ======================================================================
    Velarion Card FX — efeitos externos para a carta do perfil
 
    Este arquivo NÃO altera a estrutura interna de .vl-card.
@@ -57,6 +57,29 @@
 .vl-card-fx-front * {
   box-sizing: border-box;
   pointer-events: none;
+}
+
+
+/* V33 — Card/FX usam exatamente o mesmo transform host (.vl-card-scale).
+   O FX permanece modular, mas não mede mais pixels já ampliados/reduzidos
+   pela viewport. */
+.vl-profile-card-port[data-vfx-ready="true"] .vl-card-scale {
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.vl-profile-card-port[data-vfx-ready="true"] .vl-card-scale > .vl-card {
+  position: relative;
+  z-index: 2;
+}
+
+.vl-profile-card-port[data-vfx-ready="true"] .vl-card-scale > .vl-card-fx {
+  z-index: 0;
+}
+
+.vl-profile-card-port[data-vfx-ready="true"] .vl-card-scale > .vl-card-fx-front {
+  z-index: 4;
 }
 
 /* ----------------------------------------------------------------------
