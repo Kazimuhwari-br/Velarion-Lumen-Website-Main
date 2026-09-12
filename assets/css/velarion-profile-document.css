@@ -740,29 +740,10 @@
   opacity: .16;
   -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.95), rgba(0,0,0,.36) 58%, transparent 100%);
   mask-image: linear-gradient(90deg, rgba(0,0,0,.95), rgba(0,0,0,.36) 58%, transparent 100%);
-}.vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  border-color: transparent;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(255,255,255,.13), transparent 29%) padding-box,
-    linear-gradient(118deg, rgba(255,255,255,.10), transparent 18%, transparent 68%, rgba(255,255,255,.055)) padding-box,
-    linear-gradient(145deg, rgba(18,22,40,.96), rgba(6,9,21,.94)) padding-box,
-    var(--vp-document-palette-loop-gradient) border-box;
-  background-size: 100% 100%, 100% 100%, 100% 100%, 300% 100%;
-  animation: vlProfileDocumentPaletteFlow var(--vp-document-color-speed) linear infinite;
-}.vl-profile-public-id-card[data-vp-card-color-type="rainbow"] .vl-profile-public-id-card__shine {
-  background: var(--vp-document-palette-loop-gradient);
-  background-size: 300% 100%;
-  opacity: .15;
-  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.96), rgba(0,0,0,.34) 62%, transparent 100%);
-  mask-image: linear-gradient(90deg, rgba(0,0,0,.96), rgba(0,0,0,.34) 62%, transparent 100%);
-  animation: vlProfileDocumentPaletteFlow var(--vp-document-color-speed) linear infinite reverse;
 }@keyframes vlProfileDocumentPaletteFlow {
   from { background-position: 0 0, 0 0, 0 0, 0% 0; }
   to   { background-position: 0 0, 0 0, 0 0, 300% 0; }
-}@media (prefers-reduced-motion: reduce){.vl-profile-public-id-card[data-vp-card-color-type="rainbow"],
-  .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] .vl-profile-public-id-card__shine {
-    animation: none !important;
-  }}.vl-profile-record-grid--document-only .vl-profile-public-id-card{
+}@media (prefers-reduced-motion: reduce){}.vl-profile-record-grid--document-only .vl-profile-public-id-card{
   border-color:rgba(155,128,180,.28) !important;
   background:
     radial-gradient(circle at 86% 34%,rgba(108,68,145,.14),transparent 32%),
@@ -819,28 +800,13 @@
     inset 0 0 42px rgba(0,0,0,.18),
     0 18px 44px rgba(0,0,0,.28),
     0 0 30px color-mix(in srgb, var(--id-accent) 15%, transparent) !important;
-}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  border-color: color-mix(in srgb, var(--id-accent) 42%, rgba(255,255,255,.22)) !important;
-  background:
-    linear-gradient(118deg, rgba(255,255,255,.12), transparent 20%, transparent 68%, rgba(255,255,255,.06)),
-    linear-gradient(145deg, rgba(8,10,18,.34), rgba(5,7,14,.52)),
-    var(--vp-document-palette-loop-gradient) !important;
-  background-size: 100% 100%, 100% 100%, 300% 100% !important;
-  animation: vlProfileDocumentWholeCardFlow var(--vp-document-color-speed) linear infinite !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.16),
-    inset 0 0 42px rgba(0,0,0,.18),
-    0 18px 44px rgba(0,0,0,.28),
-    0 0 30px color-mix(in srgb, var(--id-accent) 15%, transparent) !important;
 }@keyframes vlProfileDocumentWholeCardFlow {
   from { background-position: 0 0, 0 0, 0% 0; }
   to   { background-position: 0 0, 0 0, 300% 0; }
 }.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type] .vl-profile-public-id-card__shine {
   opacity: .28 !important;
   mix-blend-mode: screen;
-}@media (prefers-reduced-motion: reduce){.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-    animation: none !important;
-  }}.vl-profile-public-id-card {
+}@media (prefers-reduced-motion: reduce){}.vl-profile-public-id-card {
   --vp-doc-dark-1: rgba(4, 7, 14, .92);
   --vp-doc-dark-2: rgba(7, 11, 18, .88);
   --vp-doc-grid: color-mix(in srgb, var(--id-accent) 18%, rgba(255,255,255,.055));
@@ -931,25 +897,6 @@
   opacity: .48;
   -webkit-mask-image: none;
   mask-image: none;
-}.vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  border-color: color-mix(in srgb, var(--id-accent) 48%, rgba(255,255,255,.16));
-  background:
-    radial-gradient(circle at 17% 12%, rgba(255,255,255,.05), transparent 30%),
-    linear-gradient(118deg, rgba(255,255,255,.04), transparent 20%, transparent 70%, rgba(255,255,255,.022)),
-    linear-gradient(145deg, rgba(4,7,14,.76), rgba(3,6,12,.90)),
-    var(--vp-document-palette-loop-gradient);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 300% 100%;
-  background-blend-mode: screen, normal, multiply, normal;
-  animation: vlProfileDocumentPaletteFlow var(--vp-document-color-speed) linear infinite;
-}.vl-profile-public-id-card[data-vp-card-color-type="rainbow"] .vl-profile-public-id-card__shine {
-  background:
-    radial-gradient(circle at 82% 72%, color-mix(in srgb, var(--id-accent) 14%, transparent), transparent 34%),
-    linear-gradient(100deg, transparent 0 22%, rgba(255,255,255,.045) 38%, transparent 54%);
-  background-size: 100% 100%;
-  opacity: .46;
-  -webkit-mask-image: none;
-  mask-image: none;
-  animation: none;
 }.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="none"],
 .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rotate"],
 .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="pulse"] {
@@ -976,22 +923,6 @@
     linear-gradient(145deg, rgba(3,6,12,.88), rgba(2,5,10,.95)),
     var(--vp-document-palette-gradient) !important;
   background-blend-mode: screen, normal, multiply, normal !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.085),
-    inset 0 0 0 1px rgba(255,255,255,.02),
-    inset 0 0 50px rgba(0,0,0,.30),
-    0 18px 44px rgba(0,0,0,.32),
-    0 0 24px color-mix(in srgb, var(--id-accent) 10%, transparent) !important;
-}.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  border-color: color-mix(in srgb, var(--id-accent) 44%, rgba(255,255,255,.14)) !important;
-  background:
-    radial-gradient(circle at 17% 12%, rgba(255,255,255,.03), transparent 30%),
-    linear-gradient(118deg, rgba(255,255,255,.028), transparent 20%, transparent 72%, rgba(255,255,255,.014)),
-    linear-gradient(145deg, rgba(3,6,12,.87), rgba(2,5,10,.95)),
-    var(--vp-document-palette-loop-gradient) !important;
-  background-size: 100% 100%, 100% 100%, 100% 100%, 300% 100% !important;
-  background-blend-mode: screen, normal, multiply, normal !important;
-  animation: vlProfileDocumentWholeCardFlow var(--vp-document-color-speed) linear infinite !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.085),
     inset 0 0 0 1px rgba(255,255,255,.02),
@@ -1379,22 +1310,13 @@
     0 0 10px color-mix(in srgb, var(--vp-doc-accent) 7%, transparent) !important;
 }
 
-/* Gradiente/rainbow: a paleta entra como película luminosa, sem multiply. */
+/* Gradiente: a paleta entra como película luminosa, sem multiply. */
 .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
   background:
     radial-gradient(ellipse at 15% 12%, rgba(255,255,255,.17), transparent 31%),
     linear-gradient(112deg, rgba(255,255,255,.07), transparent 25% 70%, rgba(255,255,255,.03)),
     var(--vp-document-palette-gradient),
     linear-gradient(135deg, var(--vp-doc-surface-a), var(--vp-doc-surface-b) 52%, var(--vp-doc-surface-c)) !important;
-  background-blend-mode: screen, normal, soft-light, normal !important;
-}
-.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  background:
-    radial-gradient(ellipse at 15% 12%, rgba(255,255,255,.17), transparent 31%),
-    linear-gradient(112deg, rgba(255,255,255,.07), transparent 25% 70%, rgba(255,255,255,.03)),
-    var(--vp-document-palette-loop-gradient),
-    linear-gradient(135deg, var(--vp-doc-surface-a), var(--vp-doc-surface-b) 52%, var(--vp-doc-surface-c)) !important;
-  background-size: 100% 100%, 100% 100%, 300% 100%, 100% 100% !important;
   background-blend-mode: screen, normal, soft-light, normal !important;
 }
 
@@ -1563,22 +1485,13 @@
     0 0 8px color-mix(in srgb, var(--vp-doc-accent) 6%, transparent) !important;
 }
 
-/* Mantém gradient/rainbow visíveis, sem lavar o fundo nem usar multiply. */
+/* Mantém gradient visíveis, sem lavar o fundo nem usar multiply. */
 .vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="gradient"] {
   background:
     radial-gradient(ellipse at 10% 4%, rgba(255,255,255,.15), transparent 28%),
     linear-gradient(108deg, rgba(255,255,255,.05), transparent 27% 72%, rgba(255,255,255,.025)),
     var(--vp-document-palette-gradient),
     linear-gradient(136deg, rgba(57,68,91,.86), rgba(35,47,70,.90) 52%, rgba(30,42,63,.90)) !important;
-  background-blend-mode: screen, normal, soft-light, normal !important;
-}
-.vl-profile-record-grid--document-only .vl-profile-public-id-card[data-vp-card-color-type="rainbow"] {
-  background:
-    radial-gradient(ellipse at 10% 4%, rgba(255,255,255,.15), transparent 28%),
-    linear-gradient(108deg, rgba(255,255,255,.05), transparent 27% 72%, rgba(255,255,255,.025)),
-    var(--vp-document-palette-loop-gradient),
-    linear-gradient(136deg, rgba(57,68,91,.86), rgba(35,47,70,.90) 52%, rgba(30,42,63,.90)) !important;
-  background-size: 100% 100%, 100% 100%, 300% 100%, 100% 100% !important;
   background-blend-mode: screen, normal, soft-light, normal !important;
 }
 

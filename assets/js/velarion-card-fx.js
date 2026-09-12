@@ -1,144 +1,165 @@
 /* ======================================================================
-   Velarion Card FX — efeitos externos para o card oficial no perfil
+   Velarion Card FX — REBUILD
 
-   Regras:
-   - NÃO altera o HTML interno de .vl-card;
-   - monta somente em .vl-profile-card-port;
-   - pausa quando sai da viewport;
-   - respeita prefers-reduced-motion;
-   - acompanha em tempo real a cor visual do card;
-   - v4: mantém a geometria v3; a flutuação exclusiva do profile é controlada pelo CSS.
+   Objetivo:
+   - manter o FX totalmente externo ao HTML interno de .vl-card;
+   - usar a própria .vl-card como fonte autoritativa para card_color;
+   - acompanhar none / gradient / rotate / pulse;
+   - acompanhar cc_speed em rotate/pulse e a paleta publicada pelo card;
+   - sobreviver à recriação/troca do card dentro do mesmo port;
+   - compartilhar exatamente o mesmo host de escala (.vl-card-scale);
+   - pausar animações fora da viewport e respeitar reduced-motion.
    ====================================================================== */
-(function() {
+(function(window, document) {
   "use strict";
 
+  const VERSION = "8.1.0-gradient-two-colors-no-rainbow";
   const PORT_SELECTOR = '.vl-profile-card-port[data-official-card-port="true"]';
-  const instances = new WeakMap();
+  const CARD_SELECTOR = ".vl-card";
+  const SCALE_SELECTOR = ".vl-card-scale";
+  const COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse"]);
+
+  const instances = new Map();
+  let globalRaf = 0;
+  let globalObserver = null;
+
   const reducedMotionQuery = window.matchMedia
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : { matches: false, addEventListener: null };
 
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
   }
 
-  function validCssColor(value) {
+  function normalizeType(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    const aliases = {
+      solid: "none",
+      static: "none",
+      grad: "gradient",
+      cycle: "rotate",
+      cycling: "rotate",
+      smooth: "pulse"
+    };
+    const normalized = aliases[raw] || raw || "none";
+    return COLOR_TYPES.has(normalized) ? normalized : "none";
+  }
+
+  function normalizeSpeed(value, fallback = 10) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(300, Math.max(0.25, parsed));
+  }
+
+  function isCssColor(value) {
     const text = String(value || "").trim();
-    if (!text) return "";
-    if (/^#[0-9a-f]{3,8}$/i.test(text)) return text;
-    if (/^(?:rgb|hsl)a?\(/i.test(text)) return text;
-    return "";
+    if (!text) return false;
+    if (window.CSS && typeof window.CSS.supports === "function") {
+      try {
+        return window.CSS.supports("color", text);
+      } catch (_) {}
+    }
+    return /^#[0-9a-f]{3,8}$/i.test(text) || /^(?:rgb|hsl)a?\(/i.test(text) || /^color-mix\(/i.test(text);
   }
 
-  function paletteFromCard(card) {
-    const raw = String(card?.dataset?.cardColorPalette || "").trim();
+  function parseSerializedPalette(rawValue) {
+    /*
+      IMPORTANTE — sem limite de cc_idN.
+
+      O velarion-card.js já normaliza card_color aceitando qualquer chave
+      /^cc_id\d+$/ e publica TODA a paleta, ordenada numericamente, em
+      data-card-color-palette. Aqui o FX apenas consome essa serialização.
+
+      Não existe slice(), maxColors, limite numérico de N ou quantidade máxima
+      de entradas. Se o card publicar 14, 106, 500 ou 9000 cores válidas, todas
+      entram na paleta do FX.
+    */
+    const raw = String(rawValue || "").trim();
     if (!raw) return [];
-    return raw
-      .split(",")
-      .map((value) => validCssColor(value))
-      .filter(Boolean);
+
+    const values = raw.split(",");
+    const palette = [];
+
+    for (let index = 0; index < values.length; index += 1) {
+      const color = values[index].trim();
+      if (isCssColor(color)) palette.push(color);
+    }
+
+    return palette;
   }
 
-  function parseHex(hex) {
-    hex = String(hex || "").replace("#", "").trim();
-    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-    if (hex.length < 6) return null;
+  function readPalette(card) {
+    return parseSerializedPalette(card?.dataset?.cardColorPalette);
+  }
+
+  function buildGradient(colors, angle, loop) {
+    const palette = Array.isArray(colors) && colors.length ? colors.slice() : ["#ff84cf"];
+    if (loop && palette.length > 1) palette.push(palette[0]);
+    if (palette.length === 1) palette.push(palette[0]);
+
+    const maxIndex = palette.length - 1;
+    const stops = palette.map((color, index) => {
+      const pct = maxIndex ? (index / maxIndex) * 100 : 0;
+      return `${color} ${Number(pct.toFixed(4))}%`;
+    });
+
+    return `linear-gradient(${angle}, ${stops.join(", ")})`;
+  }
+
+  function readCardConfiguration(card) {
+    const type = normalizeType(card?.dataset?.cardColorType);
+    const speed = type === "gradient" ? null : normalizeSpeed(card?.dataset?.cardColorSpeed, 10);
+    const palette = readPalette(card);
+    const style = card ? getComputedStyle(card) : null;
+
+    const livePrimary = String(style?.getPropertyValue("--card-color") || "").trim();
+    const liveSecondary = String(style?.getPropertyValue("--card-color2") || "").trim();
+    const liveGlow = String(style?.getPropertyValue("--card-glow") || "").trim();
+
+    const primary = isCssColor(livePrimary)
+      ? livePrimary
+      : (palette[0] || "#ff84cf");
+
+    const secondary = isCssColor(liveSecondary)
+      ? liveSecondary
+      : (palette[1] || `color-mix(in srgb, ${primary} 34%, #ffffff 66%)`);
+
+    const glow = isCssColor(liveGlow) ? liveGlow : primary;
+
+    const sourceGradient = String(style?.getPropertyValue("--card-palette-gradient") || "").trim();
+    const sourceLoopGradient = String(style?.getPropertyValue("--card-palette-loop-gradient") || "").trim();
+
+    const gradient = sourceGradient || buildGradient(palette.length ? palette : [primary], "135deg", false);
+    const loopGradient = sourceLoopGradient || buildGradient(palette.length ? palette : [primary], "90deg", true);
+
     return {
-      r: parseInt(hex.slice(0, 2), 16),
-      g: parseInt(hex.slice(2, 4), 16),
-      b: parseInt(hex.slice(4, 6), 16)
+      type,
+      speed,
+      palette: palette.length ? palette : [primary],
+      primary,
+      secondary,
+      glow,
+      gradient,
+      loopGradient
     };
   }
 
-  function colorMixFixed(color, pct) {
-    var c = parseHex(color);
-    if (!c) return "transparent";
-    var a = (pct / 100).toFixed(2);
-    return "rgba(" + c.r + "," + c.g + "," + c.b + "," + a + ")";
+  function cardConfigSignature(card) {
+    if (!card) return "";
+    return [
+      normalizeType(card.dataset.cardColorType),
+      normalizeType(card.dataset.cardColorType) === "gradient" ? "" : normalizeSpeed(card.dataset.cardColorSpeed, 10),
+      String(card.dataset.cardColorPalette || "")
+    ].join("|");
   }
 
-  function readLiveColors(card) {
-    if (!card) return ["#ff6b8b", "#8b6cff"];
-
-    var palette = paletteFromCard(card);
-    if (palette.length >= 2) return [palette[0], palette[1]];
-
-    var style = getComputedStyle(card);
-    var color =
-      validCssColor(style.getPropertyValue("--card-color")) ||
-      validCssColor(style.getPropertyValue("--vl-card-color")) ||
-      (palette[0]) ||
-      "#ff6b8b";
-
-    var color2 =
-      validCssColor(style.getPropertyValue("--card-color2")) ||
-      validCssColor(style.getPropertyValue("--card-color-2")) ||
-      validCssColor(style.getPropertyValue("--vl-card-color-2")) ||
-      (palette[1]) ||
-      (palette[0]) ||
-      "#8b6cff";
-
-    return [color, color2];
-  }
-
-  function syncColors(state) {
-    var colors = readLiveColors(state.card);
-    var color = colors[0];
-    var color2 = colors[1];
-
-    if (state.lastColor !== color) {
-      state.port.style.setProperty("--vfx-color", color);
-      var pcts = [7,10,14,18,19,23,24,27,30,34,40,42,46,70,72];
-      for (var i = 0; i < pcts.length; i++) {
-        state.port.style.setProperty("--vfx-color-" + pcts[i], colorMixFixed(color, pcts[i]));
-      }
-      state.lastColor = color;
-    }
-    if (state.lastColor2 !== color2) {
-      state.port.style.setProperty("--vfx-color-2", color2);
-      var pcts2 = [11,14,20,29,70,72];
-      for (var j = 0; j < pcts2.length; j++) {
-        state.port.style.setProperty("--vfx-color-2-" + pcts2[j], colorMixFixed(color2, pcts2[j]));
-      }
-      state.lastColor2 = color2;
-    }
-  }
-
-  function syncSize(state) {
-    if (!state.card?.isConnected || !state.port?.isConnected) return;
-
-    /*
-      O FX vive dentro do MESMO .vl-card-scale do card. Portanto ele deve usar
-      a geometria lógica do card (360x520, ou o tamanho real do elemento), e
-      NÃO getBoundingClientRect(), que já contém o zoom/scale dos ancestrais.
-
-      Assim card e FX recebem exatamente a mesma cadeia de transformações:
-      .vl-card-scale -> stage/profile zoom -> viewport/F11.
-      Isso evita aplicar o zoom duas vezes no FX.
-    */
-    const width = state.card.offsetWidth || 360;
-    const height = state.card.offsetHeight || 520;
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    if (state.lastWidth !== width) {
-      state.scaleHost.style.setProperty("--vfx-card-width", `${width}px`);
-      state.scaleHost.style.setProperty("--vfx-half-card-width", `${centerX}px`);
-      state.lastWidth = width;
-    }
-    if (state.lastHeight !== height) {
-      state.scaleHost.style.setProperty("--vfx-card-height", `${height}px`);
-      state.scaleHost.style.setProperty("--vfx-half-card-height", `${centerY}px`);
-      state.lastHeight = height;
-    }
-    if (state.lastCenterX !== centerX) {
-      state.scaleHost.style.setProperty("--vfx-card-center-x", `${centerX}px`);
-      state.lastCenterX = centerX;
-    }
-    if (state.lastCenterY !== centerY) {
-      state.scaleHost.style.setProperty("--vfx-card-center-y", `${centerY}px`);
-      state.lastCenterY = centerY;
-    }
+  function setStyleProperty(element, name, value, cache, cacheKey) {
+    if (!element) return;
+    const next = String(value ?? "").trim();
+    if (cache && cache[cacheKey] === next) return;
+    if (next) element.style.setProperty(name, next);
+    else element.style.removeProperty(name);
+    if (cache) cache[cacheKey] = next;
   }
 
   function createParticle(index, front) {
@@ -170,9 +191,9 @@
     const driftY = -(10 + Math.random() * 25);
     const opacity = .45 + Math.random() * .55;
     const shapes = ["dot", "dot", "diamond", "star"];
-    const shape = shapes[Math.floor(Math.random() * shapes.length)];
 
-    particle.dataset.shape = shape;
+    particle.dataset.shape = shapes[Math.floor(Math.random() * shapes.length)];
+    particle.dataset.paletteIndex = String(index);
     particle.style.setProperty("--particle-x", `${x}%`);
     particle.style.setProperty("--particle-y", `${y}%`);
     particle.style.setProperty("--particle-size", `${size.toFixed(2)}px`);
@@ -184,7 +205,6 @@
     particle.style.setProperty("--particle-drift-x", `${driftX.toFixed(1)}px`);
     particle.style.setProperty("--particle-drift-y", `${driftY.toFixed(1)}px`);
     particle.style.setProperty("--particle-opacity", opacity.toFixed(2));
-    particle.style.setProperty("--particle-color", index % 3 === 0 ? "var(--vfx-color-2)" : "var(--vfx-color)");
 
     return particle;
   }
@@ -193,6 +213,9 @@
     const root = document.createElement("div");
     root.className = "vl-card-fx";
     root.setAttribute("aria-hidden", "true");
+
+    const paletteField = document.createElement("div");
+    paletteField.className = "vl-card-fx__palette-field";
 
     const aura = document.createElement("div");
     aura.className = "vl-card-fx__aura";
@@ -212,12 +235,12 @@
     const particles = document.createElement("div");
     particles.className = "vl-card-fx__particles";
 
-    const particleCount = window.innerWidth <= 520 ? 5 : 10;
+    const particleCount = window.innerWidth <= 520 ? 6 : 12;
     for (let i = 0; i < particleCount; i += 1) {
       particles.appendChild(createParticle(i, false));
     }
 
-    root.append(aura, orbitA, orbitB, edge, floor, particles);
+    root.append(paletteField, aura, orbitA, orbitB, edge, floor, particles);
     return root;
   }
 
@@ -240,7 +263,7 @@
 
     const particles = document.createElement("div");
     particles.className = "vl-card-fx-front__particles";
-    const particleCount = window.innerWidth <= 520 ? 2 : 4;
+    const particleCount = window.innerWidth <= 520 ? 3 : 5;
     for (let i = 0; i < particleCount; i += 1) {
       particles.appendChild(createParticle(i + 20, true));
     }
@@ -249,20 +272,130 @@
     return root;
   }
 
+  function collectParticles(state) {
+    state.particles = Array.from(state.back.querySelectorAll(".vl-card-fx__particle"))
+      .concat(Array.from(state.front.querySelectorAll(".vl-card-fx__particle")));
+  }
+
+  function applyParticlePalette(state, config) {
+    const multicolor = config.type === "gradient";
+    const palette = config.palette.length ? config.palette : [config.primary];
+
+    state.particles.forEach((particle, index) => {
+      if (!multicolor || palette.length < 2) {
+        particle.style.removeProperty("--particle-color");
+        return;
+      }
+
+      // Distribui as partículas por toda a paleta, inclusive em paletas grandes.
+      const paletteIndex = state.particles.length > 1
+        ? Math.round((index / (state.particles.length - 1)) * (palette.length - 1))
+        : 0;
+      particle.style.setProperty("--particle-color", palette[paletteIndex]);
+    });
+  }
+
+  function applyStaticConfiguration(state, force) {
+    if (!state.card) return;
+
+    const signature = cardConfigSignature(state.card);
+    if (!force && signature === state.lastSignature) return;
+
+    const config = readCardConfiguration(state.card);
+    state.config = config;
+    state.lastSignature = signature;
+
+    state.port.dataset.vfxColorType = config.type;
+    state.port.dataset.vfxColorCount = String(config.palette.length);
+    state.port.dataset.vfxVersion = VERSION;
+
+    setStyleProperty(state.port, "--vfx-color-speed", config.speed == null ? "" : `${config.speed}s`, state.cssCache, "speed");
+    setStyleProperty(state.port, "--vfx-palette-gradient", config.gradient, state.cssCache, "gradient");
+    setStyleProperty(state.port, "--vfx-palette-loop-gradient", config.loopGradient, state.cssCache, "loopGradient");
+
+    applyParticlePalette(state, config);
+    syncLiveColors(state, true);
+  }
+
+  function syncLiveColors(state, force) {
+    if (!state.card || !state.card.isConnected) return;
+
+    const style = getComputedStyle(state.card);
+    const palette = state.config?.palette || readPalette(state.card);
+
+    let primary = String(style.getPropertyValue("--card-color") || "").trim();
+    if (!isCssColor(primary)) primary = palette[0] || "#ff84cf";
+
+    let secondary = String(style.getPropertyValue("--card-color2") || "").trim();
+    if (!isCssColor(secondary)) {
+      secondary = palette[1] || `color-mix(in srgb, ${primary} 34%, #ffffff 66%)`;
+    }
+
+    let glow = String(style.getPropertyValue("--card-glow") || "").trim();
+    if (!isCssColor(glow)) glow = primary;
+
+    if (force || state.lastPrimary !== primary) {
+      state.port.style.setProperty("--vfx-primary", primary);
+      state.lastPrimary = primary;
+    }
+
+    if (force || state.lastSecondary !== secondary) {
+      state.port.style.setProperty("--vfx-secondary", secondary);
+      state.lastSecondary = secondary;
+    }
+
+    if (force || state.lastGlow !== glow) {
+      state.port.style.setProperty("--vfx-glow", glow);
+      state.lastGlow = glow;
+    }
+  }
+
+  function syncSize(state, force) {
+    if (!state.card?.isConnected || !state.scaleHost?.isConnected) return;
+
+    // offsetWidth/offsetHeight retornam a geometria lógica antes dos transforms
+    // responsivos do host, evitando aplicar o scale duas vezes no FX.
+    const width = state.card.offsetWidth || 360;
+    const height = state.card.offsetHeight || 520;
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    if (force || state.lastWidth !== width) {
+      state.scaleHost.style.setProperty("--vfx-card-width", `${width}px`);
+      state.scaleHost.style.setProperty("--vfx-half-card-width", `${halfWidth}px`);
+      state.scaleHost.style.setProperty("--vfx-card-center-x", `${halfWidth}px`);
+      state.lastWidth = width;
+    }
+
+    if (force || state.lastHeight !== height) {
+      state.scaleHost.style.setProperty("--vfx-card-height", `${height}px`);
+      state.scaleHost.style.setProperty("--vfx-half-card-height", `${halfHeight}px`);
+      state.scaleHost.style.setProperty("--vfx-card-center-y", `${halfHeight}px`);
+      state.lastHeight = height;
+    }
+  }
+
   function setPaused(state, paused) {
-    state.paused = Boolean(paused);
-    state.port.classList.toggle("is-vfx-paused", state.paused);
+    const next = Boolean(paused);
+    if (state.paused === next) return;
+    state.paused = next;
+    state.port.classList.toggle("is-vfx-paused", next);
   }
 
   function scheduleSurge(state) {
     clearTimeout(state.surgeTimer);
-    if (reducedMotionQuery.matches) return;
+    state.surgeTimer = 0;
+
+    if (reducedMotionQuery.matches || !state.port.isConnected) return;
 
     const delay = 5200 + Math.random() * 4200;
     state.surgeTimer = window.setTimeout(() => {
-      if (!state.port.isConnected) return destroy(state.port);
+      if (!state.port.isConnected) {
+        destroy(state.port);
+        return;
+      }
 
-      if (state.visible && !document.hidden) {
+      if (state.visible && !document.hidden && !reducedMotionQuery.matches) {
         state.port.classList.add("is-vfx-surging");
         clearTimeout(state.surgeEndTimer);
         state.surgeEndTimer = window.setTimeout(() => {
@@ -274,28 +407,15 @@
     }, delay);
   }
 
-  function scheduleColorSync(state) {
-    clearTimeout(state.colorTimer);
-
-    const tick = () => {
-      if (!state.port.isConnected) return destroy(state.port);
-      if (state.visible && !document.hidden) syncColors(state);
-      state.colorTimer = window.setTimeout(tick, 250);
-    };
-
-    state.colorTimer = window.setTimeout(tick, 250);
-  }
-
-  function setupPointer(state) {
-    if (reducedMotionQuery.matches) return;
-
+  function bindPointer(state) {
     state.onPointerMove = (event) => {
-      if (event.pointerType === "touch") return;
+      if (event.pointerType === "touch" || reducedMotionQuery.matches) return;
       const rect = state.port.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
 
       const nx = clamp((event.clientX - rect.left) / rect.width, 0, 1) - .5;
       const ny = clamp((event.clientY - rect.top) / rect.height, 0, 1) - .5;
+
       state.port.style.setProperty("--vfx-parallax-x", `${(nx * 7).toFixed(2)}px`);
       state.port.style.setProperty("--vfx-parallax-y", `${(ny * 5).toFixed(2)}px`);
     };
@@ -309,78 +429,122 @@
     state.port.addEventListener("pointerleave", state.onPointerLeave, { passive: true });
   }
 
-  function setupObservers(state) {
-    if ("ResizeObserver" in window) {
-      state.resizeObserver = new ResizeObserver(() => syncSize(state));
-      state.resizeObserver.observe(state.card);
-    }
+  function bindVisibilityObserver(state) {
+    if (!("IntersectionObserver" in window)) return;
 
-    if ("IntersectionObserver" in window) {
-      state.intersectionObserver = new IntersectionObserver((entries) => {
-        const entry = entries[0];
-        state.visible = Boolean(entry?.isIntersecting);
-        setPaused(state, !state.visible || document.hidden);
-      }, { rootMargin: "100px 0px", threshold: .01 });
-      state.intersectionObserver.observe(state.port);
-    }
+    state.intersectionObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      state.visible = Boolean(entry?.isIntersecting);
+      setPaused(state, !state.visible || document.hidden);
+    }, {
+      rootMargin: "100px 0px",
+      threshold: .01
+    });
+
+    state.intersectionObserver.observe(state.port);
   }
 
-  function mount(port) {
-    if (!port || !(port instanceof Element)) return null;
+  function bindCard(state, card) {
+    if (!card || !(card instanceof Element)) return false;
 
-    const existing = instances.get(port);
-    if (existing) {
-      syncSize(existing);
-      syncColors(existing);
-      return existing;
+    const scaleHost = card.closest(SCALE_SELECTOR) || card.parentElement || state.port;
+
+    if (state.resizeObserver) {
+      state.resizeObserver.disconnect();
+      state.resizeObserver = null;
     }
 
-    const card = port.querySelector(".vl-card");
-    if (!card) return null;
+    state.card = card;
+    state.scaleHost = scaleHost;
+    state.lastSignature = "";
+    state.lastPrimary = "";
+    state.lastSecondary = "";
+    state.lastGlow = "";
+    state.lastWidth = 0;
+    state.lastHeight = 0;
 
-    // Mesmo host transformado usado pelo card: mantém FX e card 1:1 em
-    // janela, F11 e qualquer zoom responsivo, sem acoplar os arquivos.
-    const scaleHost = card.closest(".vl-card-scale") || card.parentElement || port;
-    const back = createBackLayer();
-    const front = createFrontLayer();
+    // Se o preview recriou a estrutura, move as mesmas camadas para o novo host.
+    scaleHost.insertBefore(state.back, card);
+    scaleHost.insertBefore(state.front, card.nextSibling);
 
-    scaleHost.insertBefore(back, card);
-    scaleHost.insertBefore(front, card.nextSibling);
-    port.dataset.vfxReady = "true";
+    if ("ResizeObserver" in window) {
+      state.resizeObserver = new ResizeObserver(() => syncSize(state, false));
+      state.resizeObserver.observe(card);
+    }
 
+    state.port.dataset.vfxReady = "true";
+    applyStaticConfiguration(state, true);
+    syncSize(state, true);
+    return true;
+  }
+
+  function createState(port) {
     const state = {
       port,
-      scaleHost,
-      card,
-      back,
-      front,
+      card: null,
+      scaleHost: null,
+      back: createBackLayer(),
+      front: createFrontLayer(),
+      particles: [],
+      config: null,
+      cssCache: Object.create(null),
       visible: true,
       paused: false,
-      lastColor: "",
-      lastColor2: "",
+      lastSignature: "",
+      lastPrimary: "",
+      lastSecondary: "",
+      lastGlow: "",
       lastWidth: 0,
       lastHeight: 0,
-      lastCenterX: null,
-      lastCenterY: null,
       resizeObserver: null,
       intersectionObserver: null,
       surgeTimer: 0,
       surgeEndTimer: 0,
-      colorTimer: 0,
       onPointerMove: null,
       onPointerLeave: null
     };
 
-    instances.set(port, state);
-    syncSize(state);
-    syncColors(state);
-    setupPointer(state);
-    setupObservers(state);
-    scheduleColorSync(state);
+    collectParticles(state);
+    bindPointer(state);
+    bindVisibilityObserver(state);
     scheduleSurge(state);
-    setPaused(state, document.hidden);
-
     return state;
+  }
+
+  function mount(port) {
+    if (!port || !(port instanceof Element) || !port.matches(PORT_SELECTOR)) return null;
+
+    let state = instances.get(port);
+    if (!state) {
+      state = createState(port);
+      instances.set(port, state);
+    }
+
+    const card = port.querySelector(CARD_SELECTOR);
+    if (!card) return state;
+
+    if (state.card !== card || state.scaleHost !== (card.closest(SCALE_SELECTOR) || card.parentElement || port)) {
+      bindCard(state, card);
+    } else {
+      applyStaticConfiguration(state, false);
+      syncSize(state, false);
+      syncLiveColors(state, false);
+    }
+
+    ensureGlobalRaf();
+    return state;
+  }
+
+  function cleanupHostVariables(host) {
+    if (!host) return;
+    [
+      "--vfx-card-width",
+      "--vfx-card-height",
+      "--vfx-half-card-width",
+      "--vfx-half-card-height",
+      "--vfx-card-center-x",
+      "--vfx-card-center-y"
+    ].forEach((name) => host.style.removeProperty(name));
   }
 
   function destroy(port) {
@@ -389,7 +553,6 @@
 
     clearTimeout(state.surgeTimer);
     clearTimeout(state.surgeEndTimer);
-    clearTimeout(state.colorTimer);
     state.resizeObserver?.disconnect();
     state.intersectionObserver?.disconnect();
 
@@ -398,26 +561,24 @@
 
     state.back?.remove();
     state.front?.remove();
+    cleanupHostVariables(state.scaleHost);
+
     state.port.classList.remove("is-vfx-paused", "is-vfx-surging");
     delete state.port.dataset.vfxReady;
-    state.scaleHost?.style.removeProperty("--vfx-card-width");
-    state.scaleHost?.style.removeProperty("--vfx-card-height");
-    state.scaleHost?.style.removeProperty("--vfx-half-card-width");
-    state.scaleHost?.style.removeProperty("--vfx-half-card-height");
-    state.scaleHost?.style.removeProperty("--vfx-card-center-x");
-    state.scaleHost?.style.removeProperty("--vfx-card-center-y");
-    state.port.style.removeProperty("--vfx-color");
-    state.port.style.removeProperty("--vfx-color-2");
-    var cleanupPcts = [7,10,14,18,19,23,24,27,30,34,40,42,46,70,72];
-    for (var i = 0; i < cleanupPcts.length; i++) {
-      state.port.style.removeProperty("--vfx-color-" + cleanupPcts[i]);
-    }
-    var cleanupPcts2 = [11,14,20,29,70,72];
-    for (var j = 0; j < cleanupPcts2.length; j++) {
-      state.port.style.removeProperty("--vfx-color-2-" + cleanupPcts2[j]);
-    }
-    state.port.style.removeProperty("--vfx-parallax-x");
-    state.port.style.removeProperty("--vfx-parallax-y");
+    delete state.port.dataset.vfxColorType;
+    delete state.port.dataset.vfxColorCount;
+    delete state.port.dataset.vfxVersion;
+
+    [
+      "--vfx-primary",
+      "--vfx-secondary",
+      "--vfx-glow",
+      "--vfx-color-speed",
+      "--vfx-palette-gradient",
+      "--vfx-palette-loop-gradient",
+      "--vfx-parallax-x",
+      "--vfx-parallax-y"
+    ].forEach((name) => state.port.style.removeProperty(name));
 
     instances.delete(port);
   }
@@ -429,77 +590,170 @@
     if (scope.matches?.(PORT_SELECTOR)) ports.push(scope);
     scope.querySelectorAll?.(PORT_SELECTOR).forEach((port) => ports.push(port));
 
-    ports.forEach((port) => {
-      const state = mount(port);
-      if (state) {
-        syncSize(state);
-        syncColors(state);
-      }
-    });
-
+    ports.forEach((port) => mount(port));
+    ensureGlobalRaf();
     return ports.length;
   }
 
-  function onVisibilityChange() {
-    document.querySelectorAll(PORT_SELECTOR).forEach((port) => {
+  function tick() {
+    globalRaf = 0;
+
+    instances.forEach((state, port) => {
+      if (!port.isConnected) {
+        destroy(port);
+        return;
+      }
+
+      const currentCard = port.querySelector(CARD_SELECTOR);
+      if (!currentCard) return;
+
+      if (state.card !== currentCard || !state.card?.isConnected) {
+        bindCard(state, currentCard);
+      }
+
+      applyStaticConfiguration(state, false);
+
+      if (state.visible && !document.hidden) {
+        const type = state.config?.type || normalizeType(currentCard.dataset.cardColorType);
+
+        // ROTATE/PULSE são calculados pelo velarion-card.js. O FX lê as variáveis
+        // já resolvidas do card, portanto não mantém uma segunda timeline própria.
+        if (type === "rotate" || type === "pulse") {
+          syncLiveColors(state, false);
+        }
+      }
+    });
+
+    if (instances.size) globalRaf = window.requestAnimationFrame(tick);
+  }
+
+  function ensureGlobalRaf() {
+    if (!globalRaf && instances.size) {
+      globalRaf = window.requestAnimationFrame(tick);
+    }
+  }
+
+  function debug(target) {
+    const root = target && target.querySelectorAll ? target : document;
+    const ports = [];
+    if (root.matches?.(PORT_SELECTOR)) ports.push(root);
+    root.querySelectorAll?.(PORT_SELECTOR).forEach((port) => ports.push(port));
+
+    const rows = ports.map((port, index) => {
       const state = instances.get(port);
-      if (!state) return;
+      const card = port.querySelector(CARD_SELECTOR);
+      const config = card ? readCardConfiguration(card) : null;
+      return {
+        index,
+        mounted: Boolean(state),
+        playerId: card?.dataset?.playerId || "",
+        slotId: card?.dataset?.characterSlotId || "",
+        type: config?.type || "",
+        speed: config?.speed || "",
+        colors: config?.palette?.length || 0,
+        firstColor: config?.palette?.[0] || "",
+        lastColor: config?.palette?.length ? config.palette[config.palette.length - 1] : "",
+        primary: config?.primary || "",
+        fxReady: port.dataset.vfxReady || "false",
+        unlimitedCcIdN: true,
+        version: port.dataset.vfxVersion || VERSION
+      };
+    });
+
+    try { console.table(rows); } catch (_) {}
+
+    return {
+      version: VERSION,
+      unlimitedCcIdN: true,
+      instanceCount: instances.size,
+      ports: rows
+    };
+  }
+
+  function onVisibilityChange() {
+    instances.forEach((state) => {
       setPaused(state, document.hidden || !state.visible);
     });
+  }
+
+  function onReducedMotionChange() {
+    instances.forEach((state) => {
+      if (reducedMotionQuery.matches) {
+        clearTimeout(state.surgeTimer);
+        clearTimeout(state.surgeEndTimer);
+        state.port.classList.remove("is-vfx-surging");
+        state.port.style.setProperty("--vfx-parallax-x", "0px");
+        state.port.style.setProperty("--vfx-parallax-y", "0px");
+      } else {
+        scheduleSurge(state);
+      }
+    });
+    refresh(document);
   }
 
   function boot() {
     refresh(document);
 
     if ("MutationObserver" in window && document.documentElement) {
-      var observer = new MutationObserver(function(mutations) {
-        for (var i = 0; i < mutations.length; i++) {
-          var nodes = mutations[i].addedNodes;
-          for (var j = 0; j < nodes.length; j++) {
-            var node = nodes[j];
-            if (node.nodeType !== 1) continue;
-            if (node.matches && node.matches(PORT_SELECTOR)) {
-              mount(node);
-            }
-            if (node.querySelectorAll) {
-              var found = node.querySelectorAll(PORT_SELECTOR);
-              for (var k = 0; k < found.length; k++) {
-                mount(found[k]);
-              }
+      globalObserver = new MutationObserver((mutations) => {
+        let needsRefresh = false;
+
+        for (const mutation of mutations) {
+          if (mutation.type === "childList" && (mutation.addedNodes.length || mutation.removedNodes.length)) {
+            needsRefresh = true;
+            break;
+          }
+
+          if (mutation.type === "attributes") {
+            const target = mutation.target;
+            if (target instanceof Element && target.matches(CARD_SELECTOR)) {
+              const port = target.closest(PORT_SELECTOR);
+              if (port) mount(port);
             }
           }
         }
+
+        if (needsRefresh) refresh(document);
       });
-      observer.observe(document.documentElement, { childList: true, subtree: true });
+
+      globalObserver.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["data-card-color-type", "data-card-color-speed", "data-card-color-palette"]
+      });
     }
   }
 
   document.addEventListener("visibilitychange", onVisibilityChange, { passive: true });
 
-  // Quando o seletor de Character Slot for ligado ao HTML, o runtime do card
-  // poderá emitir este evento para atualizar imediatamente aura/paleta/medidas.
-  document.addEventListener("velarion:character-slot-applied", function(event) {
+  document.addEventListener("velarion:character-slot-applied", (event) => {
     const target = event?.target instanceof Element ? event.target : null;
     const port = target?.closest?.(PORT_SELECTOR) || target?.querySelector?.(PORT_SELECTOR);
-    if (port) refresh(port);
+    if (port) mount(port);
     else refresh(document);
   });
 
   if (reducedMotionQuery.addEventListener) {
-    reducedMotionQuery.addEventListener("change", () => refresh(document));
+    reducedMotionQuery.addEventListener("change", onReducedMotionChange);
   }
 
   window.VelarionCardFX = {
+    version: VERSION,
     mount,
     refresh,
-    destroy
+    destroy,
+    debug,
+    resync: refresh
   };
 
-  window.dispatchEvent(new CustomEvent("velarion-card-fx-ready"));
+  window.dispatchEvent(new CustomEvent("velarion-card-fx-ready", {
+    detail: { version: VERSION }
+  }));
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
     boot();
   }
-})();
+})(window, document);

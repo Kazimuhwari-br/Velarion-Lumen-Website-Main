@@ -10,7 +10,7 @@
 
   const S = window.VelarionShared || {};
   const PREVIEW_MODE = false;
-  const BUILD_VERSION = "20.61-character-media-layout-slot-fallbacks";
+  const BUILD_VERSION = "20.62-character-slot-id-preservation";
 
   function getCurrentScriptUrl() {
     const script = document.currentScript || document.querySelector('script[src*="velarion-card.js"]');
@@ -96,31 +96,94 @@
       return getCleanText(value.url || value.src || value.image || value.path || "");
     }
 
+    // IDs conhecidos continuam exportados por compatibilidade, mas o renderer
+    // não compacta nem renumera character_slots. Qualquer id_N válido é tratado
+    // pelo seu identificador literal (id_1, id_2, id_3, ...).
     const CHARACTER_SLOT_IDS = ["id_1", "id_2", "id_3", "id_4"];
+    const characterSlotSelectionByPlayer = new Map();
 
-    function resolveCharacterSlot(cardEmbed, requestedId = "id_1") {
+    function normalizeCharacterSlotId(value, fallback = "") {
+      const raw = getCleanText(value).toLowerCase();
+      return /^id_[1-9]\d*$/.test(raw) ? raw : fallback;
+    }
+
+    function compareCharacterSlotIds(a, b) {
+      const ai = Number(String(a).replace(/^id_/i, ""));
+      const bi = Number(String(b).replace(/^id_/i, ""));
+      return ai - bi;
+    }
+
+    function collectCharacterSlots(cardEmbed) {
       const embed = cardEmbed && typeof cardEmbed === "object" && !Array.isArray(cardEmbed) ? cardEmbed : {};
       const raw = embed.character_slots;
 
       if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-        return { id: "id_1", data: embed, ids: ["id_1"], legacy: true };
+        return { embed, raw: null, slots: { id_1: embed }, ids: ["id_1"], legacy: true };
       }
 
       const slots = {};
-      CHARACTER_SLOT_IDS.forEach((id) => {
-        const value = raw[id];
-        if (!value || value === false || typeof value !== "object" || Array.isArray(value)) return;
+      Object.keys(raw).forEach((key) => {
+        const id = normalizeCharacterSlotId(key);
+        const value = raw[key];
+        if (!id || !value || value === false || typeof value !== "object" || Array.isArray(value)) return;
         slots[id] = value;
       });
 
-      const ids = CHARACTER_SLOT_IDS.filter((id) => Boolean(slots[id]));
-      if (!ids.length) return { id: "", data: {}, ids: [], legacy: false };
+      const ids = Object.keys(slots).sort(compareCharacterSlotIds);
+      return { embed, raw, slots, ids, legacy: false };
+    }
 
-      const cleanRequested = CHARACTER_SLOT_IDS.includes(getCleanText(requestedId))
-        ? getCleanText(requestedId)
-        : "id_1";
-      const id = slots[cleanRequested] ? cleanRequested : (slots.id_1 ? "id_1" : ids[0]);
-      return { id, data: slots[id], ids, legacy: false };
+    function resolveCharacterSlot(cardEmbed, requestedId = "") {
+      const collected = collectCharacterSlots(cardEmbed);
+      if (collected.legacy) {
+        return { id: "id_1", data: collected.embed, ids: ["id_1"], legacy: true, missing: false };
+      }
+
+      const { slots, ids } = collected;
+      const explicitRequested = normalizeCharacterSlotId(requestedId);
+
+      // Regra principal: se uma versão pediu id_N, nunca substitui silenciosamente
+      // por id_1 ou pelo primeiro slot disponível. Isso evita trocar a personagem
+      // errada quando existem lacunas como id_1 + id_3, ou quando o DOM é recriado.
+      if (explicitRequested) {
+        if (Object.prototype.hasOwnProperty.call(slots, explicitRequested)) {
+          return { id: explicitRequested, data: slots[explicitRequested], ids, legacy: false, missing: false };
+        }
+        return { id: explicitRequested, data: {}, ids, legacy: false, missing: true };
+      }
+
+      if (!ids.length) return { id: "", data: {}, ids: [], legacy: false, missing: true };
+
+      // Somente a renderização inicial sem versão explícita pode escolher um padrão.
+      const id = Object.prototype.hasOwnProperty.call(slots, "id_1") ? "id_1" : ids[0];
+      return { id, data: slots[id], ids, legacy: false, missing: false };
+    }
+
+    function rememberCharacterSlotSelection(playerId, characterSlotId) {
+      const playerKey = getCleanText(playerId);
+      const slotId = normalizeCharacterSlotId(characterSlotId);
+      if (!playerKey || !slotId) return "";
+      characterSlotSelectionByPlayer.set(playerKey, slotId);
+      return slotId;
+    }
+
+    function getCharacterSlotSelection(playerId) {
+      const playerKey = getCleanText(playerId);
+      if (!playerKey) return "";
+
+      // O DOM atual vence o cache. Isso cobre seletores externos que apenas
+      // alteram data-character-slot-id antes de recriar o card, mesmo sem evento.
+      const renderedCards = document.querySelectorAll?.(".vl-card[data-player-id][data-character-slot-id]") || [];
+      for (const card of renderedCards) {
+        if (getCleanText(card.dataset.playerId) !== playerKey) continue;
+        const renderedSlotId = normalizeCharacterSlotId(card.dataset.characterSlotId);
+        if (renderedSlotId) {
+          characterSlotSelectionByPlayer.set(playerKey, renderedSlotId);
+          return renderedSlotId;
+        }
+      }
+
+      return characterSlotSelectionByPlayer.get(playerKey) || "";
     }
 
     function slotValue(slotData, cardEmbed, key) {
@@ -451,7 +514,7 @@
        a /^cc_id\d+$/ é aceita, validada e ordenada numericamente.
        ================================================================ */
 
-    const CARD_COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse", "rainbow"]);
+    const CARD_COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse"]);
 
     function normalizeCardColorType(value) {
       const raw = getCleanText(value).toLowerCase();
@@ -462,8 +525,7 @@
         grad: "gradient",
         cycle: "rotate",
         cycling: "rotate",
-        smooth: "pulse",
-        spectrum: "rainbow"
+        smooth: "pulse"
       };
 
       const normalized = aliases[raw] || raw || "none";
@@ -518,7 +580,7 @@
         .filter(Boolean)
         .sort((a, b) => a.index - b.index);
 
-      const colors = indexedColors.map((entry) => entry.color);
+      let colors = indexedColors.map((entry) => entry.color);
 
       /* Pequena tolerância para configurações incompletas/migrações. */
       if (!colors.length) {
@@ -534,7 +596,11 @@
       }
 
       const type = normalizeCardColorType(value.cc_type);
-      const speed = normalizeCardColorSpeed(value.cc_speed, 10);
+
+      /* gradient é estritamente binário: usa apenas cc_id1 e cc_id2.
+         cc_speed não pertence a esse modo porque o gradiente é estático. */
+      if (type === "gradient") colors = colors.slice(0, 2);
+      const speed = type === "gradient" ? null : normalizeCardColorSpeed(value.cc_speed, 10);
 
       return {
         legacy: false,
@@ -1501,12 +1567,18 @@
     }
 
 
-    function normalizeCardProfile(id, data, position, requestedCharacterSlotId = "id_1") {
+    function normalizeCardProfile(id, data, position, requestedCharacterSlotId = "") {
       const profile = data.profile ?? {};
       const status = data.status ?? {};
       const cardEmbed = data.theme?.card_embed ?? {};
       const characterSlot = resolveCharacterSlot(cardEmbed, requestedCharacterSlotId);
       const slotData = characterSlot.data || {};
+      const selectedSlotValue = (key) => {
+        // Em schema character_slots, um id_N explicitamente ausente não pode
+        // herdar a mídia raiz/legada e parecer outra versão do personagem.
+        if (!characterSlot.legacy && characterSlot.missing) return undefined;
+        return slotValue(slotData, cardEmbed, key);
+      };
       const securityOverlay = cardEmbed.security_overlay ?? {};
 
       const cardEnabled = getBooleanByKeys(cardEmbed, ["enabled"], true);
@@ -1562,7 +1634,7 @@
       const fallbackCardColor = isValidHexColor(levelRankWebsite.color)
         ? levelRankWebsite.color
         : "#ff84cf";
-      const cardColorConfig = normalizeCardColorConfig(slotValue(slotData, cardEmbed, "card_color"), fallbackCardColor);
+      const cardColorConfig = normalizeCardColorConfig(selectedSlotValue("card_color"), fallbackCardColor);
       const cardColor = cardColorConfig.primary;
 
       return {
@@ -1617,17 +1689,18 @@
         online: Boolean(status.online),
 
         cardEnabled,
-        characterSlotId: characterSlot.id || "id_1",
+        characterSlotId: characterSlot.id || normalizeCharacterSlotId(requestedCharacterSlotId, "id_1"),
         characterSlotIds: characterSlot.ids,
+        characterSlotMissing: Boolean(characterSlot.missing),
         characterSlotCount: characterSlot.ids.length || 1,
         hasMultipleCharacterSlots: characterSlot.ids.length > 1,
-        backgroundColor: getCleanText(slotValue(slotData, cardEmbed, "background_color")),
-        bannerBackgroundImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_background_image")) || "") : "",
-        characterImage: cardEnabled ? (resolveFallbackMediaValue("character", slotValue(slotData, cardEmbed, "character_image"), data?.profile?.gender || "default") || "") : "",
+        backgroundColor: getCleanText(selectedSlotValue("background_color")),
+        bannerBackgroundImage: cardEnabled && showBanner ? (getMediaSource(selectedSlotValue("banner_background_image")) || "") : "",
+        characterImage: cardEnabled ? (resolveFallbackMediaValue("character", selectedSlotValue("character_image"), data?.profile?.gender || "default") || "") : "",
         characterMediaLayout: getCharacterMediaLayout(id, characterSlot.id || "id_1"),
-        bannerBottomImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_bottom_image")) || getFallbackMedia("banner") || "") : "",
-        bannerFrameImage: cardEnabled && showBanner ? (getMediaSource(slotValue(slotData, cardEmbed, "banner_frame_image")) || "") : "",
-        profileFrameImage: cardEnabled ? (resolveFallbackMediaValue("profile_frame", slotValue(slotData, cardEmbed, "profile_frame_image"), "default") || "") : "",
+        bannerBottomImage: cardEnabled && showBanner ? (getMediaSource(selectedSlotValue("banner_bottom_image")) || getFallbackMedia("banner") || "") : "",
+        bannerFrameImage: cardEnabled && showBanner ? (getMediaSource(selectedSlotValue("banner_frame_image")) || "") : "",
+        profileFrameImage: cardEnabled ? (resolveFallbackMediaValue("profile_frame", selectedSlotValue("profile_frame_image"), "default") || "") : "",
         avatarLock,
         clan,
 
@@ -1714,9 +1787,11 @@
           data-theme-enabled="${profile.cardEnabled ? "true" : "false"}"
           data-character-slot-id="${escapeHTML(profile.characterSlotId || "id_1")}"
           data-character-slot-count="${escapeHTML(profile.characterSlotCount || 1)}"
+          data-character-slot-ids="${escapeHTML((profile.characterSlotIds || []).join(","))}"
+          data-character-slot-missing="${profile.characterSlotMissing ? "true" : "false"}"
           data-character-slot-multiple="${profile.hasMultipleCharacterSlots ? "true" : "false"}"
           data-card-color-type="${escapeHTML(profile.cardColorType || "none")}"
-          data-card-color-speed="${escapeHTML(profile.cardColorSpeed || 10)}"
+          ${profile.cardColorType === "gradient" ? "" : `data-card-color-speed="${escapeHTML(profile.cardColorSpeed || 10)}"`}
           data-card-color-palette="${escapeHTML((profile.cardColors || [profile.cardColor]).join(","))}"
           data-rarity-enabled="${profile.rarityEnabled ? "true" : "false"}"
           data-rarity="${escapeHTML(profile.rarityKey)}"
@@ -1747,7 +1822,7 @@
             --card-color: ${escapeHTML(profile.cardColor)};
             --card-color2: ${escapeHTML(profile.cardColor2)};
             --card-glow: ${escapeHTML(profile.cardGlow)};
-            --card-color-speed: ${escapeHTML(profile.cardColorSpeed || 10)}s;
+            ${profile.cardColorType === "gradient" ? "" : `--card-color-speed: ${escapeHTML(profile.cardColorSpeed || 10)}s;`}
             --card-palette-gradient: ${escapeHTML(profile.cardPaletteGradient)};
             --card-palette-loop-gradient: ${escapeHTML(profile.cardPaletteLoopGradient)};
             --accent: ${escapeHTML(profile.cardColor)};
@@ -1991,7 +2066,16 @@
     const data = asObject(player);
     const opts = asObject(options);
     const id = String(data._id || data.id || data.profile_id || data.profile?.id || `ID_${Number(index || 0)}`);
-    const normalized = normalizeCardProfile(id, data, Number(index || 0) + 1, opts.characterSlotId || "id_1");
+
+    const explicitSlotId = normalizeCharacterSlotId(opts.characterSlotId);
+    const rememberedSlotId = getCharacterSlotSelection(id);
+    const requestedSlotId = explicitSlotId || rememberedSlotId || "";
+
+    const normalized = normalizeCardProfile(id, data, Number(index || 0) + 1, requestedSlotId);
+    if (normalized.characterSlotId) {
+      rememberCharacterSlotSelection(id, normalized.characterSlotId);
+    }
+
     const cardHTML = createProfileCard(normalized);
     if (!cardHTML) return "";
     return `<div class="vl-card-slot" data-vl-card-slot><div class="vl-card-scale" data-vl-card-scale>${cardHTML}</div></div>`;
@@ -2123,6 +2207,21 @@
     });
   }
 
+  // Quando o seletor externo troca a versão do personagem, memoriza o id_N
+  // literal aplicado. Assim uma recriação posterior do card não volta para id_1.
+  document.addEventListener("velarion:character-slot-applied", (event) => {
+    const target = event?.target instanceof Element ? event.target : null;
+    const card = target?.matches?.(".vl-card") ? target : target?.closest?.(".vl-card") || target?.querySelector?.(".vl-card");
+    const playerId = getCleanText(event?.detail?.playerId || card?.dataset?.playerId || "");
+    const slotId = normalizeCharacterSlotId(
+      event?.detail?.characterSlotId ||
+      event?.detail?.slotId ||
+      card?.dataset?.characterSlotId ||
+      ""
+    );
+    if (playerId && slotId) rememberCharacterSlotSelection(playerId, slotId);
+  });
+
   // Carrega o layout remoto sem bloquear a renderização inicial.
   // Quando terminar, os cards existentes recebem os overrides do Firebase.
   loadCharacterMediaLayoutFromFirebase(false);
@@ -2141,6 +2240,9 @@
     loadCharacterMediaLayoutFromFirebase,
     applyCharacterMediaLayoutToRenderedCards,
     resolveCharacterSlot,
+    normalizeCharacterSlotId,
+    rememberCharacterSlotSelection,
+    getCharacterSlotSelection,
     CHARACTER_SLOT_IDS,
     setupCardColorEffects
   };

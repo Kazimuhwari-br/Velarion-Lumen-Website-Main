@@ -3861,11 +3861,11 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
      "cc_id1": "#8c6059",
      "cc_id2": "#598C88",
      "cc_id3": "#8C5971",
-     "cc_type": "none|gradient|rotate|pulse|rainbow",
+     "cc_type": "none|gradient|rotate|pulse",
      "cc_speed": 10
    }
 
-   cc_idN é ilimitado no renderer; o JS detecta /^cc_id\d+$/ e ordena por N.
+   cc_idN é ilimitado em rotate/pulse; no modo gradient somente cc_id1 e cc_id2 são usados.
    ====================================================================== */
 
 /* Por padrão, comportamento idêntico ao card_color antigo. */
@@ -3928,44 +3928,6 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
     transform .45s var(--ease);
 }
 
-/* RAINBOW
-   Aqui "rainbow" significa a paleta cc_idN inteira percorrendo a moldura,
-   e não cores artificiais geradas pelo navegador. */
-.vl-card[data-card-color-type="rainbow"] .vl-card__border {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.14),
-      transparent 12% 88%,
-      rgba(255,255,255,.10)
-    ),
-    var(--card-palette-loop-gradient) !important;
-  background-size: 100% 100%, 300% 100% !important;
-  background-blend-mode: screen, normal;
-  animation: vlCardPaletteFlow var(--card-color-speed) linear infinite !important;
-}
-
-.vl-card[data-card-color-type="rainbow"] .vl-card__inner-border {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), transparent 20% 80%, rgba(255,255,255,.06)),
-    var(--card-palette-loop-gradient) !important;
-  background-size: 100% 100%, 300% 100% !important;
-  background-blend-mode: screen, normal;
-  animation: vlCardPaletteFlow var(--card-color-speed) linear infinite reverse !important;
-}
-
-.vl-card[data-card-color-type="rainbow"] .vl-card__outer-top-line::before {
-  background: var(--card-palette-loop-gradient) !important;
-  background-size: 300% 100% !important;
-  animation: vlCardPaletteFlow var(--card-color-speed) linear infinite !important;
-}
-
-.vl-card[data-card-color-type="rainbow"] .vl-card__side-rail {
-  background: var(--card-palette-loop-gradient) !important;
-  background-size: 100% 300% !important;
-  animation: vlCardPaletteFlowVertical var(--card-color-speed) linear infinite !important;
-}
-
 @keyframes vlCardPaletteFlow {
   from { background-position: 0 0, 0% 0; }
   to   { background-position: 0 0, 300% 0; }
@@ -3974,17 +3936,6 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
 @keyframes vlCardPaletteFlowVertical {
   from { background-position: 0 0; }
   to   { background-position: 0 300%; }
-}
-
-/* Em reduced-motion, rainbow vira gradiente estático e pulse/rotate ficam
-   parados na cor inicial definida no HTML. */
-@media (prefers-reduced-motion: reduce) {
-  .vl-card[data-card-color-type="rainbow"] .vl-card__border,
-  .vl-card[data-card-color-type="rainbow"] .vl-card__inner-border,
-  .vl-card[data-card-color-type="rainbow"] .vl-card__outer-top-line::before,
-  .vl-card[data-card-color-type="rainbow"] .vl-card__side-rail {
-    animation: none !important;
-  }
 }
 
 /* CARD COLOR PALETTE v4 END */
@@ -4114,21 +4065,6 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
   background-blend-mode: screen, normal !important;
 }
 
-/* RAINBOW:
-   mesma ideia — mais espessura para a paleta animada ser realmente visível. */
-.vl-card[data-card-color-type="rainbow"] .vl-card__border {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.12),
-      transparent 12% 88%,
-      rgba(255,255,255,.08)
-    ),
-    var(--card-palette-loop-gradient) !important;
-  background-size: 100% 100%, 300% 100% !important;
-  background-blend-mode: screen, normal !important;
-}
-
 /* Um "accent strip" secundário, discreto, para reforçar a leitura da cor
    nas laterais sem cobrir a arte. */
 .vl-card__shell {
@@ -4141,7 +4077,7 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
     inset 0 0 24px color-mix(in srgb, var(--frame-source-glow) 5%, transparent) !important;
 }
 
-/* No modo gradient/rainbow, o shell também recebe uma faixa multicolor visível. */
+/* No modo gradient, o shell também recebe uma faixa multicolor visível. */
 .vl-card[data-card-color-type="gradient"] .vl-card__shell {
   box-shadow:
     inset 5px 0 0 color-mix(in srgb, var(--frame-source) 30%, transparent),
