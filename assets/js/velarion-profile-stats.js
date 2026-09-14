@@ -15,7 +15,10 @@
     const n=Number(website.intensity??effects.intensity??0.72), intensity=Number.isFinite(n)?Math.max(0,Math.min(1,n)):0.72;
     const fallback=`linear-gradient(135deg, ${color} 0%, ${color2} 58%, ${glow} 100%)`;
     const badge=normalizeLabel(stats?.id||data?.id||"—");
-    return {color,color2,glow,gradient:safeGradient(website.gradient,fallback),intensity,badgeText:fallbackText(website.badge_text,data?.label,badge)||badge,shortLabel:fallbackText(website.short_label,data?.tier,data?.name,"Rarity")||"Rarity",aura:website.aura!==false&&effects.background_aura!==false,shimmer:website.shimmer===true,particles:website.particles===true,panel:effects.rarity_panel!==false};
+    const rawLabel=fallbackText(data?.label,website.badge_text,badge)||badge;
+    const family=rawLabel.replace(/[-+]+$/,"").toLowerCase();
+    const variant=/-$/.test(rawLabel)?"minus":/\+$/.test(rawLabel)?"plus":"base";
+    return {color,color2,glow,gradient:safeGradient(website.gradient,fallback),intensity,badgeText:rawLabel,shortLabel:fallbackText(website.short_label,data?.tier,data?.name,"Rarity")||"Rarity",family,variant,aura:website.aura!==false&&effects.background_aura!==false,shimmer:website.shimmer===true,particles:website.particles===true,panel:effects.rarity_panel!==false};
   }
   function render(player,context){
     const C=core(), ctx=context||{}, extensions=ctx.extensionsData||{}, source=extensions.badges_raritys||extensions.badges_rarities||{}, rarityId=getRarityId(player), esc=(v)=>C.escapeHtml(String(v??""));

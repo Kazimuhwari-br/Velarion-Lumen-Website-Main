@@ -13,11 +13,11 @@
 (function(window, document) {
   "use strict";
 
-  const VERSION = "8.1.0-gradient-two-colors-no-rainbow";
+  const VERSION = "8.4.0-card-color-type-sync";
   const PORT_SELECTOR = '.vl-profile-card-port[data-official-card-port="true"]';
   const CARD_SELECTOR = ".vl-card";
   const SCALE_SELECTOR = ".vl-card-scale";
-  const COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse"]);
+  const COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse", "rainbow"]);
 
   const instances = new Map();
   let globalRaf = 0;
@@ -39,7 +39,11 @@
       grad: "gradient",
       cycle: "rotate",
       cycling: "rotate",
-      smooth: "pulse"
+      smooth: "pulse",
+      spectrum: "rainbow",
+      rgb: "rainbow",
+      colours: "rainbow",
+      colors: "rainbow"
     };
     const normalized = aliases[raw] || raw || "none";
     return COLOR_TYPES.has(normalized) ? normalized : "none";
@@ -129,8 +133,14 @@
     const sourceGradient = String(style?.getPropertyValue("--card-palette-gradient") || "").trim();
     const sourceLoopGradient = String(style?.getPropertyValue("--card-palette-loop-gradient") || "").trim();
 
-    const gradient = sourceGradient || buildGradient(palette.length ? palette : [primary], "135deg", false);
-    const loopGradient = sourceLoopGradient || buildGradient(palette.length ? palette : [primary], "90deg", true);
+    const rainbowGradient = "linear-gradient(90deg, #ff304f 0%, #ff8a2a 16.66%, #ffe45b 33.33%, #45e88a 50%, #38a8ff 66.66%, #7d5cff 83.33%, #ff3fc8 100%)";
+    const rainbowLoopGradient = "linear-gradient(90deg, #ff304f 0%, #ff8a2a 16.66%, #ffe45b 33.33%, #45e88a 50%, #38a8ff 66.66%, #7d5cff 83.33%, #ff3fc8 100%, #ff304f 116.66%)";
+    const gradient = type === "rainbow"
+      ? rainbowGradient
+      : (sourceGradient || buildGradient(palette.length ? palette : [primary], "135deg", false));
+    const loopGradient = type === "rainbow"
+      ? rainbowLoopGradient
+      : (sourceLoopGradient || buildGradient(palette.length ? palette : [primary], "90deg", true));
 
     return {
       type,
@@ -278,8 +288,10 @@
   }
 
   function applyParticlePalette(state, config) {
-    const multicolor = config.type === "gradient";
-    const palette = config.palette.length ? config.palette : [config.primary];
+    const multicolor = config.type === "gradient" || config.type === "rainbow";
+    const palette = config.type === "rainbow"
+      ? ["#ff304f", "#ff8a2a", "#ffe45b", "#45e88a", "#38a8ff", "#7d5cff", "#ff3fc8"]
+      : (config.palette.length ? config.palette : [config.primary]);
 
     state.particles.forEach((particle, index) => {
       if (!multicolor || palette.length < 2) {

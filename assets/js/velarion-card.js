@@ -514,7 +514,7 @@
        a /^cc_id\d+$/ é aceita, validada e ordenada numericamente.
        ================================================================ */
 
-    const CARD_COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse"]);
+    const CARD_COLOR_TYPES = new Set(["none", "gradient", "rotate", "pulse", "rainbow"]);
 
     function normalizeCardColorType(value) {
       const raw = getCleanText(value).toLowerCase();
@@ -525,7 +525,11 @@
         grad: "gradient",
         cycle: "rotate",
         cycling: "rotate",
-        smooth: "pulse"
+        smooth: "pulse",
+      spectrum: "rainbow",
+      rgb: "rainbow",
+      colours: "rainbow",
+      colors: "rainbow"
       };
 
       const normalized = aliases[raw] || raw || "none";
@@ -609,6 +613,22 @@
         type,
         speed
       };
+    }
+
+    function buildRainbowGradient(angle = "90deg", loop = false) {
+      const stops = [
+        "#ff304f 0%",
+        "#ff8a2a 16.66%",
+        "#ffe45b 33.33%",
+        "#45e88a 50%",
+        "#38a8ff 66.66%",
+        "#7d5cff 83.33%",
+        "#ff3fc8 100%"
+      ];
+      if (loop) {
+        return `linear-gradient(${angle}, ${stops.join(", ")}, #ff304f 116.66%)`;
+      }
+      return `linear-gradient(${angle}, ${stops.join(", ")})`;
     }
 
     function buildCardPaletteGradient(colors, angle = "135deg") {
@@ -794,6 +814,18 @@
       return toDataToken(getCleanText(id).replace(/^raritys?_id_/i, ""), "none");
     }
 
+    function getRarityFamilyFromKey(key) {
+      const raw = toDataToken(key, "none");
+      return raw.replace(/_(?:minus|plus)$/i, "") || "none";
+    }
+
+    function getRarityVariantFromKey(key) {
+      const raw = toDataToken(key, "none");
+      if (/_minus$/i.test(raw)) return "minus";
+      if (/_plus$/i.test(raw)) return "plus";
+      return "base";
+    }
+
     function getRarityEvolution(value, fallback = "normal") {
       const allowed = new Set(["none", "normal", "rare", "elite", "summon", "mythic", "legendary", "divine", "exclusive", "event", "unique"]);
       const evolution = toDataToken(value, fallback);
@@ -971,9 +1003,12 @@
       const color = isValidHexColor(website.color || rarity.color) ? (website.color || rarity.color) : "#ffffff";
       const color2 = isValidHexColor(website.color2 || rarity.color2) ? (website.color2 || rarity.color2) : "color-mix(in srgb, #ffffff 26%, #fff6dc 74%)";
       const glow = isValidHexColor(website.glow || rarity.glow) ? (website.glow || rarity.glow) : color;
+      const gradient = getCleanText(website.gradient || rarity.gradient) || `linear-gradient(135deg, ${color} 0%, ${color2} 56%, ${glow} 100%)`;
       const key = getRarityKeyFromId(resolvedId || id);
+      const family = getRarityFamilyFromKey(key);
+      const variant = getRarityVariantFromKey(key);
       const frame = rarity.card_effects?.frame || website.evolution || rarity.evolution;
-      const evolution = getRarityEvolution(frame, key === "ssr" ? "summon" : "normal");
+      const evolution = getRarityEvolution(frame, family === "ssr" ? "summon" : "normal");
       const intensity = clampNumber(getNumber(rarity.card_effects?.intensity ?? website.intensity ?? rarity.intensity, 0.65), 0, 1.25);
 
       return {
@@ -982,10 +1017,13 @@
         enabled,
         label: getCleanText(rarity.label || rarity.name || website.badge_text) || "RARITY",
         key,
+        family,
+        variant,
         evolution,
         color,
         color2,
         glow,
+        gradient,
         shortLabel: getCleanText(website.short_label ?? website.shortLabel ?? website.badge_text) || "SUMMON",
         stars: getCleanText(website.stars) || (rarity.stars_count ? "★".repeat(clampNumber(getNumber(rarity.stars_count, 5), 1, 5)) : "★★★★★"),
         intensity,
@@ -1152,11 +1190,34 @@
     }
 
 
+    function getRarityTypography(family) {
+      const key = getCleanText(family).toLowerCase();
+      const map = {
+        n: [29, 22], f: [29, 22], e: [30, 23], d: [30, 23],
+        c: [31, 24], b: [31, 24], a: [32, 24], s: [34, 25],
+        ss: [35, 26], sss: [36, 26], sr: [36, 27], ssr: [37, 27],
+        ur: [38, 28], lr: [38, 28], mr: [40, 29], x: [41, 29],
+        xx: [43, 30], xxx: [46, 32]
+      };
+      const [max, min] = map[key] || [52, 41];
+      return { max, min };
+    }
+
+    function getRarityPriority(family) {
+      const order = ["n", "f", "e", "d", "c", "b", "a", "s", "ss", "sss", "sr", "ssr", "ur", "lr", "mr", "x", "xx", "xxx"];
+      const index = order.indexOf(getCleanText(family).toLowerCase());
+      return index < 0 ? 0 : index + 1;
+    }
+
     function renderRarityMark(rarity) {
       if (!rarity?.enabled) return "";
 
       const label = getCleanText(rarity.label);
       const stars = getCleanText(rarity.stars) || "★★★★★";
+      const family = getCleanText(rarity.family || rarity.key || "none").toLowerCase();
+      const variant = getCleanText(rarity.variant || "base").toLowerCase();
+      const typography = getRarityTypography(family);
+      const priority = getRarityPriority(family);
 
       return `
         <div
@@ -1164,13 +1225,15 @@
           title="Raridade ${escapeHTML(label)}"
           aria-label="Raridade ${escapeHTML(label)}"
           data-rarity-id="${escapeHTML(rarity.requestedId || rarity.id)}"
+          data-rarity-family="${escapeHTML(family)}"
+          data-rarity-variant="${escapeHTML(variant)}"
+          data-rarity-priority="${priority}"
         >
-          <strong class="vl-card__rarity-label" data-fit-line data-fit-max="48" data-fit-min="30">${escapeHTML(label)}</strong>
+          <strong class="vl-card__rarity-label" data-fit-line data-fit-max="${typography.max}" data-fit-min="${typography.min}">${escapeHTML(label)}</strong>
           <span class="vl-card__rarity-stars" aria-hidden="true">${escapeHTML(stars)}</span>
         </div>
       `;
     }
-
 
 
     function renderLevelRankChip(profile) {
@@ -1658,18 +1721,25 @@
         rarityColor: rarity.color || "#ffffff",
         rarityColor2: rarity.color2 || "#fff6dc",
         rarityGlow: rarity.glow || "#ffffff",
+        rarityGradient: rarity.gradient || `linear-gradient(135deg, ${rarity.color || "#ffffff"} 0%, ${rarity.color2 || "#fff6dc"} 56%, ${rarity.glow || "#ffffff"} 100%)`,
         rarityIntensity: rarity.intensity || 0,
         rarityCardEffects: rarity.cardEffects || {},
-        evolutionColor: rarityEnabled ? (rarity.color || cardColor) : cardColor,
-        evolutionColor2: rarityEnabled ? (rarity.color2 || `color-mix(in srgb, ${cardColor} 34%, #ffffff 66%)`) : `color-mix(in srgb, ${cardColor} 34%, #ffffff 66%)`,
-        evolutionGlow: rarityEnabled ? (rarity.glow || cardColor) : cardColor,
+        // Card Color remains the sole source for the physical card/frame VFX.
+        // Rarity colors are intentionally isolated to the rarity mark itself.
+        evolutionColor: cardColor,
+        evolutionColor2: `color-mix(in srgb, ${cardColor} 34%, #ffffff 66%)`,
+        evolutionGlow: cardColor,
 
         cardColor,
         cardColors: cardColorConfig.colors,
         cardColorType: cardColorConfig.type,
         cardColorSpeed: cardColorConfig.speed,
-        cardPaletteGradient: buildCardPaletteGradient(cardColorConfig.colors, "135deg"),
-        cardPaletteLoopGradient: buildCardPaletteLoopGradient(cardColorConfig.colors, "90deg"),
+        cardPaletteGradient: cardColorConfig.type === "rainbow"
+          ? buildRainbowGradient("135deg", false)
+          : buildCardPaletteGradient(cardColorConfig.colors, "135deg"),
+        cardPaletteLoopGradient: cardColorConfig.type === "rainbow"
+          ? buildRainbowGradient("90deg", true)
+          : buildCardPaletteLoopGradient(cardColorConfig.colors, "90deg"),
         cardColor2: `color-mix(in srgb, ${cardColor} 34%, #ffffff 66%)`,
         cardGlow: cardColor,
         cardStrong: `color-mix(in srgb, ${cardColor} 82%, #ffffff 18%)`,
@@ -1795,7 +1865,9 @@
           data-card-color-palette="${escapeHTML((profile.cardColors || [profile.cardColor]).join(","))}"
           data-rarity-enabled="${profile.rarityEnabled ? "true" : "false"}"
           data-rarity="${escapeHTML(profile.rarityKey)}"
-          data-evolution="${escapeHTML(profile.rarityEvolution)}"
+          data-rarity-family="${escapeHTML(profile.rarity?.family || profile.rarityKey || "none")}"
+          data-rarity-variant="${escapeHTML(profile.rarity?.variant || "base")}"
+          data-rarity-visual="text-only"
           data-rarity-particles="${profile.rarityCardEffects?.particles === false ? "false" : "true"}"
           data-rarity-aura="${profile.rarityCardEffects?.aura === false ? "false" : "true"}"
           data-rarity-summon-ring="${profile.rarityCardEffects?.summon_ring === false ? "false" : "true"}"
@@ -1847,6 +1919,7 @@
             --rarity-color: ${escapeHTML(profile.rarityColor)};
             --rarity-color2: ${escapeHTML(profile.rarityColor2)};
             --rarity-glow: ${escapeHTML(profile.rarityGlow)};
+            --rarity-gradient: ${escapeHTML(profile.rarityGradient)};
             --rarity-intensity: ${escapeHTML(profile.rarityIntensity || 0)};
 
             /* Variáveis do motivo do avatar bloqueado.
@@ -2124,12 +2197,24 @@
       const type = normalizeCardColorType(card.dataset.cardColorType);
       const colors = getCardRuntimePalette(card);
 
-      if (colors.length < 2 || !["rotate", "pulse"].includes(type)) return;
+      if ((colors.length < 2 && type !== "rainbow") || !["rotate", "pulse", "rainbow"].includes(type)) return;
 
       active = true;
 
       const speed = normalizeCardColorSpeed(card.dataset.cardColorSpeed, 10);
       const elapsedSeconds = (now - cardColorRuntime.startedAt) / 1000;
+
+      if (type === "rainbow") {
+        const rainbow = ["#ff304f", "#ff8a2a", "#ffe45b", "#45e88a", "#38a8ff", "#7d5cff", "#ff3fc8"];
+        const cycle = ((elapsedSeconds % speed) / speed) * rainbow.length;
+        const baseIndex = Math.floor(cycle) % rainbow.length;
+        const nextIndex = (baseIndex + 1) % rainbow.length;
+        const localProgress = cycle - Math.floor(cycle);
+        const eased = localProgress * localProgress * (3 - 2 * localProgress);
+        applyDynamicCardColor(card, interpolateHexColor(rainbow[baseIndex], rainbow[nextIndex], eased));
+        return;
+      }
+
       const cycle = ((elapsedSeconds % speed) / speed) * colors.length;
 
       const baseIndex = Math.floor(cycle) % colors.length;
@@ -2174,7 +2259,7 @@
         applyDynamicCardColor(card, colors[0]);
       }
 
-      if (colors.length > 1 && ["rotate", "pulse"].includes(type)) {
+      if ((colors.length > 1 || type === "rainbow") && ["rotate", "pulse", "rainbow"].includes(type)) {
         cardColorRuntime.cards.add(card);
       }
     });

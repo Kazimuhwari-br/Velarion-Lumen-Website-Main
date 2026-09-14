@@ -625,3 +625,72 @@
     translate: none !important;
   }
 }
+
+
+/* ======================================================================
+   CARD COLOR TYPE SYNC — v8.4
+   Os efeitos externos seguem exclusivamente theme.card_embed.card_color.cc_type.
+   none     = sem FX externo
+   gradient = paleta estática
+   rotate   = acompanha a troca de cc_idN
+   pulse    = acompanha a transição suave entre cc_idN
+   rainbow  = espectro contínuo independente da paleta
+   ====================================================================== */
+
+/* NONE: remove completamente os elementos de FX que ficam fora do cartão. */
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="none"] .vl-card-fx,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="none"] .vl-card-fx-front {
+  display: none !important;
+}
+
+/* GRADIENT: a paleta permanece estática; os movimentos geométricos existentes
+   continuam, mas nenhuma cor é trocada pelo runtime. */
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx__palette-field,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx__aura,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx__orbit,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx__edge,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx-front__beam,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="gradient"] .vl-card-fx-front__crystal {
+  background-image: var(--vfx-palette-gradient);
+}
+
+/* RAINBOW: espectro contínuo nos elementos externos. */
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] {
+  --vfx-rainbow-gradient: linear-gradient(90deg, #ff304f 0%, #ff8a2a 16.66%, #ffe45b 33.33%, #45e88a 50%, #38a8ff 66.66%, #7d5cff 83.33%, #ff3fc8 100%, #ff304f 116.66%);
+}
+
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__palette-field,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__orbit,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__edge,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx-front__beam,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx-front__crystal,
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__floor::before {
+  background-image: var(--vfx-rainbow-gradient);
+  background-size: 300% 100%;
+  animation-name: vl-vfx-rainbow-flow;
+  animation-duration: var(--vfx-color-speed, 10s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__aura {
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(255,48,79,.20), transparent 70%),
+    radial-gradient(ellipse at 58% 58%, rgba(56,168,255,.16), transparent 75%);
+}
+
+@keyframes vl-vfx-rainbow-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__palette-field,
+  .vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__edge,
+  .vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx-front__beam,
+  .vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx-front__crystal,
+  .vl-profile-card-port[data-vfx-ready="true"][data-vfx-color-type="rainbow"] .vl-card-fx__floor::before {
+    animation: none !important;
+    background-position: 50% 50%;
+  }
+}

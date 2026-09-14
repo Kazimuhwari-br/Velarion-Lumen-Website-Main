@@ -1512,10 +1512,7 @@
       text-overflow: ellipsis;
       color: color-mix(in srgb, var(--rarity-color2, #fff0c4) 88%, #ffffff 12%);
       background:
-        linear-gradient(180deg,
-          #ffffff 0%,
-          color-mix(in srgb, var(--rarity-color2, #fff0c4) 92%, #ffffff 8%) 42%,
-          color-mix(in srgb, var(--rarity-color, #ffffff) 72%, var(--rarity-color2, #fff0c4) 28%) 100%);
+        var(--rarity-gradient, linear-gradient(180deg, #ffffff 0%, var(--rarity-color2, #fff0c4) 52%, var(--rarity-color, #ffffff) 100%));
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -4127,3 +4124,274 @@ html.vl-layout-1024x768-67 .grid.vl-data-grid:not(.list-mode) {
 .vl-card[data-character-slot-switching="true"] .vl-card__character {
   opacity: 0;
 }
+
+
+/* ======================================================================
+   VELARION RARITY 52 — CLEAN RARITY LAYER v7
+   Card Color owns the card/frame/VFX.
+   Rarity owns only: label, outline, underline and stars.
+   ====================================================================== */
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-mark {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  width: max-content; max-width: 190px; padding: 0 !important; margin: 0 !important;
+  background: transparent !important; background-image: none !important; border: 0 !important;
+  box-shadow: none !important; filter: none !important; transform: none !important; animation: none !important;
+}
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-mark::before {
+  content: none !important; display: none !important; background: none !important; box-shadow: none !important; filter: none !important; animation: none !important;
+}
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-mark::after {
+  content: "" !important; display: block !important; position: absolute; left: 0; right: 0; bottom: -5px;
+  height: 1px !important; background: linear-gradient(90deg, color-mix(in srgb, var(--rarity-color,#fff) 92%,#fff 8%), color-mix(in srgb,var(--rarity-color,#fff) 58%,transparent) 72%, transparent) !important;
+  border: 0 !important; box-shadow: none !important; filter: none !important; opacity: .9 !important; animation: none !important;
+}
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-label {
+  display: block; width: max-content; max-width: 190px; overflow: visible !important; text-overflow: clip !important; white-space: nowrap;
+  font-family: Cinzel, Georgia, "Times New Roman", serif; font-size: 30px; line-height: .82; font-weight: 900; letter-spacing: -.055em; paint-order: stroke fill;
+  color: var(--rarity-color,#fff) !important; background: none !important; background-image: none !important;
+  -webkit-background-clip: initial !important; background-clip: initial !important; -webkit-text-fill-color: var(--rarity-color,#fff) !important;
+  -webkit-text-stroke: .45px color-mix(in srgb,var(--rarity-color,#fff) 82%,#fff 18%);
+  text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 6px color-mix(in srgb,var(--rarity-glow,var(--rarity-color,#fff)) 32%,transparent) !important;
+  filter: none !important; animation: none !important; transform: none !important; opacity: 1 !important;
+}
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="minus"] .vl-card__rarity-label { transform: scale(.94) !important; transform-origin: left center; opacity: .86 !important; }
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="base"] .vl-card__rarity-label { transform: scale(1) !important; }
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="plus"] .vl-card__rarity-label {
+  transform: scale(1.08) !important; transform-origin: left center; opacity: 1 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 8px color-mix(in srgb,var(--rarity-glow,var(--rarity-color,#fff)) 38%,transparent) !important;
+}
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-stars {
+  display: block; color: #fff !important; background: none !important; -webkit-text-fill-color: #fff !important;
+  font-size: 12px !important; line-height: 1 !important; letter-spacing: .14em !important; padding-left: 1px !important; opacity: .96 !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,.85) !important; filter: none !important; animation: none !important;
+}
+.vl-card[data-rarity-family="s"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="ss"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="sss"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="sr"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="ssr"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="ur"][data-rarity-visual="text-only"] .vl-card__rarity-label,
+.vl-card[data-rarity-family="lr"][data-rarity-visual="text-only"] .vl-card__rarity-label { font-size: 34px; }
+.vl-card[data-rarity-family="mr"][data-rarity-visual="text-only"] .vl-card__rarity-label { font-size: 37px; }
+.vl-card[data-rarity-family="x"][data-rarity-visual="text-only"] .vl-card__rarity-label { font-size: 39px; }
+.vl-card[data-rarity-family="xx"][data-rarity-visual="text-only"] .vl-card__rarity-label { font-size: 41px; }
+.vl-card[data-rarity-family="xxx"][data-rarity-visual="text-only"] .vl-card__rarity-label { font-size: 45px; letter-spacing: -.07em; }
+/* Rarity never changes physical Card Color effects. */
+.vl-card[data-rarity-visual="text-only"] .vl-card__summon-aura,
+.vl-card[data-rarity-visual="text-only"] .vl-card__arcane-ring { display: none !important; }
+.vl-card[data-rarity-visual="text-only"] {
+  --frame-source: var(--card-color,#ff84cf); --frame-source-glow: var(--card-glow,var(--card-color,#ff84cf));
+  --rank-color: var(--card-color,#ff84cf); --rank-color2: var(--card-color2,#ffd3f0); --rank-glow: var(--card-glow,var(--card-color,#ff84cf));
+}
+@media (prefers-reduced-motion: reduce) { .vl-card[data-rarity-visual="text-only"] .vl-card__rarity-mark, .vl-card[data-rarity-visual="text-only"] .vl-card__rarity-label, .vl-card[data-rarity-visual="text-only"] .vl-card__rarity-mark::after { animation:none !important; } }
+
+
+/* CARD COLOR TYPE — RAINBOW / EXTERNAL SYNC */
+.vl-card[data-card-color-type="rainbow"] .vl-card__border,
+.vl-card[data-card-color-type="rainbow"] .vl-card__inner-border,
+.vl-card[data-card-color-type="rainbow"] .vl-card__side-rail,
+.vl-card[data-card-color-type="rainbow"] .vl-card__outer-top-line::before {
+  background-image: var(--card-palette-gradient) !important;
+  background-size: 300% 100% !important;
+  animation: vlCardRainbowFlow var(--card-color-speed, 10s) linear infinite;
+}
+
+@keyframes vlCardRainbowFlow {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
+}
+
+.vl-card[data-card-color-type="rainbow"] .vl-card__shell {
+  box-shadow:
+    inset 4px 0 0 color-mix(in srgb, #38a8ff 48%, transparent),
+    inset -4px 0 0 color-mix(in srgb, #ff3fc8 48%, transparent),
+    inset 0 4px 0 color-mix(in srgb, #ff8a2a 34%, transparent),
+    inset 0 -4px 0 color-mix(in srgb, #7d5cff 34%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-card[data-card-color-type="rainbow"] .vl-card__border,
+  .vl-card[data-card-color-type="rainbow"] .vl-card__inner-border,
+  .vl-card[data-card-color-type="rainbow"] .vl-card__side-rail,
+  .vl-card[data-card-color-type="rainbow"] .vl-card__outer-top-line::before {
+    animation: none !important;
+    background-position: 50% 50%;
+  }
+}
+
+
+/* ======================================================================
+   CARD COLOR DECORATIONS v9
+   Os elementos externos decorativos da carta seguem o MESMO runtime de
+   Card Color. A raridade permanece restrita ao texto/linha/estrelas.
+
+   none    -> cc_id1
+   rotate  -> cor atual publicada pelo JS
+   pulse   -> interpolação atual publicada pelo JS
+   gradient-> paleta inteira cc_id1..cc_idN
+   rainbow -> paleta arco-íris publicada pelo JS
+   ====================================================================== */
+
+/* Fonte única para os elementos decorativos. */
+.vl-card {
+  --cc-deco-primary: var(--card-color, #ff84cf);
+  --cc-deco-secondary: var(--card-color2, var(--card-color, #ff84cf));
+  --cc-deco-glow: var(--card-glow, var(--card-color, #ff84cf));
+  --cc-deco-gradient: var(--card-palette-gradient, linear-gradient(135deg, var(--cc-deco-primary), var(--cc-deco-secondary)));
+}
+
+/* none / rotate / pulse: seguem a cor atualmente publicada pelo
+   runtime de Card Color. */
+.vl-card[data-card-color-type="none"],
+.vl-card[data-card-color-type="rotate"],
+.vl-card[data-card-color-type="pulse"] {
+  --cc-deco-primary: var(--card-color, #ff84cf);
+  --cc-deco-secondary: var(--card-color2, var(--card-color, #ff84cf));
+  --cc-deco-glow: var(--card-glow, var(--card-color, #ff84cf));
+}
+
+/* gradient / rainbow: os elementos passam a receber a paleta inteira,
+   sem deixar a raridade contaminar a decoração. */
+.vl-card[data-card-color-type="gradient"],
+.vl-card[data-card-color-type="rainbow"] {
+  --cc-deco-gradient: var(--card-palette-gradient);
+  --cc-deco-glow: var(--card-glow, var(--card-color, #ff84cf));
+}
+
+/* ----------------------------------------------------------------------
+   Gemas dos quatro cantos
+   ---------------------------------------------------------------------- */
+.vl-card[data-card-color-type="none"] .vl-card__corner-crystal,
+.vl-card[data-card-color-type="rotate"] .vl-card__corner-crystal,
+.vl-card[data-card-color-type="pulse"] .vl-card__corner-crystal {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.94), transparent 18%),
+    linear-gradient(135deg,
+      rgba(255,255,255,.72),
+      color-mix(in srgb, var(--cc-deco-secondary) 58%, #ffffff 42%) 38%,
+      color-mix(in srgb, var(--cc-deco-primary) 88%, #111522 12%) 100%) !important;
+  filter:
+    drop-shadow(0 0 8px color-mix(in srgb, var(--cc-deco-glow) 58%, transparent))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--cc-deco-glow) 22%, transparent)) !important;
+}
+
+.vl-card[data-card-color-type="none"] .vl-card__corner-crystal::before,
+.vl-card[data-card-color-type="rotate"] .vl-card__corner-crystal::before,
+.vl-card[data-card-color-type="pulse"] .vl-card__corner-crystal::before {
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,.96),
+      color-mix(in srgb, var(--cc-deco-primary) 72%, #ffffff 28%)) !important;
+}
+
+.vl-card[data-card-color-type="gradient"] .vl-card__corner-crystal,
+.vl-card[data-card-color-type="rainbow"] .vl-card__corner-crystal {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.94), transparent 18%),
+    var(--cc-deco-gradient) !important;
+  filter:
+    drop-shadow(0 0 8px color-mix(in srgb, var(--cc-deco-glow) 58%, transparent))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--cc-deco-glow) 22%, transparent)) !important;
+}
+
+.vl-card[data-card-color-type="gradient"] .vl-card__corner-crystal::before,
+.vl-card[data-card-color-type="rainbow"] .vl-card__corner-crystal::before {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.94), transparent 52%),
+    var(--cc-deco-gradient) !important;
+  opacity: .78 !important;
+}
+
+/* ----------------------------------------------------------------------
+   Crest superior/inferior
+   ---------------------------------------------------------------------- */
+.vl-card[data-card-color-type="none"] .vl-card__crest::before,
+.vl-card[data-card-color-type="none"] .vl-card__crest::after,
+.vl-card[data-card-color-type="none"] .vl-card__crest span,
+.vl-card[data-card-color-type="rotate"] .vl-card__crest::before,
+.vl-card[data-card-color-type="rotate"] .vl-card__crest::after,
+.vl-card[data-card-color-type="rotate"] .vl-card__crest span,
+.vl-card[data-card-color-type="pulse"] .vl-card__crest::before,
+.vl-card[data-card-color-type="pulse"] .vl-card__crest::after,
+.vl-card[data-card-color-type="pulse"] .vl-card__crest span {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), transparent 17%),
+    linear-gradient(135deg,
+      rgba(255,255,255,.84),
+      color-mix(in srgb, var(--cc-deco-secondary) 58%, #ffffff 42%) 38%,
+      color-mix(in srgb, var(--cc-deco-primary) 88%, #111522 12%) 100%) !important;
+}
+
+.vl-card[data-card-color-type="gradient"] .vl-card__crest::before,
+.vl-card[data-card-color-type="gradient"] .vl-card__crest::after,
+.vl-card[data-card-color-type="gradient"] .vl-card__crest span,
+.vl-card[data-card-color-type="rainbow"] .vl-card__crest::before,
+.vl-card[data-card-color-type="rainbow"] .vl-card__crest::after,
+.vl-card[data-card-color-type="rainbow"] .vl-card__crest span {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), transparent 17%),
+    var(--cc-deco-gradient) !important;
+}
+
+.vl-card[data-card-color-type="none"] .vl-card__crest,
+.vl-card[data-card-color-type="rotate"] .vl-card__crest,
+.vl-card[data-card-color-type="pulse"] .vl-card__crest,
+.vl-card[data-card-color-type="gradient"] .vl-card__crest,
+.vl-card[data-card-color-type="rainbow"] .vl-card__crest {
+  filter:
+    drop-shadow(0 0 10px color-mix(in srgb, var(--cc-deco-glow) 58%, transparent))
+    drop-shadow(0 0 26px color-mix(in srgb, var(--cc-deco-glow) 20%, transparent)) !important;
+}
+
+/* ----------------------------------------------------------------------
+   Gem central inferior
+   ---------------------------------------------------------------------- */
+.vl-card[data-card-color-type="none"] .vl-card__gem,
+.vl-card[data-card-color-type="rotate"] .vl-card__gem,
+.vl-card[data-card-color-type="pulse"] .vl-card__gem {
+  background:
+    radial-gradient(circle at 45% 20%, rgba(255,255,255,.88), transparent 16%),
+    linear-gradient(135deg,
+      rgba(255,255,255,.28),
+      color-mix(in srgb, var(--cc-deco-primary) 82%, #111522 18%)) !important;
+  filter:
+    drop-shadow(0 0 10px color-mix(in srgb, var(--cc-deco-glow) 72%, transparent))
+    drop-shadow(0 0 24px color-mix(in srgb, var(--cc-deco-glow) 22%, transparent)) !important;
+}
+
+.vl-card[data-card-color-type="gradient"] .vl-card__gem,
+.vl-card[data-card-color-type="rainbow"] .vl-card__gem {
+  background:
+    radial-gradient(circle at 45% 20%, rgba(255,255,255,.88), transparent 16%),
+    var(--cc-deco-gradient) !important;
+  filter:
+    drop-shadow(0 0 10px color-mix(in srgb, var(--cc-deco-glow) 72%, transparent))
+    drop-shadow(0 0 24px color-mix(in srgb, var(--cc-deco-glow) 22%, transparent)) !important;
+}
+
+.vl-card[data-card-color-type="none"] .vl-card__gem::before,
+.vl-card[data-card-color-type="rotate"] .vl-card__gem::before,
+.vl-card[data-card-color-type="pulse"] .vl-card__gem::before {
+  background:
+    radial-gradient(circle at 30% 25%, #fff, transparent 24%),
+    linear-gradient(135deg, #fff, color-mix(in srgb, var(--cc-deco-primary) 68%, #ffffff 32%)) !important;
+}
+
+.vl-card[data-card-color-type="gradient"] .vl-card__gem::before,
+.vl-card[data-card-color-type="rainbow"] .vl-card__gem::before {
+  background:
+    radial-gradient(circle at 30% 25%, #fff, transparent 24%),
+    var(--cc-deco-gradient) !important;
+}
+
+/* ======================================================================
+   CARD COLOR DECORATIONS v9 END
+   ====================================================================== */
+
+/* VELARION RARITY VARIANT PALETTE V10 */
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-label{background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;filter:none!important;}
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="minus"] .vl-card__rarity-label{opacity:.82!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;}
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="base"] .vl-card__rarity-label{opacity:1!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;}
+.vl-card[data-rarity-visual="text-only"][data-rarity-variant="plus"] .vl-card__rarity-label{opacity:1!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 9px color-mix(in srgb,var(--rarity-glow,var(--rarity-color,#fff)) 42%,transparent)!important;}
+.vl-card[data-rarity-visual="text-only"] .vl-card__rarity-stars{color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;}
